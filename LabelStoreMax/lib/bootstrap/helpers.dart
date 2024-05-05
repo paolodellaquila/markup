@@ -9,10 +9,26 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'dart:convert';
+
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_web_browser/flutter_web_browser.dart';
+import 'package:html/parser.dart';
+import 'package:intl/intl.dart';
+import 'package:math_expressions/math_expressions.dart';
+import 'package:money_formatter/money_formatter.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:status_alert/status_alert.dart';
+import 'package:woosignal/models/response/product.dart';
+import 'package:woosignal/models/response/tax_rate.dart';
+import 'package:woosignal/woosignal.dart';
+import 'package:wp_json_api/models/responses/wp_user_info_response.dart';
 import 'package:wp_json_api/models/wp_user.dart';
 import 'package:wp_json_api/wp_json_api.dart';
+
+import '../resources/themes/styles/color_styles.dart';
 import '/app/models/billing_details.dart';
 import '/app/models/cart.dart';
 import '/app/models/cart_line_item.dart';
@@ -25,20 +41,6 @@ import '/bootstrap/extensions.dart';
 import '/bootstrap/shared_pref/shared_key.dart';
 import '/config/currency.dart';
 import '/config/payment_gateways.dart';
-import 'package:intl/intl.dart';
-import 'package:flutter/material.dart';
-import 'package:html/parser.dart';
-import 'package:flutter_web_browser/flutter_web_browser.dart';
-import 'package:math_expressions/math_expressions.dart';
-import 'package:money_formatter/money_formatter.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import 'package:status_alert/status_alert.dart';
-import 'package:woosignal/models/response/product.dart';
-import 'package:woosignal/models/response/tax_rate.dart';
-import 'package:woosignal/woosignal.dart';
-import 'package:wp_json_api/models/responses/wp_user_info_response.dart';
-import '../resources/themes/styles/color_styles.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
 Future<WpUser?> getUser() async {
   return await WPJsonAPI.wpUser();
@@ -144,6 +146,7 @@ String moneyFormatter(double amount) {
 }
 
 String formatDoubleCurrency({required double total}) {
+  return "$total €";
   return moneyFormatter(total);
 }
 
@@ -152,7 +155,8 @@ String formatStringCurrency({required String? total}) {
   if (total != null && total != "") {
     tmpVal = parseWcPrice(total);
   }
-  return moneyFormatter(tmpVal);
+  return "$total €";
+  //return moneyFormatter(tmpVal);
 }
 
 String workoutSaleDiscount(

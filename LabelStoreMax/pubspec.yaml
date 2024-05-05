@@ -15,7 +15,7 @@
 # Android https://flutter.dev/docs/deployment/android
 
 name: flutter_app
-description: Label StoreMax
+description: Markup
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 

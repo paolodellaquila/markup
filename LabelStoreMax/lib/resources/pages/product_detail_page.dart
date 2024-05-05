@@ -10,6 +10,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/response/product.dart' as ws_product;
+import 'package:woosignal/models/response/product_variation.dart'
+    as ws_product_variation;
+import 'package:woosignal/models/response/woosignal_app.dart';
+
 import '/app/controllers/product_detail_controller.dart';
 import '/app/models/cart_line_item.dart';
 import '/bootstrap/app_helper.dart';
@@ -20,11 +26,6 @@ import '/resources/widgets/cart_icon_widget.dart';
 import '/resources/widgets/product_detail_body_widget.dart';
 import '/resources/widgets/product_detail_footer_actions_widget.dart';
 import '/resources/widgets/woosignal_ui.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/response/product_variation.dart'
-    as ws_product_variation;
-import 'package:woosignal/models/response/product.dart' as ws_product;
-import 'package:woosignal/models/response/woosignal_app.dart';
 
 class ProductDetailPage extends NyStatefulWidget<ProductDetailController> {
   static String path = "/product-detail";
@@ -116,7 +117,8 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
       context,
       title: trans("Options"),
       bodyWidget: ListView.separated(
-        itemCount: _product!.attributes.length,
+        itemCount:
+            _product!.attributes.length - 2, //DFP remove season and lines
         separatorBuilder: (BuildContext context, int index) => Divider(
           color: Colors.black12,
           thickness: 1,
@@ -166,7 +168,7 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
             PrimaryButton(
                 title: trans("Add to cart"),
                 action: () async {
-                  if (_product!.attributes.length !=
+                  if (_product!.attributes.length - 2 !=
                       _tmpAttributeObj.values.length) {
                     showToastNotification(context,
                         title: trans("Oops"),

@@ -10,19 +10,20 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/cart_item_container_widget.dart';
-import '/resources/pages/account_login_page.dart';
-import '/resources/pages/checkout_confirmation_page.dart';
+import 'package:nylo_framework/nylo_framework.dart';
 import 'package:wp_json_api/wp_json_api.dart';
+
 import '/app/models/cart.dart';
 import '/app/models/cart_line_item.dart';
 import '/app/models/checkout_session.dart';
 import '/app/models/customer_address.dart';
 import '/bootstrap/app_helper.dart';
 import '/bootstrap/helpers.dart';
+import '/resources/pages/account_login_page.dart';
+import '/resources/pages/checkout_confirmation_page.dart';
 import '/resources/widgets/buttons.dart';
 import '/resources/widgets/safearea_widget.dart';
 import '/resources/widgets/text_row_widget.dart';
-import 'package:nylo_framework/nylo_framework.dart';
 
 class CartPage extends StatefulWidget {
   static String path = "/cart";
@@ -257,16 +258,19 @@ class _CartPageState extends NyState<CartPage> {
                           itemCount: _cartLines.length,
                           itemBuilder: (BuildContext context, int index) {
                             CartLineItem cartLineItem = _cartLines[index];
-                            return CartItemContainer(
-                              cartLineItem: cartLineItem,
-                              actionIncrementQuantity: () =>
-                                  actionIncrementQuantity(
-                                      cartLineItem: cartLineItem),
-                              actionDecrementQuantity: () =>
-                                  actionDecrementQuantity(
-                                      cartLineItem: cartLineItem),
-                              actionRemoveItem: () =>
-                                  actionRemoveItem(index: index),
+                            return SizedBox(
+                              height: 500,
+                              child: CartItemContainer(
+                                cartLineItem: cartLineItem,
+                                actionIncrementQuantity: () =>
+                                    actionIncrementQuantity(
+                                        cartLineItem: cartLineItem),
+                                actionDecrementQuantity: () =>
+                                    actionDecrementQuantity(
+                                        cartLineItem: cartLineItem),
+                                actionRemoveItem: () =>
+                                    actionRemoveItem(index: index),
+                              ),
                             );
                           })),
             ),

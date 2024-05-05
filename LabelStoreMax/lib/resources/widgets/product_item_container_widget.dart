@@ -1,9 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import '/bootstrap/helpers.dart';
-import '/resources/widgets/cached_image_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
+
+import '/bootstrap/helpers.dart';
+import '/resources/widgets/cached_image_widget.dart';
 
 class ProductItemContainer extends StatelessWidget {
   const ProductItemContainer({
@@ -75,14 +76,14 @@ class ProductItemContainer extends StatelessWidget {
                               children: <TextSpan>[
                                 TextSpan(
                                   text:
-                                  "${workoutSaleDiscount(salePrice: product!.salePrice, priceBefore: product!.regularPrice)}% ${trans("off")}",
+                                      "${workoutSaleDiscount(salePrice: product!.salePrice, priceBefore: product!.regularPrice)}% ${trans("off")}",
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyLarge!
                                       .copyWith(
-                                    color: Colors.black,
-                                    fontSize: 13,
-                                  ),
+                                        color: Colors.black,
+                                        fontSize: 13,
+                                      ),
                                 ),
                               ],
                             ),
@@ -112,7 +113,7 @@ class ProductItemContainer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   AutoSizeText(
-                    "${formatStringCurrency(total: product?.price)} ",
+                    formatStringCurrency(total: product?.price),
                     style: Theme.of(context)
                         .textTheme
                         .bodyLarge!
@@ -125,20 +126,20 @@ class ProductItemContainer extends StatelessWidget {
                         TextSpan(
                           text: '${trans("Was")}: ',
                           style:
-                          Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            fontSize: 11,
-                          ),
+                              Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                    fontSize: 11,
+                                  ),
                         ),
                         TextSpan(
                           text: formatStringCurrency(
                             total: product?.regularPrice,
                           ),
                           style:
-                          Theme.of(context).textTheme.bodyLarge!.copyWith(
-                            decoration: TextDecoration.lineThrough,
-                            color: Colors.grey,
-                            fontSize: 11,
-                          ),
+                              Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                    decoration: TextDecoration.lineThrough,
+                                    color: Colors.grey,
+                                    fontSize: 11,
+                                  ),
                         ),
                       ]),
                     ),

@@ -10,22 +10,22 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
-import '/resources/pages/account_detail_page.dart';
-import '/resources/pages/account_login_page.dart';
-import '/resources/pages/cart_page.dart';
-import '/resources/pages/wishlist_page_widget.dart';
-import 'package:wp_json_api/wp_json_api.dart';
-import '/resources/pages/browse_category_page.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:woosignal/models/menu_link.dart';
 import 'package:woosignal/models/response/product_category.dart';
+import 'package:woosignal/models/response/woosignal_app.dart';
+import 'package:wp_json_api/wp_json_api.dart';
+
 import '/bootstrap/app_helper.dart';
 import '/bootstrap/helpers.dart';
+import '/resources/pages/account_detail_page.dart';
+import '/resources/pages/account_login_page.dart';
+import '/resources/pages/browse_category_page.dart';
+import '/resources/pages/cart_page.dart';
+import '/resources/pages/wishlist_page_widget.dart';
 import '/resources/widgets/app_version_widget.dart';
 import '/resources/widgets/cached_image_widget.dart';
-import 'package:nylo_framework/theme/helper/ny_theme.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/menu_link.dart';
-import 'package:woosignal/models/response/woosignal_app.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class HomeDrawerWidget extends StatefulWidget {
   const HomeDrawerWidget(
@@ -186,22 +186,6 @@ class _HomeDrawerWidgetState extends State<HomeDrawerWidget> {
                 leading: Icon(Icons.account_balance),
                 onTap: _actionPrivacy,
               ),
-            ListTile(
-              title: Text(trans((isDark ? "Light Mode" : "Dark Mode")),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(fontSize: 16)),
-              leading: Icon(Icons.brightness_4_rounded),
-              onTap: () {
-                setState(() {
-                  NyTheme.set(context,
-                      id: isDark
-                          ? "default_light_theme"
-                          : "default_dark_theme");
-                });
-              },
-            ),
             if (_menuLinks.isNotEmpty)
               Padding(
                 child: Text(

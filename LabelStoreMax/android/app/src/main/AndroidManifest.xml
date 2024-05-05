@@ -12,7 +12,7 @@
 
     <application
         android:name="${applicationName}"
-        android:label="Label StoreMax"
+        android:label="Markup"
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher">
