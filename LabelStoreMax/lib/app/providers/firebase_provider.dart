@@ -1,11 +1,18 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:wp_json_api/models/wp_user.dart';
-import 'package:wp_json_api/wp_json_api.dart';
-import '/bootstrap/app_helper.dart';
-import '/firebase_options.dart';
+import 'package:flutter/foundation.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/woosignal.dart';
+import 'package:wp_json_api/models/wp_user.dart';
+import 'package:wp_json_api/wp_json_api.dart';
+
+import '/bootstrap/app_helper.dart';
+import '/firebase_options.dart';
+
+Future<void> _messageHandler(RemoteMessage message) async {
+  print('background message ${message.notification?.body}');
+}
 
 class FirebaseProvider implements NyProvider {
   @override
@@ -15,8 +22,7 @@ class FirebaseProvider implements NyProvider {
 
   @override
   afterBoot(Nylo nylo) async {
-    bool? firebaseFcmIsEnabled =
-        AppHelper.instance.appConfig?.firebaseFcmIsEnabled;
+    bool? firebaseFcmIsEnabled = AppHelper.instance.appConfig?.firebaseFcmIsEnabled;
     firebaseFcmIsEnabled ??= getEnv('FCM_ENABLED', defaultValue: false);
 
     if (firebaseFcmIsEnabled != true) return;
@@ -24,6 +30,18 @@ class FirebaseProvider implements NyProvider {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+
+    FirebaseMessaging.onBackgroundMessage(_messageHandler);
+
+    ///CRASHLYTICS
+    FlutterError.onError = (errorDetails) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
+    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
 
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     NotificationSettings settings = await messaging.requestPermission(

@@ -10,17 +10,19 @@
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import '/resources/pages/account_order_detail_page.dart';
+import 'package:flutter_app/config/firebase-messaging/firebase_notification_handler.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/response/woosignal_app.dart';
+
 import '/app/events/firebase_on_message_order_event.dart';
 import '/app/events/order_notification_event.dart';
 import '/app/events/product_notification_event.dart';
-import '/bootstrap/helpers.dart';
 import '/bootstrap/app_helper.dart';
+import '/bootstrap/helpers.dart';
+import '/resources/pages/account_order_detail_page.dart';
 import '/resources/widgets/compo_theme_widget.dart';
 import '/resources/widgets/mello_theme_widget.dart';
 import '/resources/widgets/notic_theme_widget.dart';
-import 'package:woosignal/models/response/woosignal_app.dart';
 
 class HomePage extends StatefulWidget {
   static String path = "/home";
@@ -41,8 +43,7 @@ class _HomePageState extends NyState<HomePage> {
   }
 
   _enableFcmNotifications() async {
-    bool? firebaseFcmIsEnabled =
-        AppHelper.instance.appConfig?.firebaseFcmIsEnabled;
+    bool? firebaseFcmIsEnabled = AppHelper.instance.appConfig?.firebaseFcmIsEnabled;
     firebaseFcmIsEnabled ??= getEnv('FCM_ENABLED', defaultValue: false);
 
     if (firebaseFcmIsEnabled != true) return;
@@ -66,6 +67,9 @@ class _HomePageState extends NyState<HomePage> {
         _maybeShowSnackBar(message);
       }
     });
+
+    ///INNESTING FCM Custom Class
+    FirebaseNotifications().setUpFirebase(context);
   }
 
   /// Attempt to show a snackbar if the user is on the same page
@@ -74,8 +78,7 @@ class _HomePageState extends NyState<HomePage> {
       return;
     }
     _showSnackBar(message.notification?.body, onPressed: () {
-      routeTo(AccountOrderDetailPage.path,
-          data: int.parse(message.data['order_id']));
+      routeTo(AccountOrderDetailPage.path, data: int.parse(message.data['order_id']));
     });
   }
 
