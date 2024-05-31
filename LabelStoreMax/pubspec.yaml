@@ -58,6 +58,11 @@ dependencies:
   firebase_analytics: ^10.7.2
   firebase_crashlytics: ^3.4.18
 
+  #utils
+  dio: ^5.4.3+1
+  path_provider: ^2.1.3
+  video_player: ^2.8.6
+
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -95,5 +100,7 @@ flutter:
     - public/
     - public/assets/json/
     - public/assets/images/
+    - public/assets/app_icon/
+    - public/assets/videos/
     - lang/
     - .env
