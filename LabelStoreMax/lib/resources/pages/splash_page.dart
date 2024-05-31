@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Future.delayed(Duration(seconds: 5), () {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
-      routeTo(HomePage.path, navigationType: NavigationType.pushReplace);
+      routeTo(HomePage.path, navigationType: NavigationType.pushReplace, pageTransition: PageTransitionType.fade);
     });
   }
 
@@ -63,10 +63,13 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       extendBody: true,
-      body: Center(
-        child: _controller != null && _controller!.value.isInitialized
-            ? VideoPlayer(_controller!)
-            : Image.asset(width: 96, height: 96, "public/assets/app_icon/appicon.png"),
+      body: GestureDetector(
+        onTap: () => routeTo(HomePage.path, navigationType: NavigationType.pushReplace, pageTransition: PageTransitionType.fade),
+        child: Center(
+          child: _controller != null && _controller!.value.isInitialized
+              ? VideoPlayer(_controller!)
+              : Image.asset(width: 96, height: 96, "public/assets/app_icon/appicon.png"),
+        ),
       ),
     );
   }
