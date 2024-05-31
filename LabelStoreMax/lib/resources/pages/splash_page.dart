@@ -15,13 +15,20 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   VideoPlayerController? _controller;
+  bool _isSplashCompleted = false;
+
+  _navigateToHome() {
+    _isSplashCompleted = true;
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+    routeTo(HomePage.path, navigationType: NavigationType.pushReplace, pageTransition: PageTransitionType.fade);
+  }
 
   _checkVideos() async {
     await _initializeVideoPlayer();
 
     Future.delayed(Duration(seconds: 5), () {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
-      routeTo(HomePage.path, navigationType: NavigationType.pushReplace, pageTransition: PageTransitionType.fade);
+      if (_isSplashCompleted) return;
+      _navigateToHome();
     });
   }
 
@@ -64,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
       extendBodyBehindAppBar: true,
       extendBody: true,
       body: GestureDetector(
-        onTap: () => routeTo(HomePage.path, navigationType: NavigationType.pushReplace, pageTransition: PageTransitionType.fade),
+        onTap: () => _navigateToHome(),
         child: Center(
           child: _controller != null && _controller!.value.isInitialized
               ? VideoPlayer(_controller!)
