@@ -241,18 +241,16 @@ class _CartPageState extends NyState<CartPage> {
                           widthFactor: 1,
                         )
                       : ListView.builder(
+                          shrinkWrap: true,
                           padding: const EdgeInsets.all(8),
                           itemCount: _cartLines.length,
                           itemBuilder: (BuildContext context, int index) {
                             CartLineItem cartLineItem = _cartLines[index];
-                            return SizedBox(
-                              height: 500,
-                              child: CartItemContainer(
-                                cartLineItem: cartLineItem,
-                                actionIncrementQuantity: () => actionIncrementQuantity(cartLineItem: cartLineItem),
-                                actionDecrementQuantity: () => actionDecrementQuantity(cartLineItem: cartLineItem),
-                                actionRemoveItem: () => actionRemoveItem(index: index),
-                              ),
+                            return CartItemContainer(
+                              cartLineItem: cartLineItem,
+                              actionIncrementQuantity: () => actionIncrementQuantity(cartLineItem: cartLineItem),
+                              actionDecrementQuantity: () => actionDecrementQuantity(cartLineItem: cartLineItem),
+                              actionRemoveItem: () => actionRemoveItem(index: index),
                             );
                           })),
             ),

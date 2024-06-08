@@ -25,7 +25,7 @@ class _CartIconWidgetState extends State<CartIconWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 70,
+      width: 50,
       child: IconButton(
         icon: Stack(
           children: <Widget>[
