@@ -9,18 +9,17 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import 'package:wp_json_api/wp_json_api.dart';
-import '/app/models/bottom_nav_item.dart';
-import '/bootstrap/app_helper.dart';
-import '/resources/pages/account_detail_page.dart';
-import '/resources/pages/account_login_page.dart';
-import '/resources/pages/cart_page.dart';
-import '/resources/pages/wishlist_page_widget.dart';
-import '/resources/pages/home_search_page.dart';
-import '/resources/widgets/app_loader_widget.dart';
-import '/resources/widgets/compo_home_widget.dart';
+import 'package:flutter_app/resources/pages/categories_page.dart';
+import 'package:flutter_app/resources/pages/settings_page.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
+
+import '/app/models/bottom_nav_item.dart';
+import '/bootstrap/app_helper.dart';
+import '/resources/pages/cart_page.dart';
+import '/resources/pages/wishlist_page_widget.dart';
+import '/resources/widgets/app_loader_widget.dart';
+import '/resources/widgets/compo_home_widget.dart';
 
 class CompoThemeWidget extends StatefulWidget {
   CompoThemeWidget({super.key, required this.wooSignalApp});
@@ -57,8 +56,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> {
       bottomNavigationBar: allNavWidgets.isEmpty
           ? AppLoaderWidget()
           : BottomNavigationBar(
-              onTap: (currentIndex) =>
-                  _changeMainWidget(currentIndex, allNavWidgets),
+              onTap: (currentIndex) => _changeMainWidget(currentIndex, allNavWidgets),
               currentIndex: _currentIndex,
               unselectedItemColor: Colors.black54,
               type: BottomNavigationBarType.fixed,
@@ -69,8 +67,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> {
               ),
               showSelectedLabels: false,
               showUnselectedLabels: false,
-              items:
-                  allNavWidgets.map((e) => e.bottomNavigationBarItem).toList(),
+              items: allNavWidgets.map((e) => e.bottomNavigationBarItem).toList(),
             ),
     );
   }
@@ -87,15 +84,15 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> {
           tabWidget: CompoHomeWidget(wooSignalApp: widget.wooSignalApp)),
     );
 
-    items.add(
-      BottomNavItem(
-          id: 2,
-          bottomNavigationBarItem: BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search'.tr(),
-          ),
-          tabWidget: HomeSearchPage()),
-    );
+    // items.add(
+    //   BottomNavItem(
+    //       id: 2,
+    //       bottomNavigationBarItem: BottomNavigationBarItem(
+    //         icon: Icon(Icons.search),
+    //         label: 'Search'.tr(),
+    //       ),
+    //       tabWidget: HomeSearchPage()),
+    // );
 
     if (AppHelper.instance.appConfig!.wishlistEnabled == true) {
       items.add(BottomNavItem(
@@ -110,12 +107,19 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> {
 
     items.add(BottomNavItem(
       id: 4,
-      bottomNavigationBarItem: BottomNavigationBarItem(
-          icon: Icon(Icons.shopping_cart), label: 'Cart'.tr()),
+      bottomNavigationBarItem: BottomNavigationBarItem(icon: Icon(Icons.search_outlined), label: 'Categories'.tr()),
+      tabWidget: CategoriesPage(
+        wooSignalApp: AppHelper.instance.appConfig,
+      ),
+    ));
+
+    items.add(BottomNavItem(
+      id: 5,
+      bottomNavigationBarItem: BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart'.tr()),
       tabWidget: CartPage(),
     ));
 
-    if (AppHelper.instance.appConfig!.wpLoginEnabled == 1) {
+    /*if (AppHelper.instance.appConfig!.wpLoginEnabled == 1) {
       items.add(BottomNavItem(
         id: 5,
         bottomNavigationBarItem: BottomNavigationBarItem(
@@ -126,12 +130,20 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> {
                 showBackButton: false,
               ),
       ));
-    }
+    }*/
+
+    items.add(BottomNavItem(
+      id: 6,
+      bottomNavigationBarItem: BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'.tr()),
+      tabWidget: SettingsPage(
+        wooSignalApp: AppHelper.instance.appConfig,
+      ),
+    ));
+
     return items;
   }
 
-  _changeMainWidget(
-      int currentIndex, List<BottomNavItem> bottomNavWidgets) async {
+  _changeMainWidget(int currentIndex, List<BottomNavItem> bottomNavWidgets) async {
     _currentIndex = currentIndex;
     activeWidget = bottomNavWidgets[_currentIndex].tabWidget;
     setState(() {});

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/resources/pages/home_page.dart';
 import 'package:flutter_app/utils/video_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:nylo_framework/theme/helper/ny_theme.dart';
 import 'package:video_player/video_player.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -39,6 +40,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     _checkVideos();
+
+    ///FORCE LIGHT THEME
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      NyTheme.set(context, id: "default_light_theme");
+    });
   }
 
   Future<void> _initializeVideoPlayer() async {

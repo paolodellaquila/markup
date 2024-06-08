@@ -28,10 +28,7 @@ import '/resources/widgets/app_version_widget.dart';
 import '/resources/widgets/cached_image_widget.dart';
 
 class HomeDrawerWidget extends StatefulWidget {
-  const HomeDrawerWidget(
-      {super.key,
-      required this.wooSignalApp,
-      this.productCategories = const []});
+  const HomeDrawerWidget({super.key, required this.wooSignalApp, this.productCategories = const []});
 
   final WooSignalApp? wooSignalApp;
   final List<ProductCategory> productCategories;
@@ -84,10 +81,7 @@ class _HomeDrawerWidgetState extends State<HomeDrawerWidget> {
                     ListTile(
                       title: Text(
                         trans("Profile"),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(fontSize: 16),
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
                       ),
                       leading: Icon(Icons.account_circle),
                       onTap: _actionProfile,
@@ -96,10 +90,7 @@ class _HomeDrawerWidgetState extends State<HomeDrawerWidget> {
                     ListTile(
                       title: Text(
                         trans("Wishlist"),
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium!
-                            .copyWith(fontSize: 16),
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
                       ),
                       leading: Icon(Icons.favorite_border),
                       onTap: _actionWishlist,
@@ -107,50 +98,39 @@ class _HomeDrawerWidgetState extends State<HomeDrawerWidget> {
                   ListTile(
                     title: Text(
                       trans("Cart"),
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(fontSize: 16),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
                     ),
-                    leading: Icon(Icons.shopping_cart),
+                    leading: Icon(Icons.shopping_bag_outlined),
                     onTap: _actionCart,
                   ),
                 ],
               ),
-            if (widget.wooSignalApp?.productCategoryCollections.isNotEmpty ??
-                false)
-              Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      child: Text(
-                        trans("Categories".tr()),
-                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                        textAlign: TextAlign.left,
-                      ),
-                      padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
-                    ),
-                    ...widget.productCategories.map((collection) {
-                      return ListTile(
-                        title: Text(
-                          collection.name ?? "",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(fontSize: 16),
+            if (widget.wooSignalApp?.productCategoryCollections.isNotEmpty ?? false)
+              Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.start, children: [
+                Padding(
+                  child: Text(
+                    trans("Categories".tr()),
+                    style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          fontWeight: FontWeight.w600,
                         ),
-                        trailing: Icon(Icons.keyboard_arrow_right_rounded),
-                        onTap: () {
-                          routeTo(BrowseCategoryPage.path, data: collection);
-                        },
-                      );
-                    })
-                  ]),
-            if (widget.wooSignalApp!.appTermsLink != null &&
-                widget.wooSignalApp!.appPrivacyLink != null)
+                    textAlign: TextAlign.left,
+                  ),
+                  padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
+                ),
+                ...widget.productCategories.map((collection) {
+                  return ListTile(
+                    title: Text(
+                      collection.name ?? "",
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+                    ),
+                    trailing: Icon(Icons.keyboard_arrow_right_rounded),
+                    onTap: () {
+                      routeTo(BrowseCategoryPage.path, data: collection);
+                    },
+                  );
+                })
+              ]),
+            if (widget.wooSignalApp!.appTermsLink != null && widget.wooSignalApp!.appPrivacyLink != null)
               Padding(
                 child: Text(
                   trans("About Us"),
@@ -158,29 +138,21 @@ class _HomeDrawerWidgetState extends State<HomeDrawerWidget> {
                 ),
                 padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
               ),
-            if (widget.wooSignalApp!.appTermsLink != null &&
-                widget.wooSignalApp!.appTermsLink!.isNotEmpty)
+            if (widget.wooSignalApp!.appTermsLink != null && widget.wooSignalApp!.appTermsLink!.isNotEmpty)
               ListTile(
                 title: Text(
                   trans("Terms and conditions"),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(fontSize: 16),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
                 ),
                 leading: Icon(Icons.menu_book_rounded),
                 trailing: Icon(Icons.keyboard_arrow_right_rounded),
                 onTap: _actionTerms,
               ),
-            if (widget.wooSignalApp!.appPrivacyLink != null &&
-                widget.wooSignalApp!.appPrivacyLink!.isNotEmpty)
+            if (widget.wooSignalApp!.appPrivacyLink != null && widget.wooSignalApp!.appPrivacyLink!.isNotEmpty)
               ListTile(
                 title: Text(
                   trans("Privacy policy"),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(fontSize: 16),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
                 ),
                 trailing: Icon(Icons.keyboard_arrow_right_rounded),
                 leading: Icon(Icons.account_balance),
@@ -194,24 +166,17 @@ class _HomeDrawerWidgetState extends State<HomeDrawerWidget> {
                 ),
                 padding: EdgeInsets.only(left: 16, top: 8, bottom: 8),
               ),
-            ..._menuLinks
-                .where((element) => element.label != "")
-                .map((menuLink) => ListTile(
-                      title: Text(menuLink.label,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(fontSize: 16)),
-                      leading: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: CachedImageWidget(
-                          image: menuLink.iconUrl,
-                          width: 40,
-                        ),
-                      ),
-                      onTap: () async =>
-                          await launchUrl(Uri.parse(menuLink.linkUrl)),
-                    )),
+            ..._menuLinks.where((element) => element.label != "").map((menuLink) => ListTile(
+                  title: Text(menuLink.label, style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16)),
+                  leading: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: CachedImageWidget(
+                      image: menuLink.iconUrl,
+                      width: 40,
+                    ),
+                  ),
+                  onTap: () async => await launchUrl(Uri.parse(menuLink.linkUrl)),
+                )),
             ListTile(
               title: Text("Change language".tr()),
               leading: Icon(Icons.language),
@@ -234,8 +199,7 @@ class _HomeDrawerWidgetState extends State<HomeDrawerWidget> {
 
   _actionProfile() async {
     Navigator.pop(context);
-    if (widget.wooSignalApp!.wpLoginEnabled == 1 &&
-        !(await WPJsonAPI.wpUserLoggedIn())) {
+    if (widget.wooSignalApp!.wpLoginEnabled == 1 && !(await WPJsonAPI.wpUserLoggedIn())) {
       UserAuth.instance.redirect = AccountDetailPage.path;
       routeTo(AccountLoginPage.path);
       return;

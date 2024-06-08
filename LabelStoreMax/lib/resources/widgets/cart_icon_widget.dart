@@ -9,9 +9,10 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import '/resources/pages/cart_page.dart';
+import 'package:flutter_app/resources/widgets/cart_quantity_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
-import '/resources/widgets/cart_quantity_widget.dart';
+
+import '/resources/pages/cart_page.dart';
 
 class CartIconWidget extends StatefulWidget {
   CartIconWidget({super.key});
@@ -28,19 +29,16 @@ class _CartIconWidgetState extends State<CartIconWidget> {
       child: IconButton(
         icon: Stack(
           children: <Widget>[
-            Positioned.fill(
-              child: Align(
-                child: Icon(Icons.shopping_cart, size: 20),
-                alignment: Alignment.bottomCenter,
+            Align(
+              child: Icon(
+                Icons.shopping_bag_outlined,
+                size: 32,
               ),
-              bottom: 0,
+              alignment: Alignment.topCenter,
             ),
-            Positioned.fill(
-              child: Align(
-                child: CartQuantity(),
-                alignment: Alignment.topCenter,
-              ),
-              top: 0,
+            Align(
+              child: CartQuantity(),
+              alignment: Alignment.center,
             )
           ],
         ),

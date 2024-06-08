@@ -103,5 +103,6 @@ flutter:
     - public/assets/json/
     - public/assets/images/
     - public/assets/app_icon/
+    - public/assets/icons/
     - lang/
     - .env
