@@ -2,12 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:dio/dio.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 
 class VideoManager {
-  final Dio _dio = Dio();
-  final String _url = "https://markupitalia.com/wp-content/uploads/reel-campaign/";
   Directory? _localDir;
 
   static final VideoManager _singleton = VideoManager._internal();
@@ -32,37 +30,26 @@ class VideoManager {
   }
 
   Future<void> _downloadVideos() async {
-    try {
-      Response response = await _dio.get<List<dynamic>>(
-        _url,
-        options: Options(responseType: ResponseType.json),
-      );
-      List<String> remoteVideos = (response.data as List).map((e) => e.toString()).toList();
-      for (String video in remoteVideos) {
-        await _downloadFile(video);
-      }
-    } catch (e) {
-      print("Error downloading videos: $e");
+    final result = await FirebaseStorage.instance.ref().child('intro_videos').listAll();
+    for (var ref in result.items) {
+      _downloadFile(ref.name);
     }
   }
 
   Future<void> _downloadFile(String fileName) async {
-    String fileUrl = '$_url$fileName';
-    String filePath = '${_localDir!.path}/$fileName';
     try {
-      await _dio.download(fileUrl, filePath);
+      final ref = FirebaseStorage.instance.ref().child('intro_videos').child(fileName);
+      final file = File('${_localDir!.path}/$fileName');
+      await ref.writeToFile(file);
     } catch (e) {
-      print("Error downloading file $fileName: $e");
+      print("Error downloading file: $e");
     }
   }
 
   Future<void> _checkForUpdates() async {
     try {
-      Response response = await _dio.get<List<dynamic>>(
-        _url,
-        options: Options(responseType: ResponseType.json),
-      );
-      List<String> remoteVideos = (response.data as List).map((e) => e.toString()).toList();
+      final result = await FirebaseStorage.instance.ref().child('intro_videos').listAll();
+      List<String> remoteVideos = result.items.map((e) => e.name).toList();
       if (_isUpdateRequired(remoteVideos)) {
         await _deleteLocalVideos();
         await _downloadVideos();

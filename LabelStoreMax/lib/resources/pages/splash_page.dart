@@ -1,8 +1,9 @@
-import 'dart:math';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/resources/pages/home_page.dart';
+import 'package:flutter_app/utils/video_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:video_player/video_player.dart';
 
@@ -42,14 +43,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _initializeVideoPlayer() async {
     try {
-      /*File? videoFile = await VideoManager().getRandomVideo();
+      File? videoFile = await VideoManager().getRandomVideo();
       if (videoFile == null) {
         print("Error loading video: video file is null");
         return;
-      }*/
+      }
 
-      int index = Random().nextInt(3) + 1;
-      _controller = VideoPlayerController.asset("public/assets/videos/${index}.mp4")
+      _controller = VideoPlayerController.file(videoFile)
         ..initialize().then((_) {
           setState(() {});
           _controller?.play();
@@ -75,7 +75,15 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Center(
           child: _controller != null && _controller!.value.isInitialized
               ? VideoPlayer(_controller!)
-              : Image.asset(width: 96, height: 96, "public/assets/app_icon/appicon.png"),
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(width: 196, height: 196, "public/assets/app_icon/appicon.png"),
+                    SizedBox(height: 4),
+                    CircularProgressIndicator(),
+                  ],
+                ),
         ),
       ),
     );

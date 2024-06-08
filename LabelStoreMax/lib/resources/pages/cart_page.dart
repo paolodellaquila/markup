@@ -52,8 +52,7 @@ class _CartPageState extends NyState<CartPage> {
 
     List<Map<String, dynamic>> cartJSON = cart.map((c) => c.toJson()).toList();
 
-    List<dynamic> cartRes =
-        await (appWooSignal((api) => api.cartCheck(cartJSON)));
+    List<dynamic> cartRes = await (appWooSignal((api) => api.cartCheck(cartJSON)));
     if (cartRes.isEmpty) {
       await Cart.getInstance.saveCartToPref(cartLineItems: []);
       return;
@@ -82,8 +81,7 @@ class _CartPageState extends NyState<CartPage> {
       return;
     }
 
-    if (!cartLineItems.every(
-        (c) => c.stockStatus == 'instock' || c.stockStatus == 'onbackorder')) {
+    if (!cartLineItems.every((c) => c.stockStatus == 'instock' || c.stockStatus == 'onbackorder')) {
       showToastNotification(
         context,
         title: trans("Cart"),
@@ -95,14 +93,11 @@ class _CartPageState extends NyState<CartPage> {
     }
 
     CheckoutSession.getInstance.initSession();
-    CustomerAddress? sfCustomerAddress =
-        await CheckoutSession.getInstance.getBillingAddress();
+    CustomerAddress? sfCustomerAddress = await CheckoutSession.getInstance.getBillingAddress();
 
     if (sfCustomerAddress != null) {
-      CheckoutSession.getInstance.billingDetails!.billingAddress =
-          sfCustomerAddress;
-      CheckoutSession.getInstance.billingDetails!.shippingAddress =
-          sfCustomerAddress;
+      CheckoutSession.getInstance.billingDetails!.billingAddress = sfCustomerAddress;
+      CheckoutSession.getInstance.billingDetails!.shippingAddress = sfCustomerAddress;
     }
 
     if (!(await WPJsonAPI.wpUserLoggedIn())) {
@@ -111,8 +106,7 @@ class _CartPageState extends NyState<CartPage> {
           context: context,
           builder: (context) {
             return AlertDialog.adaptive(
-              content: Text("Checkout as guest or login to continue".tr())
-                  .headingMedium(context),
+              content: Text("Checkout as guest or login to continue".tr()).headingMedium(context),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -125,8 +119,7 @@ class _CartPageState extends NyState<CartPage> {
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      UserAuth.instance.redirect =
-                          CheckoutConfirmationPage.path;
+                      UserAuth.instance.redirect = CheckoutConfirmationPage.path;
                       routeTo(AccountLoginPage.path);
                     },
                     child: Text("Login / Create an account".tr()),
@@ -144,8 +137,7 @@ class _CartPageState extends NyState<CartPage> {
   }
 
   actionIncrementQuantity({required CartLineItem cartLineItem}) async {
-    if (cartLineItem.isManagedStock! &&
-        cartLineItem.quantity + 1 > cartLineItem.stockQuantity!) {
+    if (cartLineItem.isManagedStock! && cartLineItem.quantity + 1 > cartLineItem.stockQuantity!) {
       showToastNotification(
         context,
         title: trans("Cart"),
@@ -155,8 +147,7 @@ class _CartPageState extends NyState<CartPage> {
       );
       return;
     }
-    await Cart.getInstance
-        .updateQuantity(cartLineItem: cartLineItem, incrementQuantity: 1);
+    await Cart.getInstance.updateQuantity(cartLineItem: cartLineItem, incrementQuantity: 1);
     cartLineItem.quantity += 1;
     setState(() {});
   }
@@ -165,8 +156,7 @@ class _CartPageState extends NyState<CartPage> {
     if (cartLineItem.quantity - 1 <= 0) {
       return;
     }
-    await Cart.getInstance
-        .updateQuantity(cartLineItem: cartLineItem, incrementQuantity: -1);
+    await Cart.getInstance.updateQuantity(cartLineItem: cartLineItem, incrementQuantity: -1);
     cartLineItem.quantity -= 1;
     setState(() {});
   }
@@ -188,10 +178,7 @@ class _CartPageState extends NyState<CartPage> {
     await Cart.getInstance.clear();
     _cartLines = [];
     showToastNotification(context,
-        title: trans("Success"),
-        description: trans("Cart cleared"),
-        style: ToastNotificationStyleType.SUCCESS,
-        icon: Icons.delete_outline);
+        title: trans("Success"), description: trans("Cart cleared"), style: ToastNotificationStyleType.SUCCESS, icon: Icons.delete_outline);
     setState(() {});
   }
 
@@ -262,14 +249,9 @@ class _CartPageState extends NyState<CartPage> {
                               height: 500,
                               child: CartItemContainer(
                                 cartLineItem: cartLineItem,
-                                actionIncrementQuantity: () =>
-                                    actionIncrementQuantity(
-                                        cartLineItem: cartLineItem),
-                                actionDecrementQuantity: () =>
-                                    actionDecrementQuantity(
-                                        cartLineItem: cartLineItem),
-                                actionRemoveItem: () =>
-                                    actionRemoveItem(index: index),
+                                actionIncrementQuantity: () => actionIncrementQuantity(cartLineItem: cartLineItem),
+                                actionDecrementQuantity: () => actionDecrementQuantity(cartLineItem: cartLineItem),
+                                actionRemoveItem: () => actionRemoveItem(index: index),
                               ),
                             );
                           })),
@@ -288,10 +270,8 @@ class _CartPageState extends NyState<CartPage> {
               ),
               loading: SizedBox.shrink(),
             ),
-            PrimaryButton(
-              title: trans("PROCEED TO CHECKOUT"),
-              action: _actionProceedToCheckout,
-            ),
+            PrimaryButton(title: trans("PROCEED TO CHECKOUT"), action: () {} //_actionProceedToCheckout, //TODO: enable this
+                ),
           ],
         ),
       ),

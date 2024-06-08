@@ -27,9 +27,12 @@ class FirebaseProvider implements NyProvider {
 
     if (firebaseFcmIsEnabled != true) return;
 
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    if(Firebase.apps.isEmpty){
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+
 
     FirebaseMessaging.onBackgroundMessage(_messageHandler);
 
