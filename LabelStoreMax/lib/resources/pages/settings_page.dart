@@ -136,10 +136,7 @@ class SettingsPage extends StatelessWidget {
                           NyLanguageSwitcher.showBottomModal(context);
                         },
                       ),
-                      ListTile(
-                        contentPadding: const EdgeInsets.all(0.0),
-                        title: AppVersionWidget(),
-                      ),
+                      const SizedBox(height: 24),
                       Row(
                         children: [
                           GestureDetector(
@@ -158,7 +155,11 @@ class SettingsPage extends StatelessWidget {
                             ),
                           ),
                         ],
-                      )
+                      ),
+                      ListTile(
+                        contentPadding: const EdgeInsets.all(0.0),
+                        title: AppVersionWidget(),
+                      ),
                     ],
                   ),
                 ),
