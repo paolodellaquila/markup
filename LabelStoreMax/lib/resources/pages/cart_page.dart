@@ -268,8 +268,7 @@ class _CartPageState extends NyState<CartPage> {
               ),
               loading: SizedBox.shrink(),
             ),
-            PrimaryButton(title: trans("PROCEED TO CHECKOUT"), action: () {} //_actionProceedToCheckout, //TODO: enable this
-                ),
+            PrimaryButton(title: trans("PROCEED TO CHECKOUT"), action: _actionProceedToCheckout),
           ],
         ),
       ),

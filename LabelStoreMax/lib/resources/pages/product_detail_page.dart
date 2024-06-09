@@ -54,7 +54,7 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
     bool isFetching = true;
     while (isFetching) {
       List<ws_product_variation.ProductVariation> tmp = await (appWooSignal(
-        (api) => api.getProductVariations(_product!.id!, perPage: 100, page: currentPage),
+        (api) => api.getProductVariations(_product!.id!, perPage: 100, page: currentPage, status: "publish", stockStatus: "instock"),
       ));
       if (tmp.isNotEmpty) {
         tmpVariations.addAll(tmp);
@@ -144,46 +144,51 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
                       ? trans("Out of stock")
                       : ""
                   : ""),
-              style: Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.red, fontWeight: FontWeight.bold),
             ),
-            PrimaryButton(
-                title: trans("Add to cart"),
-                action: () async {
-                  if (_product!.attributes.length - 2 != _tmpAttributeObj.values.length) {
-                    showToastNotification(context,
-                        title: trans("Oops"), description: trans("Please select valid options first"), style: ToastNotificationStyleType.WARNING);
-                    return;
-                  }
+            if (productVariation != null && productVariation.stockStatus == "instock") ...[
+              PrimaryButton(
+                  title: trans("Add to cart"),
+                  action: () async {
+                    if (_product!.attributes.length - 2 != _tmpAttributeObj.values.length) {
+                      showToastNotification(context,
+                          title: trans("Sorry"), description: trans("Please select valid options first"), style: ToastNotificationStyleType.WARNING);
+                      return;
+                    }
 
-                  if (productVariation == null) {
-                    showToastNotification(context,
-                        title: trans("Oops"), description: trans("Product variation does not exist"), style: ToastNotificationStyleType.WARNING);
-                    return;
-                  }
+                    // if (productVariation == null) {
+                    //   showToastNotification(context,
+                    //       title: trans("Oops"), description: trans("Product variation does not exist"), style: ToastNotificationStyleType.WARNING);
+                    //   return;
+                    // }
 
-                  if (productVariation.stockStatus != "instock") {
-                    showToastNotification(context,
-                        title: trans("Sorry"), description: trans("This item is not in stock"), style: ToastNotificationStyleType.WARNING);
-                    return;
-                  }
+                    if (productVariation.stockStatus != "instock") {
+                      showToastNotification(context,
+                          title: trans("Sorry"), description: trans("This item is not in stock"), style: ToastNotificationStyleType.WARNING);
+                      return;
+                    }
 
-                  List<String> options = [];
-                  _tmpAttributeObj.forEach((k, v) {
-                    options.add("${v["name"]}: ${v["value"]}");
-                  });
+                    List<String> options = [];
+                    _tmpAttributeObj.forEach((k, v) {
+                      options.add("${v["name"]}: ${v["value"]}");
+                    });
 
-                  CartLineItem cartLineItem = CartLineItem.fromProductVariation(
-                    quantityAmount: widget.controller.quantity,
-                    options: options,
-                    product: _product!,
-                    productVariation: productVariation,
-                  );
+                    CartLineItem cartLineItem = CartLineItem.fromProductVariation(
+                      quantityAmount: widget.controller.quantity,
+                      options: options,
+                      product: _product!,
+                      productVariation: productVariation,
+                    );
 
-                  await widget.controller.itemAddToCart(
-                    cartLineItem: cartLineItem,
-                  );
-                  Navigator.of(context).pop();
-                }),
+                    await widget.controller.itemAddToCart(
+                      cartLineItem: cartLineItem,
+                    );
+                    Navigator.of(context).pop();
+                  }),
+            ] else ...[
+              Text(trans("This variation is unavailable"),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.red, fontWeight: FontWeight.bold)),
+            ],
           ],
         ),
         margin: EdgeInsets.only(bottom: 10),

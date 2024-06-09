@@ -35,7 +35,7 @@ class ProductDetailFooterActionsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         color: ThemeColor.get(context).background,
         boxShadow: [
@@ -95,10 +95,19 @@ class ProductDetailFooterActionsWidget extends StatelessWidget {
               children: <Widget>[
                 Flexible(
                     child: Align(
-                  child: AutoSizeText(
-                    formatStringCurrency(total: (parseWcPrice(product!.price) * quantity).toString()),
-                    style: Theme.of(context).textTheme.headlineMedium,
-                    textAlign: TextAlign.center,
+                  child: Row(
+                    children: [
+                      AutoSizeText(
+                        "${trans("Price")}:  ",
+                        style: Theme.of(context).textTheme.bodyLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      AutoSizeText(
+                        formatStringCurrency(total: (parseWcPrice(product!.price) * quantity).toString()),
+                        style: Theme.of(context).textTheme.headlineMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                   alignment: Alignment.centerLeft,
                 )),

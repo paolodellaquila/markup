@@ -58,6 +58,7 @@ class _SplashScreenState extends State<SplashScreen> {
       _controller = VideoPlayerController.file(videoFile)
         ..initialize().then((_) {
           setState(() {});
+          _controller?.setVolume(0);
           _controller?.play();
         });
     } catch (e) {

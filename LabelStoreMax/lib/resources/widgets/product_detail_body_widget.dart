@@ -9,20 +9,20 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import '/resources/pages/product_image_viewer_page.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/response/product.dart';
+import 'package:woosignal/models/response/woosignal_app.dart';
+
+import '/resources/pages/product_image_viewer_page.dart';
 import '/resources/widgets/product_detail_description_widget.dart';
 import '/resources/widgets/product_detail_header_widget.dart';
 import '/resources/widgets/product_detail_image_swiper_widget.dart';
 import '/resources/widgets/product_detail_related_products_widget.dart';
 import '/resources/widgets/product_detail_reviews_widget.dart';
 import '/resources/widgets/product_detail_upsell_widget.dart';
-import 'package:woosignal/models/response/product.dart';
-import 'package:woosignal/models/response/woosignal_app.dart';
 
 class ProductDetailBodyWidget extends StatelessWidget {
-  const ProductDetailBodyWidget(
-      {super.key, required this.product, required this.wooSignalApp});
+  const ProductDetailBodyWidget({super.key, required this.product, required this.wooSignalApp});
 
   final Product? product;
   final WooSignalApp? wooSignalApp;
@@ -32,9 +32,7 @@ class ProductDetailBodyWidget extends StatelessWidget {
     return ListView(
       shrinkWrap: true,
       children: <Widget>[
-        ProductDetailImageSwiperWidget(
-            product: product,
-            onTapImage: (i) => _viewProductImages(context, i)),
+        ProductDetailImageSwiperWidget(product: product, onTapImage: (i) => _viewProductImages(context, i)),
         // </Image Swiper>
 
         ProductDetailHeaderWidget(product: product),
@@ -43,26 +41,21 @@ class ProductDetailBodyWidget extends StatelessWidget {
         ProductDetailDescriptionWidget(product: product),
         // </Description body>
 
-        ProductDetailReviewsWidget(
-            product: product, wooSignalApp: wooSignalApp),
+        ProductDetailReviewsWidget(product: product, wooSignalApp: wooSignalApp),
         // </Product reviews>
 
-        if (product != null)
-          ProductDetailUpsellWidget(
-              productIds: product!.upsellIds, wooSignalApp: wooSignalApp),
+        if (product != null) ProductDetailUpsellWidget(productIds: product!.upsellIds, wooSignalApp: wooSignalApp),
         // </You may also like>
 
-        ProductDetailRelatedProductsWidget(
-            product: product, wooSignalApp: wooSignalApp)
+        const SizedBox(height: 72),
+
+        ProductDetailRelatedProductsWidget(product: product, wooSignalApp: wooSignalApp)
         // </Related products>
       ],
     );
   }
 
   _viewProductImages(BuildContext context, int i) {
-    routeTo(ProductImageViewerPage.path, data: {
-      "index": i,
-      "images": product!.images.map((f) => f.src).toList()
-    });
+    routeTo(ProductImageViewerPage.path, data: {"index": i, "images": product!.images.map((f) => f.src).toList()});
   }
 }
