@@ -5,6 +5,7 @@ import 'package:flutter_app/resources/pages/browse_category_page.dart';
 import 'package:flutter_app/resources/pages/browse_search_page.dart';
 import 'package:flutter_app/resources/widgets/app_loader_widget.dart';
 import 'package:flutter_app/resources/widgets/buttons.dart';
+import 'package:flutter_expanded_tile/flutter_expanded_tile.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product_category.dart';
 import 'package:woosignal/models/response/product_category_collection.dart';
@@ -22,7 +23,9 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends NyState<CategoriesPage> {
-  List<ProductCategory> categories = [];
+  List<ProductCategory> mainCategories = [];
+  Map<String, List<ProductCategory>> subCategories = {};
+
   final TextEditingController _txtSearchController = TextEditingController();
 
   _actionSearch() {
@@ -39,8 +42,8 @@ class _CategoriesPageState extends NyState<CategoriesPage> {
   _loadCategories() async {
     if ((widget.wooSignalApp?.productCategoryCollections ?? []).isNotEmpty) {
       List<int> productCategoryId = widget.wooSignalApp?.productCategoryCollections.map((e) => int.parse(e.collectionId!)).toList() ?? [];
-      categories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, hideEmpty: true, include: productCategoryId)));
-      categories.sort((category1, category2) {
+      mainCategories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, hideEmpty: true, include: productCategoryId)));
+      mainCategories.sort((category1, category2) {
         ProductCategoryCollection? productCategoryCollection1 =
             widget.wooSignalApp?.productCategoryCollections.firstWhereOrNull((element) => element.collectionId == category1.id.toString());
         ProductCategoryCollection? productCategoryCollection2 =
@@ -54,12 +57,20 @@ class _CategoriesPageState extends NyState<CategoriesPage> {
 
         return productCategoryCollection1.position!.compareTo(productCategoryCollection2.position!);
       });
+      //Remove uncategorized category
+      mainCategories.removeWhere((element) => (element.name ?? "").contains("Uncategorized"));
     } else {
-      categories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, hideEmpty: true)));
-      categories.sort((category1, category2) => category1.menuOrder!.compareTo(category2.menuOrder!));
+      mainCategories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, hideEmpty: true)));
+      mainCategories.sort((category1, category2) => category1.name!.compareTo(category2.name!));
 
       //Remove uncategorized category
-      categories.removeWhere((element) => (element.name ?? "").contains("Uncategorized"));
+      mainCategories.removeWhere((element) => (element.name ?? "").contains("Uncategorized"));
+      mainCategories.removeWhere((element) => (element.name ?? "").contains("Special Price"));
+    }
+
+    for (ProductCategory category in mainCategories) {
+      List<ProductCategory> subCats = await (appWooSignal((api) => api.getProductCategories(parent: category.id, perPage: 50, hideEmpty: true)));
+      subCategories[category.id.toString()] = subCats;
     }
   }
 
@@ -76,60 +87,78 @@ class _CategoriesPageState extends NyState<CategoriesPage> {
         title: Text(trans("Categories")),
       ),
       body: SafeArea(
-        child: categories.isEmpty
+        child: mainCategories.isEmpty
             ? Center(
                 child: AppLoaderWidget(),
               )
-            : ListView.builder(
-                shrinkWrap: true,
-                itemCount: categories.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == 0) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          NyTextField.compact(
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(Icons.search),
-                              hintText: trans("Search hint"),
-                              hintStyle: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
-                            ),
-                            backgroundColor: Colors.grey.shade200,
-                            controller: _txtSearchController,
-                            style: Theme.of(context).textTheme.displaySmall,
-                            keyboardType: TextInputType.text,
-                            autocorrect: false,
-                            autoFocus: false,
-                            textCapitalization: TextCapitalization.sentences,
-                            onSubmitted: (_) => _actionSearch,
-                            onTapOutside: (_) => _actionSearch(),
+            : Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        NyTextField.compact(
+                          decoration: InputDecoration(
+                            prefixIcon: Icon(Icons.search),
+                            hintText: trans("Search hint"),
+                            hintStyle: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
                           ),
-                          const SizedBox(height: 16),
-                          PrimaryButton(
-                            title: trans("Search"),
-                            action: _actionSearch,
-                          ),
-                          const SizedBox(height: 36),
-                        ],
-                      ),
-                    );
-                  }
-
-                  ProductCategory category = categories[index - 1];
-                  return ListTile(
-                    title: Text(
-                      category.name ?? "",
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+                          backgroundColor: Colors.grey.shade200,
+                          controller: _txtSearchController,
+                          style: Theme.of(context).textTheme.displaySmall,
+                          keyboardType: TextInputType.text,
+                          autocorrect: false,
+                          autoFocus: false,
+                          textCapitalization: TextCapitalization.sentences,
+                          onSubmitted: (_) => _actionSearch,
+                          onTapOutside: (_) => _actionSearch(),
+                        ),
+                        const SizedBox(height: 16),
+                        PrimaryButton(
+                          title: trans("Search"),
+                          action: _actionSearch,
+                        ),
+                        const SizedBox(height: 36),
+                      ],
                     ),
-                    trailing: Icon(Icons.keyboard_arrow_right_rounded),
-                    onTap: () {
-                      routeTo(BrowseCategoryPage.path, data: category);
-                    },
-                  );
-                },
+                  ),
+                  Expanded(
+                    child: ExpandedTileList.builder(
+                      shrinkWrap: true,
+                      itemCount: mainCategories.length,
+                      itemBuilder: (BuildContext context, int index, controller) {
+                        ProductCategory category = mainCategories[index];
+                        return ExpandedTile(
+                          title: Text(
+                            category.name ?? "",
+                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+                          ),
+                          trailing: Icon(Icons.keyboard_arrow_right_rounded),
+                          controller: controller,
+                          content: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: subCategories[category.id.toString()]?.length ?? 0,
+                            itemBuilder: (BuildContext context, int index) {
+                              ProductCategory subCategory = subCategories[category.id.toString()]![index];
+                              return ListTile(
+                                title: Text(
+                                  subCategory.name ?? "",
+                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+                                ),
+                                trailing: Icon(Icons.keyboard_arrow_right_rounded),
+                                onTap: () {
+                                  routeTo(BrowseCategoryPage.path, data: subCategory);
+                                },
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
       ),
     );
