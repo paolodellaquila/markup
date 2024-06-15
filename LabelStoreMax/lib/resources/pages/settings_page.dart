@@ -86,7 +86,7 @@ class SettingsPage extends StatelessWidget {
                       // --------- ACCOUNT
                       ListTile(
                         onTap: () async {
-                          (await WPJsonAPI.wpUserLoggedIn()) ? AccountDetailPage(showLeadingBackButton: false) : AccountLoginPage(showBackButton: false);
+                          (await WPJsonAPI.wpUserLoggedIn()) ? routeTo(AccountDetailPage.path) : routeTo(AccountLoginPage.path);
                         },
                         contentPadding: const EdgeInsets.all(0.0),
                         leading: Icon(

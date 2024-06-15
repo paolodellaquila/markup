@@ -9,11 +9,12 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import '/resources/pages/product_detail_page.dart';
-import '/bootstrap/helpers.dart';
-import '/resources/widgets/cached_image_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
+
+import '/bootstrap/helpers.dart';
+import '/resources/pages/product_detail_page.dart';
+import '/resources/widgets/cached_image_widget.dart';
 
 class WishListPageWidget extends StatefulWidget {
   static String path = "/wishlist";
@@ -32,8 +33,7 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> {
 
   loadProducts() async {
     List<dynamic> favouriteProducts = await getWishlistProducts();
-    List<int> productIds =
-        favouriteProducts.map((e) => e['id']).cast<int>().toList();
+    List<int> productIds = favouriteProducts.map((e) => e['id']).cast<int>().toList();
     if (productIds.isEmpty) {
       return;
     }
@@ -67,12 +67,7 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> {
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: 12),
                         ),
-                        Text(trans("No items found"),
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleLarge!
-                                .setColor(
-                                    context, (color) => color!.primaryContent))
+                        Text(trans("No items in whishlist"), style: Theme.of(context).textTheme.titleLarge!.setColor(context, (color) => color!.primaryContent))
                       ],
                     ),
                   )
@@ -81,17 +76,14 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> {
                     itemBuilder: (BuildContext context, int index) {
                       Product product = _products[index];
                       return InkWell(
-                        onTap: () =>
-                            routeTo(ProductDetailPage.path, data: product),
+                        onTap: () => routeTo(ProductDetailPage.path, data: product),
                         child: Container(
                           child: Row(
                             children: [
                               Container(
                                 margin: EdgeInsets.only(left: 8),
                                 child: CachedImageWidget(
-                                  image: (product.images.isNotEmpty
-                                      ? product.images.first.src
-                                      : getEnv("PRODUCT_PLACEHOLDER_IMAGE")),
+                                  image: (product.images.isNotEmpty ? product.images.first.src : getEnv("PRODUCT_PLACEHOLDER_IMAGE")),
                                   fit: BoxFit.contain,
                                   width: double.infinity,
                                 ),
@@ -100,20 +92,17 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> {
                               Expanded(
                                 child: Container(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
                                         product.name!,
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
+                                        style: TextStyle(fontWeight: FontWeight.bold),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       Text(
-                                        formatStringCurrency(
-                                            total: product.price),
+                                        formatStringCurrency(total: product.price),
                                       ),
                                     ],
                                   ),
