@@ -9,14 +9,13 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:collection/collection.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
-import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:video_player/video_player.dart';
 import 'package:woosignal/models/response/product.dart';
 import 'package:woosignal/models/response/product_category.dart';
-import 'package:woosignal/models/response/product_category_collection.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
 
 import '/bootstrap/helpers.dart';
@@ -38,33 +37,56 @@ class CompoHomeWidget extends StatefulWidget {
 }
 
 class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
+  VideoPlayerController? _controller;
+
+  ///HOME banner URL
+  String? lifestyleBanner;
+
   @override
   boot() async {
     await _loadHome();
   }
 
-  _loadHome() async {
-    if ((widget.wooSignalApp?.productCategoryCollections ?? []).isNotEmpty) {
-      List<int> productCategoryId = widget.wooSignalApp?.productCategoryCollections.map((e) => int.parse(e.collectionId!)).toList() ?? [];
-      categories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, hideEmpty: true, include: productCategoryId)));
-      categories.sort((category1, category2) {
-        ProductCategoryCollection? productCategoryCollection1 =
-            widget.wooSignalApp?.productCategoryCollections.firstWhereOrNull((element) => element.collectionId == category1.id.toString());
-        ProductCategoryCollection? productCategoryCollection2 =
-            widget.wooSignalApp?.productCategoryCollections.firstWhereOrNull((element) => element.collectionId == category2.id.toString());
-
-        if (productCategoryCollection1 == null) return 0;
-        if (productCategoryCollection2 == null) return 0;
-
-        if (productCategoryCollection1.position == null) return 0;
-        if (productCategoryCollection2.position == null) return 0;
-
-        return productCategoryCollection1.position!.compareTo(productCategoryCollection2.position!);
-      });
-    } else {
-      categories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, hideEmpty: true)));
-      categories.sort((category1, category2) => category1.menuOrder!.compareTo(category2.menuOrder!));
+  _loadFirebaseUrl() async {
+    try {
+      final ref = FirebaseDatabase.instance.ref("homeApp").child('lifestyleBanner');
+      final snapshot = await ref.get();
+      if (snapshot.exists) {
+        lifestyleBanner = snapshot.value.toString();
+        _controller = VideoPlayerController.networkUrl(Uri.parse(lifestyleBanner ?? ""))
+          ..initialize().then((_) {
+            setState(() {});
+            _controller?.setVolume(0);
+            _controller?.play();
+            _controller?.setLooping(true);
+          });
+      } else {
+        return true;
+      }
+    } catch (e) {
+      print("error: $e");
     }
+  }
+
+  _loadHome() async {
+    await _loadFirebaseUrl();
+
+    //HOME CATEGORIES
+    ///influencer 386
+    ///hottest 387
+    ///new in donna 196
+    ///new in uomo 195
+    List<int> productCategoryId = [386, 387];
+    categories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, include: productCategoryId)));
+
+    List<int> subNewproductCategoryId = [196, 195];
+    categories.addAll(await (appWooSignal((api) => api.getProductCategories(parent: 193, perPage: 50, include: subNewproductCategoryId))));
+
+    ///Add New in name
+    final indexUomo = categories.indexWhere((cat) => (cat.slug ?? "").contains("uomo_174"));
+    final indexDonna = categories.indexWhere((cat) => (cat.slug ?? "").contains("donna_173"));
+    categories[indexUomo].name = "New in Uomo";
+    categories[indexDonna].name = "New in Donna";
 
     for (var category in categories) {
       List<Product> products = await (appWooSignal(
@@ -107,23 +129,8 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
             : ListView(
                 shrinkWrap: true,
                 children: [
-                  if (bannerImages.isNotEmpty)
-                    Container(
-                      child: Swiper(
-                        itemBuilder: (BuildContext context, int index) {
-                          return CachedImageWidget(
-                            image: bannerImages[index],
-                            fit: BoxFit.cover,
-                          );
-                        },
-                        itemCount: bannerImages.length,
-                        viewportFraction: 0.8,
-                        scale: 0.9,
-                      ),
-                      height: size.height / 2.5,
-                    ),
                   ...categoryAndProducts.entries.map((catProds) {
-                    double containerHeight = size.height / 1.1;
+                    double containerHeight = size.height / 0.8;
                     bool hasImage = catProds.key.image != null;
                     if (hasImage == false) {
                       containerHeight = (containerHeight / 2);
@@ -138,12 +145,13 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
                             InkWell(
                               child: CachedImageWidget(
                                 image: catProds.key.image!.src,
-                                height: containerHeight / 2,
+                                height: containerHeight / 1.8,
                                 width: MediaQuery.of(context).size.width,
                                 fit: BoxFit.cover,
                               ),
                               onTap: () => _showCategory(catProds.key),
                             ),
+                          const SizedBox(height: 16),
                           ConstrainedBox(
                             constraints: BoxConstraints(
                               minHeight: 50,
@@ -178,7 +186,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
                             ),
                           ),
                           Container(
-                            height: hasImage ? (containerHeight / 2) / 1.2 : containerHeight / 1.2,
+                            height: hasImage ? (containerHeight / 2.2) / 1.2 : containerHeight / 1.2,
                             padding: EdgeInsets.symmetric(horizontal: 8),
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
@@ -198,6 +206,74 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
                       ),
                     );
                   }),
+                  if (bannerImages.isNotEmpty)
+                    Container(
+                      child: Column(
+                        children: [
+                          ///DONNA
+                          GestureDetector(
+                            child: Stack(
+                              children: [
+                                CachedImageWidget(
+                                  image: bannerImages[0],
+                                  height: size.height / 2.5,
+                                  width: size.width,
+                                  fit: BoxFit.cover,
+                                ),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    "Donna",
+                                    style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          ///UOMO
+                          Stack(
+                            children: [
+                              CachedImageWidget(
+                                image: bannerImages[1],
+                                height: size.height / 2.5,
+                                width: size.width,
+                                fit: BoxFit.cover,
+                              ),
+                              Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "Uomo",
+                                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      height: size.height / 2.5,
+                    ),
+                  if (lifestyleBanner != null && _controller != null && _controller!.value.isInitialized)
+                    GestureDetector(
+                      onTap: () => openBrowserTab(url: 'https://markupitalia.com/primavera-estate-2024/'),
+                      child: Container(
+                        child: Center(
+                          child: Stack(
+                            children: [
+                              VideoPlayer(_controller!),
+                              Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "Esplora Lifestyle",
+                                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        height: size.height / 2.5,
+                      ),
+                    ),
                 ],
               ),
       ),

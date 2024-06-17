@@ -84,16 +84,6 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> {
           tabWidget: CompoHomeWidget(wooSignalApp: widget.wooSignalApp)),
     );
 
-    // items.add(
-    //   BottomNavItem(
-    //       id: 2,
-    //       bottomNavigationBarItem: BottomNavigationBarItem(
-    //         icon: Icon(Icons.search),
-    //         label: 'Search'.tr(),
-    //       ),
-    //       tabWidget: HomeSearchPage()),
-    // );
-
     if (AppHelper.instance.appConfig!.wishlistEnabled == true) {
       items.add(BottomNavItem(
         id: 3,
