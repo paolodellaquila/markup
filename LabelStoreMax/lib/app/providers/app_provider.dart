@@ -1,15 +1,16 @@
 import 'package:flutter/services.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/response/woosignal_app.dart';
+import 'package:woosignal/woosignal.dart';
+import 'package:wp_json_api/wp_json_api.dart';
+
 import '/bootstrap/app_helper.dart';
 import '/bootstrap/helpers.dart';
 import '/config/decoders.dart';
 import '/config/design.dart';
+import '/config/localization.dart';
 import '/config/theme.dart';
 import '/config/validation_rules.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import '/config/localization.dart';
-import 'package:woosignal/models/response/woosignal_app.dart';
-import 'package:woosignal/woosignal.dart';
-import 'package:wp_json_api/wp_json_api.dart';
 
 class AppProvider implements NyProvider {
   @override
@@ -19,10 +20,10 @@ class AppProvider implements NyProvider {
     ]);
 
     await WooSignal.instance.init(
-        appKey: getEnv('APP_KEY'),
-        debugMode: getEnv('APP_DEBUG'),
-        encryptKey: getEnv('ENCRYPT_KEY', defaultValue: null),
-        encryptSecret: getEnv('ENCRYPT_SECRET', defaultValue: null),
+      appKey: getEnv('APP_KEY'),
+      debugMode: getEnv('APP_DEBUG'),
+      encryptKey: getEnv('ENCRYPT_KEY', defaultValue: null),
+      encryptSecret: getEnv('ENCRYPT_SECRET', defaultValue: null),
     );
 
     AppHelper.instance.appConfig = WooSignalApp();
@@ -47,8 +48,7 @@ class AppProvider implements NyProvider {
     };
 
     // WooSignal Setup
-    WooSignalApp? wooSignalApp =
-        await (appWooSignal((api) => api.getApp(encrypted: shouldEncrypt())));
+    WooSignalApp? wooSignalApp = await (appWooSignal((api) => api.getApp(encrypted: shouldEncrypt())));
     Locale locale = Locale('en');
 
     if (wooSignalApp != null) {
@@ -57,14 +57,12 @@ class AppProvider implements NyProvider {
       if (wooSignalApp.wpLoginEnabled == 1) {
         if (wooSignalApp.wpLoginBaseUrl == null) {
           AppHelper.instance.appConfig?.wpLoginEnabled = 0;
-          NyLogger.debug(
-              'Set your stores domain on WooSignal. Go to Features > WP Login and add your domain to "Store Base Url"');
+          NyLogger.debug('Set your stores domain on WooSignal. Go to Features > WP Login and add your domain to "Store Base Url"');
         }
 
         if (wooSignalApp.wpLoginWpApiPath == null) {
           AppHelper.instance.appConfig?.wpLoginEnabled = 0;
-          NyLogger.debug(
-              'Set your stores Wp JSON path on WooSignal. Go to Features > WP Login and add your Wp JSON path to "WP API Path"');
+          NyLogger.debug('Set your stores Wp JSON path on WooSignal. Go to Features > WP Login and add your Wp JSON path to "WP API Path"');
         }
 
         WPJsonAPI.instance.init(
@@ -74,8 +72,7 @@ class AppProvider implements NyProvider {
         );
       }
 
-      if (getEnv('DEFAULT_LOCALE', defaultValue: null) == null &&
-          wooSignalApp.locale != null) {
+      if (getEnv('DEFAULT_LOCALE', defaultValue: null) == null && wooSignalApp.locale != null) {
         locale = Locale(wooSignalApp.locale!);
       } else {
         locale = Locale(getEnv('DEFAULT_LOCALE', defaultValue: 'en'));
