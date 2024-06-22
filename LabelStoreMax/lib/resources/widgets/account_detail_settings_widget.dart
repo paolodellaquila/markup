@@ -9,23 +9,23 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import '/resources/pages/account_detail_page.dart';
+import 'package:flutter_app/bootstrap/helpers.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+
+import '/app/events/logout_event.dart';
 import '/resources/pages/account_delete_page.dart';
+import '/resources/pages/account_detail_page.dart';
 import '/resources/pages/account_profile_update_page.dart';
 import '/resources/pages/account_shipping_details_page.dart';
-import '/app/events/logout_event.dart';
-import 'package:nylo_framework/nylo_framework.dart';
 
 class AccountDetailSettingsWidget extends StatefulWidget {
   const AccountDetailSettingsWidget({super.key});
 
   @override
-  State<AccountDetailSettingsWidget> createState() =>
-      _AccountDetailSettingsWidgetState();
+  State<AccountDetailSettingsWidget> createState() => _AccountDetailSettingsWidgetState();
 }
 
-class _AccountDetailSettingsWidgetState
-    extends NyState<AccountDetailSettingsWidget> {
+class _AccountDetailSettingsWidgetState extends NyState<AccountDetailSettingsWidget> {
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -34,10 +34,13 @@ class _AccountDetailSettingsWidgetState
           child: ListTile(
               leading: Icon(Icons.account_circle),
               title: Text(trans("Update details")),
-              onTap: () =>
-                  routeTo(AccountProfileUpdatePage.path, onPop: (value) {
+              onTap: () => routeTo(AccountProfileUpdatePage.path, onPop: (value) {
                     StateAction.refreshPage(AccountDetailPage.path);
                   })),
+        ),
+        Card(
+          child: ListTile(
+              leading: Icon(Icons.assignment_return), title: Text(trans("Make a return")), onTap: () => openBrowserTab(url: "https://markupitalia.com/reso/")),
         ),
         Card(
           child: ListTile(

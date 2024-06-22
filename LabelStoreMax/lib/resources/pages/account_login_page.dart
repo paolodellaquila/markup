@@ -10,12 +10,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
-import '/app/events/login_event.dart';
-import '/resources/pages/account_register_page.dart';
-import '/bootstrap/app_helper.dart';
-import '/bootstrap/helpers.dart';
-import '/resources/widgets/buttons.dart';
-import '/resources/widgets/woosignal_ui.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:wp_json_api/exceptions/incorrect_password_exception.dart';
 import 'package:wp_json_api/exceptions/invalid_email_exception.dart';
@@ -23,6 +17,13 @@ import 'package:wp_json_api/exceptions/invalid_nonce_exception.dart';
 import 'package:wp_json_api/exceptions/invalid_username_exception.dart';
 import 'package:wp_json_api/models/responses/wp_user_login_response.dart';
 import 'package:wp_json_api/wp_json_api.dart';
+
+import '/app/events/login_event.dart';
+import '/bootstrap/app_helper.dart';
+import '/bootstrap/helpers.dart';
+import '/resources/pages/account_register_page.dart';
+import '/resources/widgets/buttons.dart';
+import '/resources/widgets/woosignal_ui.dart';
 
 class AccountLoginPage extends StatefulWidget {
   static String path = "/account-login";
@@ -34,8 +35,7 @@ class AccountLoginPage extends StatefulWidget {
 }
 
 class _AccountLoginPageState extends NyState<AccountLoginPage> {
-  final TextEditingController _tfEmailController = TextEditingController(),
-      _tfPasswordController = TextEditingController();
+  final TextEditingController _tfEmailController = TextEditingController(), _tfPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +61,7 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
                       child: Text(
                         trans("Login"),
                         textAlign: TextAlign.left,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium!
-                            .copyWith(
+                        style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
                             ),
@@ -74,10 +71,7 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      boxShadow:
-                          (Theme.of(context).brightness == Brightness.light)
-                              ? wsBoxShadow()
-                              : null,
+                      boxShadow: (Theme.of(context).brightness == Brightness.light) ? wsBoxShadow() : null,
                       color: ThemeColor.get(context).backgroundContainer,
                     ),
                     padding: EdgeInsets.symmetric(vertical: 18, horizontal: 8),
@@ -86,15 +80,9 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
+                        TextEditingRow(heading: trans("Email"), controller: _tfEmailController, keyboardType: TextInputType.emailAddress),
                         TextEditingRow(
-                            heading: trans("Email"),
-                            controller: _tfEmailController,
-                            keyboardType: TextInputType.emailAddress),
-                        TextEditingRow(
-                            heading: trans("Password"),
-                            controller: _tfPasswordController,
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true),
+                            heading: trans("Password"), controller: _tfPasswordController, keyboardType: TextInputType.visiblePassword, obscureText: true),
                         PrimaryButton(
                           title: trans("Login"),
                           isLoading: isLocked('login_button'),
@@ -113,9 +101,7 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
                 children: <Widget>[
                   Icon(
                     Icons.account_circle,
-                    color: (Theme.of(context).brightness == Brightness.light)
-                        ? Colors.black38
-                        : Colors.white70,
+                    color: (Theme.of(context).brightness == Brightness.light) ? Colors.black38 : Colors.white70,
                   ),
                   Padding(
                     child: Text(
@@ -131,13 +117,11 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
             LinkButton(
                 title: trans("Forgot Password"),
                 action: () {
-                  String? forgotPasswordUrl =
-                      AppHelper.instance.appConfig!.wpLoginForgotPasswordUrl;
+                  String? forgotPasswordUrl = AppHelper.instance.appConfig!.wpLoginForgotPasswordUrl;
                   if (forgotPasswordUrl != null) {
                     openBrowserTab(url: forgotPasswordUrl);
                   } else {
-                    NyLogger.info(
-                        "No URL found for \"forgot password\".\nAdd your forgot password URL here https://woosignal.com/dashboard/apps");
+                    NyLogger.info("No URL found for \"forgot password\".\nAdd your forgot password URL here https://woosignal.com/dashboard/apps");
                   }
                 }),
             widget.showBackButton
@@ -169,52 +153,34 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
 
     if (email == "" || password == "") {
       showToastNotification(context,
-          title: trans("Invalid details"),
-          description: trans("The email and password field cannot be empty"),
-          style: ToastNotificationStyleType.DANGER);
+          title: trans("Invalid details"), description: trans("The email and password field cannot be empty"), style: ToastNotificationStyleType.DANGER);
       return;
     }
 
     if (!isEmail(email)) {
-      showToastNotification(context,
-          title: trans("Oops"),
-          description: trans("That email address is not valid"),
-          style: ToastNotificationStyleType.DANGER);
+      showToastNotification(context, title: trans("Oops"), description: trans("That email address is not valid"), style: ToastNotificationStyleType.DANGER);
       return;
     }
 
     await lockRelease('login_button', perform: () async {
       WPUserLoginResponse? wpUserLoginResponse;
       try {
-        wpUserLoginResponse = await WPJsonAPI.instance.api(
-            (request) => request.wpLogin(email: email, password: password));
+        wpUserLoginResponse = await WPJsonAPI.instance.api((request) => request.wpLogin(email: email, password: password));
       } on InvalidNonceException catch (_) {
         showToastNotification(context,
-            title: trans("Invalid details"),
-            description:
-                trans("Something went wrong, please contact our store"),
-            style: ToastNotificationStyleType.DANGER);
+            title: trans("Invalid details"), description: trans("Something went wrong, please contact our store"), style: ToastNotificationStyleType.DANGER);
       } on InvalidEmailException catch (_) {
         showToastNotification(context,
-            title: trans("Invalid details"),
-            description: trans("That email does not match our records"),
-            style: ToastNotificationStyleType.DANGER);
+            title: trans("Invalid details"), description: trans("That email does not match our records"), style: ToastNotificationStyleType.DANGER);
       } on InvalidUsernameException catch (_) {
         showToastNotification(context,
-            title: trans("Invalid details"),
-            description: trans("That username does not match our records"),
-            style: ToastNotificationStyleType.DANGER);
+            title: trans("Invalid details"), description: trans("That username does not match our records"), style: ToastNotificationStyleType.DANGER);
       } on IncorrectPasswordException catch (_) {
         showToastNotification(context,
-            title: trans("Invalid details"),
-            description: trans("That password does not match our records"),
-            style: ToastNotificationStyleType.DANGER);
+            title: trans("Invalid details"), description: trans("That password does not match our records"), style: ToastNotificationStyleType.DANGER);
       } on Exception catch (_) {
         showToastNotification(context,
-            title: trans("Oops!"),
-            description: trans("Invalid login credentials"),
-            style: ToastNotificationStyleType.DANGER,
-            icon: Icons.account_circle);
+            title: trans("Oops!"), description: trans("Invalid login credentials"), style: ToastNotificationStyleType.DANGER, icon: Icons.account_circle);
       }
 
       if (wpUserLoginResponse == null) {
@@ -228,12 +194,9 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
       event<LoginEvent>();
 
       showToastNotification(context,
-          title: trans("Hello"),
-          description: trans("Welcome back"),
-          style: ToastNotificationStyleType.SUCCESS,
-          icon: Icons.account_circle);
-      navigatorPush(context,
-          routeName: UserAuth.instance.redirect, forgetLast: 1);
+          title: trans("Hello"), description: trans("Welcome back"), style: ToastNotificationStyleType.SUCCESS, icon: Icons.account_circle);
+
+      navigatorPush(context, routeName: UserAuth.instance.redirect, forgetAll: true);
     });
   }
 }

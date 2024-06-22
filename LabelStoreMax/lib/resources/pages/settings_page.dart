@@ -93,8 +93,8 @@ class SettingsPage extends StatelessWidget {
                           Icons.account_circle,
                           color: Colors.black,
                         ),
-                        title: const Text(
-                          "Account",
+                        title: Text(
+                          trans("Account"),
                           style: TextStyle(color: Colors.black),
                         ),
                         trailing: Icon(
