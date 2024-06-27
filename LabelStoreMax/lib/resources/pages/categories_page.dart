@@ -131,6 +131,7 @@ class _CategoriesPageState extends NyState<CategoriesPage> {
                       itemBuilder: (BuildContext context, int index, controller) {
                         ProductCategory category = mainCategories[index];
                         return ExpandedTile(
+                          onTap: (subCategories[category.id.toString()] ?? []).isEmpty ? () => routeTo(BrowseCategoryPage.path, data: category) : null,
                           title: Text(
                             category.name ?? "",
                             style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
