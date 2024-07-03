@@ -101,7 +101,8 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
         ),
         onPressed: () {
           _hideBottomBarAnimationController.reset();
-          _changeMainWidget(2, allNavWidgets, updateCurrentIndex: false);
+          activeWidget = CategoriesPage(wooSignalApp: AppHelper.instance.appConfig);
+          setState(() {});
         },
         //params
       ),
@@ -154,13 +155,13 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
       ));
     }
 
-    items.add(BottomNavItem(
-      id: 4,
-      bottomNavigationBarItem: BottomNavigationBarItem(icon: Icon(Icons.search_outlined), label: 'Categories'.tr()),
-      tabWidget: CategoriesPage(
-        wooSignalApp: AppHelper.instance.appConfig,
-      ),
-    ));
+    // items.add(BottomNavItem(
+    //   id: 4,
+    //   bottomNavigationBarItem: BottomNavigationBarItem(icon: Icon(Icons.search_outlined), label: 'Categories'.tr()),
+    //   tabWidget: CategoriesPage(
+    //     wooSignalApp: AppHelper.instance.appConfig,
+    //   ),
+    // ));
 
     items.add(BottomNavItem(
       id: 5,
@@ -192,8 +193,8 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
     return items;
   }
 
-  _changeMainWidget(int currentIndex, List<BottomNavItem> bottomNavWidgets, {bool updateCurrentIndex = true}) async {
-    if (updateCurrentIndex) _currentIndex = currentIndex;
+  _changeMainWidget(int currentIndex, List<BottomNavItem> bottomNavWidgets) async {
+    _currentIndex = currentIndex;
     activeWidget = bottomNavWidgets[currentIndex].tabWidget;
     setState(() {});
   }
