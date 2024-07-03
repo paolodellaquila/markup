@@ -52,16 +52,14 @@ Future appWooSignal(Function(WooSignal api) api) async {
 
 /// helper to find correct color from the [context].
 class ThemeColor {
-  static ColorStyles get(BuildContext context, {String? themeId}) =>
-      nyColorStyle<ColorStyles>(context, themeId: themeId);
+  static ColorStyles get(BuildContext context, {String? themeId}) => nyColorStyle<ColorStyles>(context, themeId: themeId);
 
   static Color fromHex(String hexColor) => nyHexColor(hexColor);
 }
 
 /// helper to set colors on TextStyle
 extension ColorsHelper on TextStyle {
-  TextStyle setColor(
-      BuildContext context, Color Function(BaseColorStyles? color) newColor) {
+  TextStyle setColor(BuildContext context, Color Function(BaseColorStyles? color) newColor) {
     return copyWith(color: newColor(ThemeColor.get(context)));
   }
 }
@@ -69,41 +67,25 @@ extension ColorsHelper on TextStyle {
 Future<List<PaymentType?>> getPaymentTypes() async {
   List<PaymentType?> paymentTypes = [];
   for (var appPaymentGateway in appPaymentGateways) {
-    if (paymentTypes.firstWhere(
-            (paymentType) => paymentType!.name != appPaymentGateway,
-            orElse: () => null) ==
-        null) {
-      paymentTypes.add(paymentTypeList.firstWhereOrNull(
-          (paymentTypeList) => paymentTypeList.name == appPaymentGateway));
+    if (paymentTypes.firstWhere((paymentType) => paymentType!.name != appPaymentGateway, orElse: () => null) == null) {
+      paymentTypes.add(paymentTypeList.firstWhereOrNull((paymentTypeList) => paymentTypeList.name == appPaymentGateway));
     }
   }
 
-  if (!appPaymentGateways.contains('Stripe') &&
-      AppHelper.instance.appConfig!.stripeEnabled == true) {
-    paymentTypes.add(paymentTypeList
-        .firstWhereOrNull((element) => element.name == "Stripe"));
+  if (!appPaymentGateways.contains('Stripe') && AppHelper.instance.appConfig!.stripeEnabled == true) {
+    paymentTypes.add(paymentTypeList.firstWhereOrNull((element) => element.name == "Stripe"));
   }
-  if (!appPaymentGateways.contains('PayPal') &&
-      AppHelper.instance.appConfig!.paypalEnabled == true) {
-    paymentTypes.add(paymentTypeList
-        .firstWhereOrNull((element) => element.name == "PayPal"));
+  if (!appPaymentGateways.contains('PayPal') && AppHelper.instance.appConfig!.paypalEnabled == true) {
+    paymentTypes.add(paymentTypeList.firstWhereOrNull((element) => element.name == "PayPal"));
   }
-  if (!appPaymentGateways.contains('CashOnDelivery') &&
-      AppHelper.instance.appConfig!.codEnabled == true) {
-    paymentTypes.add(paymentTypeList
-        .firstWhereOrNull((element) => element.name == "CashOnDelivery"));
+  if (!appPaymentGateways.contains('CashOnDelivery') && AppHelper.instance.appConfig!.codEnabled == true) {
+    paymentTypes.add(paymentTypeList.firstWhereOrNull((element) => element.name == "CashOnDelivery"));
   }
 
   return paymentTypes.where((v) => v != null).toList();
 }
 
-PaymentType addPayment(
-        {required int id,
-        required String name,
-        required String description,
-        required String assetImage,
-        required Function pay}) =>
-    PaymentType(
+PaymentType addPayment({required int id, required String name, required String description, required String assetImage, required Function pay}) => PaymentType(
       id: id,
       name: name,
       desc: description,
@@ -111,11 +93,7 @@ PaymentType addPayment(
       pay: pay,
     );
 
-showStatusAlert(context,
-    {required String title,
-    required String subtitle,
-    IconData? icon,
-    int? duration}) {
+showStatusAlert(context, {required String title, required String subtitle, IconData? icon, int? duration}) {
   StatusAlert.show(
     context,
     duration: Duration(seconds: duration ?? 2),
@@ -133,9 +111,7 @@ String parseHtmlString(String? htmlString) {
 String moneyFormatter(double amount) {
   MoneyFormatter fmf = MoneyFormatter(
     amount: amount,
-    settings: MoneyFormatterSettings(
-        symbol: AppHelper.instance.appConfig!.currencyMeta!.symbolNative,
-        symbolAndNumberSeparator: ""),
+    settings: MoneyFormatterSettings(symbol: AppHelper.instance.appConfig!.currencyMeta!.symbolNative, symbolAndNumberSeparator: ""),
   );
   if (appCurrencySymbolPosition == SymbolPositionType.left) {
     return fmf.output.symbolOnLeft;
@@ -159,20 +135,17 @@ String formatStringCurrency({required String? total}) {
   //return moneyFormatter(tmpVal);
 }
 
-String workoutSaleDiscount(
-    {required String? salePrice, required String? priceBefore}) {
+String workoutSaleDiscount({required String? salePrice, required String? priceBefore}) {
   double dSalePrice = parseWcPrice(salePrice);
   double dPriceBefore = parseWcPrice(priceBefore);
-  return ((dPriceBefore - dSalePrice) * (100 / dPriceBefore))
-      .toStringAsFixed(0);
+  return ((dPriceBefore - dSalePrice) * (100 / dPriceBefore)).toStringAsFixed(0);
 }
 
 openBrowserTab({required String url}) async {
   await FlutterWebBrowser.openWebPage(
     url: url,
     customTabsOptions: CustomTabsOptions(
-      defaultColorSchemeParams:
-          CustomTabsColorSchemeParams(toolbarColor: Colors.white70),
+      defaultColorSchemeParams: CustomTabsColorSchemeParams(toolbarColor: Colors.white70),
     ),
   );
 }
@@ -184,12 +157,8 @@ bool isNumeric(String? str) {
   return double.tryParse(str) != null;
 }
 
-checkout(
-    TaxRate? taxRate,
-    Function(String total, BillingDetails? billingDetails, Cart cart)
-        completeCheckout) async {
-  String cartTotal = await CheckoutSession.getInstance
-      .total(withFormat: false, taxRate: taxRate);
+checkout(TaxRate? taxRate, Function(String total, BillingDetails? billingDetails, Cart cart) completeCheckout) async {
+  String cartTotal = await CheckoutSession.getInstance.total(withFormat: false, taxRate: taxRate);
   BillingDetails? billingDetails = CheckoutSession.getInstance.billingDetails;
   Cart cart = Cart.getInstance;
   return await completeCheckout(cartTotal, billingDetails, cart);
@@ -211,11 +180,7 @@ Future<double?> workoutShippingCostWC({required String? sum}) async {
   }
   List<CartLineItem> cartLineItem = await Cart.getInstance.getCart();
   sum = sum.replaceAllMapped(defaultRegex(r'\[qty\]', strict: true), (replace) {
-    return cartLineItem
-        .map((f) => f.quantity)
-        .toList()
-        .reduce((i, d) => i + d)
-        .toString();
+    return cartLineItem.map((f) => f.quantity).toList().reduce((i, d) => i + d).toString();
   });
 
   String orderTotal = await Cart.getInstance.getSubtotal();
@@ -227,18 +192,15 @@ Future<double?> workoutShippingCostWC({required String? sum}) async {
     String newSum = replace.group(1)!;
 
     // PERCENT
-    String percentVal = newSum.replaceAllMapped(
-        defaultRegex(r'percent="([0-9\.]+)"'), (replacePercent) {
+    String percentVal = newSum.replaceAllMapped(defaultRegex(r'percent="([0-9\.]+)"'), (replacePercent) {
       if (replacePercent.groupCount >= 1) {
-        String strPercentage =
-            "( ($orderTotal * ${replacePercent.group(1)}) / 100 )";
+        String strPercentage = "( ($orderTotal * ${replacePercent.group(1)}) / 100 )";
         double? calPercentage = strCal(sum: strPercentage);
 
         // MIN
         String strRegexMinFee = r'min_fee="([0-9\.]+)"';
         if (defaultRegex(strRegexMinFee).hasMatch(newSum)) {
-          String strMinFee =
-              defaultRegex(strRegexMinFee).firstMatch(newSum)!.group(1) ?? "0";
+          String strMinFee = defaultRegex(strRegexMinFee).firstMatch(newSum)!.group(1) ?? "0";
           double doubleMinFee = double.parse(strMinFee);
 
           if (calPercentage! < doubleMinFee) {
@@ -250,8 +212,7 @@ Future<double?> workoutShippingCostWC({required String? sum}) async {
         // MAX
         String strRegexMaxFee = r'max_fee="([0-9\.]+)"';
         if (defaultRegex(strRegexMaxFee).hasMatch(newSum)) {
-          String strMaxFee =
-              defaultRegex(strRegexMaxFee).firstMatch(newSum)!.group(1) ?? "0";
+          String strMaxFee = defaultRegex(strRegexMaxFee).firstMatch(newSum)!.group(1) ?? "0";
           double doubleMaxFee = double.parse(strMaxFee);
 
           if (calPercentage! > doubleMaxFee) {
@@ -264,28 +225,19 @@ Future<double?> workoutShippingCostWC({required String? sum}) async {
       return "";
     });
 
-    percentVal = percentVal
-        .replaceAll(
-            defaultRegex(r'(min_fee=\"([0-9\.]+)\"|max_fee=\"([0-9\.]+)\")'),
-            "")
-        .trim();
+    percentVal = percentVal.replaceAll(defaultRegex(r'(min_fee=\"([0-9\.]+)\"|max_fee=\"([0-9\.]+)\")'), "").trim();
     return percentVal;
   });
 
   return strCal(sum: sum);
 }
 
-Future<double?> workoutShippingClassCostWC(
-    {required String? sum, List<CartLineItem>? cartLineItem}) async {
+Future<double?> workoutShippingClassCostWC({required String? sum, List<CartLineItem>? cartLineItem}) async {
   if (sum == null || sum == "") {
     return 0;
   }
   sum = sum.replaceAllMapped(defaultRegex(r'\[qty\]', strict: true), (replace) {
-    return cartLineItem!
-        .map((f) => f.quantity)
-        .toList()
-        .reduce((i, d) => i + d)
-        .toString();
+    return cartLineItem!.map((f) => f.quantity).toList().reduce((i, d) => i + d).toString();
   });
 
   String orderTotal = await Cart.getInstance.getSubtotal();
@@ -297,18 +249,15 @@ Future<double?> workoutShippingClassCostWC(
     String newSum = replace.group(1)!;
 
     // PERCENT
-    String percentVal = newSum.replaceAllMapped(
-        defaultRegex(r'percent="([0-9\.]+)"'), (replacePercent) {
+    String percentVal = newSum.replaceAllMapped(defaultRegex(r'percent="([0-9\.]+)"'), (replacePercent) {
       if (replacePercent.groupCount >= 1) {
-        String strPercentage =
-            "( ($orderTotal * ${replacePercent.group(1)}) / 100 )";
+        String strPercentage = "( ($orderTotal * ${replacePercent.group(1)}) / 100 )";
         double? calPercentage = strCal(sum: strPercentage);
 
         // MIN
         String strRegexMinFee = r'min_fee="([0-9\.]+)"';
         if (defaultRegex(strRegexMinFee).hasMatch(newSum)) {
-          String strMinFee =
-              defaultRegex(strRegexMinFee).firstMatch(newSum)!.group(1) ?? "0";
+          String strMinFee = defaultRegex(strRegexMinFee).firstMatch(newSum)!.group(1) ?? "0";
           double doubleMinFee = double.parse(strMinFee);
 
           if (calPercentage! < doubleMinFee) {
@@ -320,8 +269,7 @@ Future<double?> workoutShippingClassCostWC(
         // MAX
         String strRegexMaxFee = r'max_fee="([0-9\.]+)"';
         if (defaultRegex(strRegexMaxFee).hasMatch(newSum)) {
-          String strMaxFee =
-              defaultRegex(strRegexMaxFee).firstMatch(newSum)!.group(1) ?? "0";
+          String strMaxFee = defaultRegex(strRegexMaxFee).firstMatch(newSum)!.group(1) ?? "0";
           double doubleMaxFee = double.parse(strMaxFee);
 
           if (calPercentage! > doubleMaxFee) {
@@ -334,11 +282,7 @@ Future<double?> workoutShippingClassCostWC(
       return "";
     });
 
-    percentVal = percentVal
-        .replaceAll(
-            defaultRegex(r'(min_fee=\"([0-9\.]+)\"|max_fee=\"([0-9\.]+)\")'),
-            "")
-        .trim();
+    percentVal = percentVal.replaceAll(defaultRegex(r'(min_fee=\"([0-9\.]+)\"|max_fee=\"([0-9\.]+)\")'), "").trim();
     return percentVal;
   });
 
@@ -363,15 +307,9 @@ bool isEmail(String em) {
   return regExp.hasMatch(em);
 }
 
-navigatorPush(BuildContext context,
-    {required String routeName,
-    Object? arguments,
-    bool forgetAll = false,
-    int? forgetLast}) {
+navigatorPush(BuildContext context, {required String routeName, Object? arguments, bool forgetAll = false, int? forgetLast}) {
   if (forgetAll) {
-    Navigator.of(context).pushNamedAndRemoveUntil(
-        routeName, (Route<dynamic> route) => false,
-        arguments: arguments);
+    Navigator.of(context).pushNamedAndRemoveUntil(routeName, (Route<dynamic> route) => false, arguments: arguments);
   }
   if (forgetLast != null) {
     int count = 0;
@@ -386,8 +324,7 @@ DateTime parseDateTime(String strDate) => DateTime.parse(strDate);
 
 DateFormat formatDateTime(String format) => DateFormat(format);
 
-String dateFormatted({required String date, required String formatType}) =>
-    formatDateTime(formatType).format(parseDateTime(date));
+String dateFormatted({required String date, required String formatType}) => formatDateTime(formatType).format(parseDateTime(date));
 
 enum FormatType {
   dateTime,
@@ -426,18 +363,15 @@ class UserAuth {
 }
 
 Future<List<DefaultShipping>> getDefaultShipping() async {
-  String data =
-      await rootBundle.loadString('public/assets/json/default_shipping.json');
+  String data = await rootBundle.loadString('public/assets/json/default_shipping.json');
   dynamic dataJson = json.decode(data);
   List<DefaultShipping> shipping = [];
 
   dataJson.forEach((key, value) {
-    DefaultShipping defaultShipping =
-        DefaultShipping(code: key, country: value['country'], states: []);
+    DefaultShipping defaultShipping = DefaultShipping(code: key, country: value['country'], states: []);
     if (value['states'] != null) {
       value['states'].forEach((key1, value2) {
-        defaultShipping.states
-            .add(DefaultShippingState(code: key1, name: value2));
+        defaultShipping.states.add(DefaultShippingState(code: key1, name: value2));
       });
     }
     shipping.add(defaultShipping);
@@ -447,39 +381,29 @@ Future<List<DefaultShipping>> getDefaultShipping() async {
 
 Future<DefaultShipping?> findCountryMetaForShipping(String countryCode) async {
   List<DefaultShipping> defaultShipping = await getDefaultShipping();
-  List<DefaultShipping> shippingByCountryCode =
-      defaultShipping.where((element) => element.code == countryCode).toList();
+  List<DefaultShipping> shippingByCountryCode = defaultShipping.where((element) => element.code == countryCode).toList();
   if (shippingByCountryCode.isNotEmpty) {
     return shippingByCountryCode.first;
   }
   return null;
 }
 
-DefaultShippingState? findDefaultShippingStateByCode(
-    DefaultShipping defaultShipping, String code) {
-  List<DefaultShippingState> defaultShippingStates =
-      defaultShipping.states.where((state) => state.code == code).toList();
+DefaultShippingState? findDefaultShippingStateByCode(DefaultShipping defaultShipping, String code) {
+  List<DefaultShippingState> defaultShippingStates = defaultShipping.states.where((state) => state.code == code).toList();
   if (defaultShippingStates.isEmpty) {
     return null;
   }
   DefaultShippingState defaultShippingState = defaultShippingStates.first;
-  return DefaultShippingState(
-      code: defaultShippingState.code, name: defaultShippingState.name);
+  return DefaultShippingState(code: defaultShippingState.code, name: defaultShippingState.name);
 }
 
 bool hasKeyInMeta(WPUserInfoResponse wpUserInfoResponse, String key) {
-  return (wpUserInfoResponse.data!.metaData ?? [])
-      .where((meta) => meta.key == key)
-      .toList()
-      .isNotEmpty;
+  return (wpUserInfoResponse.data!.metaData ?? []).where((meta) => meta.key == key).toList().isNotEmpty;
 }
 
 String fetchValueInMeta(WPUserInfoResponse wpUserInfoResponse, String key) {
   String value = "";
-  List<dynamic>? metaDataValue = (wpUserInfoResponse.data!.metaData ?? [])
-      .where((meta) => meta.key == key)
-      .first
-      .value;
+  List<dynamic>? metaDataValue = (wpUserInfoResponse.data!.metaData ?? []).where((meta) => meta.key == key).first.value;
   if (metaDataValue != null && metaDataValue.isNotEmpty) {
     return metaDataValue.first ?? "";
   }
@@ -492,8 +416,7 @@ String truncateString(String data, int length) {
 
 Future<List<dynamic>> getWishlistProducts() async {
   List<dynamic> favouriteProducts = [];
-  String? currentProductsJSON =
-      await (NyStorage.read(SharedKey.wishlistProducts));
+  String? currentProductsJSON = await (NyStorage.read(SharedKey.wishlistProducts));
   if (currentProductsJSON != null) {
     favouriteProducts = (jsonDecode(currentProductsJSON)).toList();
   }
@@ -502,8 +425,7 @@ Future<List<dynamic>> getWishlistProducts() async {
 
 hasAddedWishlistProduct(int? productId) async {
   List<dynamic> favouriteProducts = await getWishlistProducts();
-  List<int> productIds =
-      favouriteProducts.map((e) => e['id']).cast<int>().toList();
+  List<int> productIds = favouriteProducts.map((e) => e['id']).cast<int>().toList();
   if (productIds.isEmpty) {
     return false;
   }
@@ -512,8 +434,7 @@ hasAddedWishlistProduct(int? productId) async {
 
 saveWishlistProduct({required Product? product}) async {
   List<dynamic> products = await getWishlistProducts();
-  if (products.any((wishListProduct) => wishListProduct['id'] == product!.id) ==
-      false) {
+  if (products.any((wishListProduct) => wishListProduct['id'] == product!.id) == false) {
     products.add({"id": product!.id});
   }
   String json = jsonEncode(products.map((i) => {"id": i['id']}).toList());
@@ -528,8 +449,7 @@ removeWishlistProduct({required Product? product}) async {
   await NyStorage.store(SharedKey.wishlistProducts, json);
 }
 
-Future<BillingDetails> billingDetailsFromWpUserInfoResponse(
-    wpUserInfoResponse) async {
+Future<BillingDetails> billingDetailsFromWpUserInfoResponse(wpUserInfoResponse) async {
   List<String> metaDataAddress = [
     'billing_first_name',
     'billing_last_name',
@@ -573,9 +493,7 @@ bool isProductNew(Product? product) {
   if (product?.dateCreatedGMT == null) false;
   try {
     DateTime dateTime = DateTime.parse(product!.dateCreatedGMT!);
-    return dateTime.isBetween(
-            DateTime.now().subtract(Duration(days: 2)), DateTime.now()) ??
-        false;
+    return dateTime.isBetween(DateTime.now().subtract(Duration(days: 2)), DateTime.now()) ?? false;
   } on Exception catch (e) {
     NyLogger.error(e.toString());
   }
@@ -595,8 +513,7 @@ bool shouldEncrypt() {
 }
 
 bool isFirebaseEnabled() {
-  bool? firebaseFcmIsEnabled =
-      AppHelper.instance.appConfig?.firebaseFcmIsEnabled;
+  bool? firebaseFcmIsEnabled = AppHelper.instance.appConfig?.firebaseFcmIsEnabled;
   firebaseFcmIsEnabled ??= getEnv('FCM_ENABLED', defaultValue: false);
 
   return firebaseFcmIsEnabled == true;
@@ -611,14 +528,7 @@ class NotificationItem extends Model {
   Map<String, dynamic>? meta;
   String? createdAt;
 
-  NotificationItem(
-      {this.title,
-      this.message,
-      this.id,
-      this.type,
-      this.meta,
-      this.createdAt,
-      this.hasRead = false});
+  NotificationItem({this.title, this.message, this.id, this.type, this.meta, this.createdAt, this.hasRead = false});
 
   NotificationItem.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -640,15 +550,7 @@ class NotificationItem extends Model {
   }
 
   @override
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'type': type,
-        'meta': meta,
-        'message': message,
-        'has_read': hasRead,
-        "created_at": createdAt
-      };
+  Map<String, dynamic> toJson() => {'id': id, 'title': title, 'type': type, 'meta': meta, 'message': message, 'has_read': hasRead, "created_at": createdAt};
 }
 
 class NyNotification {
@@ -657,35 +559,22 @@ class NyNotification {
   static String storageKey() => _storageKey;
 
   /// Add a notification
-  static addNotification(String title, String message,
-      {String? id, Map<String, dynamic>? meta}) async {
-    NotificationItem notificationItem = NotificationItem.fromJson({
-      "id": id,
-      "title": title,
-      "message": message,
-      "meta": meta,
-      "has_read": false,
-      "created_at": DateTime.now().toDateTimeString()
+  static addNotification(String title, String message, {String? id, Map<String, dynamic>? meta}) async {
+    NotificationItem notificationItem = NotificationItem.fromJson(
+        {"id": id, "title": title, "message": message, "meta": meta, "has_read": false, "created_at": DateTime.now().toDateTimeString()});
+    await NyStorage.addToCollection<NotificationItem>(storageKey(), item: notificationItem, allowDuplicates: false, modelDecoders: {
+      NotificationItem: (data) => NotificationItem.fromJson(data),
     });
-    await NyStorage.addToCollection<NotificationItem>(storageKey(),
-        item: notificationItem,
-        allowDuplicates: false,
-        modelDecoders: {
-          NotificationItem: (data) => NotificationItem.fromJson(data),
-        });
   }
 
   /// Get all notifications
   static Future<List<NotificationItem>> allNotifications() async {
-    List<NotificationItem> notifications =
-        await NyStorage.readCollection<NotificationItem>("app_notifications",
-            modelDecoders: {
-          NotificationItem: (data) => NotificationItem.fromJson(data),
-        });
+    List<NotificationItem> notifications = await NyStorage.readCollection<NotificationItem>("app_notifications", modelDecoders: {
+      NotificationItem: (data) => NotificationItem.fromJson(data),
+    });
     String? userId = await WPJsonAPI.wpUserId();
     notifications.removeWhere((notification) {
-      if (notification.meta != null &&
-          notification.meta!.containsKey('user_id')) {
+      if (notification.meta != null && notification.meta!.containsKey('user_id')) {
         if (notification.meta?['user_id'] != userId) {
           return true;
         }
@@ -727,9 +616,7 @@ class NyNotification {
   }
 
   /// Render notifications
-  static Widget renderNotifications(
-      Widget Function(List<NotificationItem> notificationItems) child,
-      {Widget? loading}) {
+  static Widget renderNotifications(Widget Function(List<NotificationItem> notificationItems) child, {Widget? loading}) {
     return NyFutureBuilder(
         future: allNotifications(),
         child: (context, data) {
@@ -742,9 +629,7 @@ class NyNotification {
   }
 
   /// Render list of notifications
-  static Widget renderListNotifications(
-      Widget Function(NotificationItem notificationItems) child,
-      {Widget? loading}) {
+  static Widget renderListNotifications(Widget Function(NotificationItem notificationItems) child, {Widget? loading}) {
     return NyFutureBuilder(
         future: allNotifications(),
         child: (context, data) {
@@ -762,9 +647,7 @@ class NyNotification {
   }
 
   /// Render list of notifications
-  static Widget renderListNotificationsWithSeparator(
-      Widget Function(NotificationItem notificationItems) child,
-      {Widget? loading}) {
+  static Widget renderListNotificationsWithSeparator(Widget Function(NotificationItem notificationItems) child, {Widget? loading}) {
     return NyFutureBuilder(
         future: allNotifications(),
         child: (context, data) {

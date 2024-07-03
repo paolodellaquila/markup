@@ -1,10 +1,11 @@
+import 'package:nylo_framework/nylo_framework.dart';
+
 import '/app/models/payment_type.dart';
 import '/app/providers/payments/cash_on_delivery.dart';
 import '/app/providers/payments/paypal_pay.dart';
 import '/app/providers/payments/razorpay_pay.dart';
 import '/app/providers/payments/stripe_pay.dart';
 import '/bootstrap/helpers.dart';
-import 'package:nylo_framework/nylo_framework.dart';
 
 /* PAYMENT GATEWAYS
 |--------------------------------------------------------------------------
@@ -12,7 +13,7 @@ import 'package:nylo_framework/nylo_framework.dart';
 | Docs here: https://woosignal.com/docs/app/label-storemax
 |-------------------------------------------------------------------------- */
 
-const appPaymentGateways = ["CashOnDelivery"];
+const appPaymentGateways = ["PayPal"];
 // Available: "Stripe", "CashOnDelivery", "PayPal", "RazorPay"
 // e.g. appPaymentGateways = ["Stripe", "CashOnDelivery"]; will only use Stripe and Cash on Delivery.
 

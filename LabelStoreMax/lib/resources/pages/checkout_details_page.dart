@@ -9,24 +9,25 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import '/resources/pages/customer_countries_page.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:validated/validated.dart' as validate;
+import 'package:wp_json_api/models/responses/wp_user_info_response.dart';
+import 'package:wp_json_api/wp_json_api.dart';
+
+import '../../app/models/default_shipping.dart';
 import '/app/models/billing_details.dart';
 import '/app/models/checkout_session.dart';
 import '/app/models/customer_address.dart';
 import '/app/models/customer_country.dart';
 import '/bootstrap/app_helper.dart';
 import '/bootstrap/helpers.dart';
+import '/resources/pages/customer_countries_page.dart';
 import '/resources/widgets/app_loader_widget.dart';
 import '/resources/widgets/buttons.dart';
 import '/resources/widgets/customer_address_input.dart';
 import '/resources/widgets/safearea_widget.dart';
 import '/resources/widgets/switch_address_tab.dart';
 import '/resources/widgets/woosignal_ui.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import 'package:validated/validated.dart' as validate;
-import 'package:wp_json_api/models/responses/wp_user_info_response.dart';
-import 'package:wp_json_api/wp_json_api.dart';
-import '../../app/models/default_shipping.dart';
 
 class CheckoutDetailsPage extends StatefulWidget {
   static String path = "/checkout-details";
@@ -39,9 +40,7 @@ class CheckoutDetailsPage extends StatefulWidget {
 class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
   _CheckoutDetailsPageState();
 
-  bool? _hasDifferentShippingAddress = false,
-      valRememberDetails = true,
-      _wpLoginEnabled;
+  bool? _hasDifferentShippingAddress = false, valRememberDetails = true, _wpLoginEnabled;
   int activeTabIndex = 0;
 
   // TEXT CONTROLLERS
@@ -104,18 +103,14 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
 
     if (CheckoutSession.getInstance.billingDetails!.billingAddress == null) {
       CheckoutSession.getInstance.billingDetails!.initSession();
-      CheckoutSession.getInstance.billingDetails!.shippingAddress!
-          .initAddress();
+      CheckoutSession.getInstance.billingDetails!.shippingAddress!.initAddress();
       CheckoutSession.getInstance.billingDetails!.billingAddress?.initAddress();
     }
     BillingDetails billingDetails = CheckoutSession.getInstance.billingDetails!;
-    _setFieldsFromCustomerAddress(billingDetails.billingAddress,
-        type: "billing");
-    _setFieldsFromCustomerAddress(billingDetails.shippingAddress,
-        type: "shipping");
+    _setFieldsFromCustomerAddress(billingDetails.billingAddress, type: "billing");
+    _setFieldsFromCustomerAddress(billingDetails.shippingAddress, type: "shipping");
 
-    _hasDifferentShippingAddress =
-        CheckoutSession.getInstance.shipToDifferentAddress;
+    _hasDifferentShippingAddress = CheckoutSession.getInstance.shipToDifferentAddress;
     valRememberDetails = billingDetails.rememberDetails ?? true;
     if (valRememberDetails == true) {
       await _setCustomersDetailsFromRemember();
@@ -125,18 +120,15 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
   }
 
   _setCustomersDetailsFromRemember() async {
-    CustomerAddress? sfCustomerBillingAddress =
-        await CheckoutSession.getInstance.getBillingAddress();
+    CustomerAddress? sfCustomerBillingAddress = await CheckoutSession.getInstance.getBillingAddress();
     _setFieldsFromCustomerAddress(sfCustomerBillingAddress, type: "billing");
 
-    CustomerAddress? sfCustomerShippingAddress =
-        await CheckoutSession.getInstance.getShippingAddress();
+    CustomerAddress? sfCustomerShippingAddress = await CheckoutSession.getInstance.getShippingAddress();
     _setFieldsFromCustomerAddress(sfCustomerShippingAddress, type: "shipping");
     setState(() {});
   }
 
-  _setFieldsFromCustomerAddress(CustomerAddress? customerAddress,
-      {required String type}) {
+  _setFieldsFromCustomerAddress(CustomerAddress? customerAddress, {required String type}) {
     assert(type != "");
     if (customerAddress == null) {
       return;
@@ -213,15 +205,12 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
                               margin: EdgeInsets.symmetric(vertical: 0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: <Widget>[
                                   Padding(
                                     child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                                       children: <Widget>[
                                         SwitchAddressTab(
                                             title: trans("Billing Details"),
@@ -229,17 +218,15 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
                                             type: "billing",
                                             onTapAction: () => setState(() {
                                                   activeTabIndex = 0;
-                                                  activeTab =
-                                                      tabBillingDetails();
+                                                  activeTab = tabBillingDetails();
                                                 })),
                                         SwitchAddressTab(
-                                            title: trans("Shipping Address"),
+                                            title: trans("Shipping Details"),
                                             currentTabIndex: activeTabIndex,
                                             type: "shipping",
                                             onTapAction: () => setState(() {
                                                   activeTabIndex = 1;
-                                                  activeTab =
-                                                      tabShippingDetails();
+                                                  activeTab = tabShippingDetails();
                                                 })),
                                       ],
                                     ),
@@ -252,16 +239,11 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
                           Expanded(
                             child: Container(
                                 decoration: BoxDecoration(
-                                  color: ThemeColor.get(context)
-                                      .backgroundContainer,
+                                  color: ThemeColor.get(context).backgroundContainer,
                                   borderRadius: BorderRadius.circular(10),
-                                  boxShadow: (Theme.of(context).brightness ==
-                                          Brightness.light)
-                                      ? wsBoxShadow()
-                                      : null,
+                                  boxShadow: (Theme.of(context).brightness == Brightness.light) ? wsBoxShadow() : null,
                                 ),
-                                padding:
-                                    EdgeInsets.only(left: 8, right: 8, top: 8),
+                                padding: EdgeInsets.only(left: 8, right: 8, top: 8),
                                 margin: EdgeInsets.only(top: 8),
                                 child: (activeTab ?? tabBillingDetails())),
                           ),
@@ -306,7 +288,7 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
                               ],
                             ),
                           PrimaryButton(
-                            title: trans("USE DETAILS"),
+                            title: trans("Confirm"),
                             action: _useDetailsTapped,
                             isLoading: isLocked('update_shipping'),
                           ),
@@ -333,10 +315,8 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
         customerCountry: _billingCountry,
       );
 
-      CheckoutSession.getInstance.billingDetails!.shippingAddress =
-          customerBillingAddress;
-      CheckoutSession.getInstance.billingDetails!.billingAddress =
-          customerBillingAddress;
+      CheckoutSession.getInstance.billingDetails!.shippingAddress = customerBillingAddress;
+      CheckoutSession.getInstance.billingDetails!.billingAddress = customerBillingAddress;
 
       if (_hasDifferentShippingAddress == true) {
         CustomerAddress customerShippingAddress = _setCustomerAddress(
@@ -352,19 +332,16 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
           showToastNotification(
             context,
             title: trans("Oops"),
-            description: trans(
-                "Invalid shipping address, please check your shipping details"),
+            description: trans("Invalid shipping address, please check your shipping details"),
             style: ToastNotificationStyleType.WARNING,
           );
           return;
         }
 
-        CheckoutSession.getInstance.billingDetails!.shippingAddress =
-            customerShippingAddress;
+        CheckoutSession.getInstance.billingDetails!.shippingAddress = customerShippingAddress;
       }
 
-      BillingDetails billingDetails =
-          CheckoutSession.getInstance.billingDetails!;
+      BillingDetails billingDetails = CheckoutSession.getInstance.billingDetails!;
 
       // Email validation
       String billingEmail = billingDetails.billingAddress!.emailAddress!;
@@ -396,15 +373,11 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
           await WPJsonAPI.instance.api(
             (request) => request.wpUpdateUserInfo(metaData: [
               ...?billingDetails.billingAddress?.toUserMetaDataItem('billing'),
-              ...?billingDetails.shippingAddress
-                  ?.toUserMetaDataItem('shipping'),
+              ...?billingDetails.shippingAddress?.toUserMetaDataItem('shipping'),
             ]),
           );
         } on Exception catch (e) {
-          showToastNotification(context,
-              title: trans("Oops!"),
-              description: trans("Something went wrong"),
-              style: ToastNotificationStyleType.DANGER);
+          showToastNotification(context, title: trans("Oops!"), description: trans("Something went wrong"), style: ToastNotificationStyleType.DANGER);
           if (getEnv('APP_DEBUG', defaultValue: true) == true) {
             NyLogger.error(e.toString());
           }
@@ -419,10 +392,8 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
         await CheckoutSession.getInstance.clearShippingAddress();
       }
 
-      CheckoutSession.getInstance.billingDetails!.rememberDetails =
-          valRememberDetails;
-      CheckoutSession.getInstance.shipToDifferentAddress =
-          _hasDifferentShippingAddress;
+      CheckoutSession.getInstance.billingDetails!.rememberDetails = valRememberDetails;
+      CheckoutSession.getInstance.shipToDifferentAddress = _hasDifferentShippingAddress;
 
       CheckoutSession.getInstance.shippingType = null;
       Navigator.pop(context);
@@ -434,18 +405,9 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
     activeTabIndex = 1;
     activeTab = value == true ? tabShippingDetails() : tabBillingDetails();
 
-    CustomerAddress? sfCustomerShippingAddress =
-        await CheckoutSession.getInstance.getShippingAddress();
+    CustomerAddress? sfCustomerShippingAddress = await CheckoutSession.getInstance.getShippingAddress();
     if (sfCustomerShippingAddress == null) {
-      _setFields(
-          firstName: "",
-          lastName: "",
-          addressLine: "",
-          city: "",
-          postalCode: "",
-          phoneNumber: "",
-          emailAddress: "",
-          customerCountry: CustomerCountry());
+      _setFields(firstName: "", lastName: "", addressLine: "", city: "", postalCode: "", phoneNumber: "", emailAddress: "", customerCountry: CustomerCountry());
     }
     setState(() {});
   }
@@ -479,12 +441,10 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
         return;
       }
       if (type == "billing") {
-        _billingCountry = CustomerCountry.fromDefaultShipping(
-            defaultShipping: value as DefaultShipping);
+        _billingCountry = CustomerCountry.fromDefaultShipping(defaultShipping: value as DefaultShipping);
         activeTab = tabBillingDetails();
       } else if (type == "shipping") {
-        _shippingCountry = CustomerCountry.fromDefaultShipping(
-            defaultShipping: value as DefaultShipping);
+        _shippingCountry = CustomerCountry.fromDefaultShipping(defaultShipping: value as DefaultShipping);
         activeTab = tabShippingDetails();
       }
       setState(() {});
@@ -495,8 +455,7 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
     await lockRelease('load_shipping_info', perform: () async {
       WPUserInfoResponse? wpUserInfoResponse;
       try {
-        wpUserInfoResponse =
-            await WPJsonAPI.instance.api((request) => request.wpGetUserInfo());
+        wpUserInfoResponse = await WPJsonAPI.instance.api((request) => request.wpGetUserInfo());
       } on Exception catch (e) {
         print(e.toString());
         showToastNotification(
@@ -509,13 +468,10 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
       }
 
       if (wpUserInfoResponse != null && wpUserInfoResponse.status == 200) {
-        BillingDetails billingDetails =
-            await billingDetailsFromWpUserInfoResponse(wpUserInfoResponse);
+        BillingDetails billingDetails = await billingDetailsFromWpUserInfoResponse(wpUserInfoResponse);
 
-        _setFieldsFromCustomerAddress(billingDetails.shippingAddress,
-            type: "shipping");
-        _setFieldsFromCustomerAddress(billingDetails.billingAddress,
-            type: "billing");
+        _setFieldsFromCustomerAddress(billingDetails.shippingAddress, type: "shipping");
+        _setFieldsFromCustomerAddress(billingDetails.billingAddress, type: "billing");
 
         setState(() {});
       }

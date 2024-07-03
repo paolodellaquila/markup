@@ -10,20 +10,16 @@
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import '/app/models/cart.dart';
-import '/app/models/checkout_session.dart';
-import '/bootstrap/helpers.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/tax_rate.dart';
 
+import '/app/models/cart.dart';
+import '/app/models/checkout_session.dart';
+import '/bootstrap/helpers.dart';
+
 class CheckoutRowLine extends StatelessWidget {
   const CheckoutRowLine(
-      {super.key,
-      required this.heading,
-      required this.leadImage,
-      required this.leadTitle,
-      required this.action,
-      this.showBorderBottom = true});
+      {super.key, required this.heading, required this.leadImage, required this.leadTitle, required this.action, this.showBorderBottom = true});
 
   final String heading;
   final String? leadTitle;
@@ -52,10 +48,7 @@ class CheckoutRowLine extends StatelessWidget {
               Padding(
                 child: Text(
                   heading,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 padding: EdgeInsets.only(bottom: 8),
               ),
@@ -123,8 +116,7 @@ class TextEditingRow extends StatelessWidget {
                 child: Padding(
                   child: AutoSizeText(
                     heading!,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        color: ThemeColor.get(context).primaryContent),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: ThemeColor.get(context).primaryContent),
                   ),
                   padding: EdgeInsets.only(bottom: 2),
                 ),
@@ -156,23 +148,18 @@ class CheckoutMetaLine extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: EdgeInsets.symmetric(horizontal: 8),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Flexible(
               child: Container(
-                child: AutoSizeText(title!,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(fontWeight: FontWeight.bold)),
+                child: AutoSizeText(title!, style: Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.bold)),
               ),
               flex: 3,
             ),
             Flexible(
               child: Container(
-                child:
-                    Text(amount!, style: Theme.of(context).textTheme.bodyLarge),
+                child: Text(amount!, style: Theme.of(context).textTheme.bodyMedium),
               ),
               flex: 3,
             )
@@ -193,8 +180,7 @@ List<BoxShadow> wsBoxShadow({double? blurRadius}) => [
       )
     ];
 
-wsModalBottom(BuildContext context,
-    {String? title, Widget? bodyWidget, Widget? extraWidget}) {
+wsModalBottom(BuildContext context, {String? title, Widget? bodyWidget, Widget? extraWidget}) {
   showModalBottomSheet(
     context: context,
     backgroundColor: Colors.transparent,
@@ -228,10 +214,7 @@ wsModalBottom(BuildContext context,
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      boxShadow:
-                          (Theme.of(context).brightness == Brightness.light)
-                              ? wsBoxShadow()
-                              : null,
+                      boxShadow: (Theme.of(context).brightness == Brightness.light) ? wsBoxShadow() : null,
                       color: ThemeColor.get(context).background,
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -256,8 +239,7 @@ class CheckoutTotal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => NyFutureBuilder<String>(
-        future: CheckoutSession.getInstance
-            .total(withFormat: true, taxRate: taxRate),
+        future: CheckoutSession.getInstance.total(withFormat: true, taxRate: taxRate),
         child: (BuildContext context, data) => Padding(
           child: CheckoutMetaLine(title: title, amount: data),
           padding: EdgeInsets.only(bottom: 0, top: 15),

@@ -9,10 +9,11 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+
 import '/app/models/customer_country.dart';
 import '/resources/widgets/buttons.dart';
 import '/resources/widgets/woosignal_ui.dart';
-import 'package:nylo_framework/nylo_framework.dart';
 
 class CustomerAddressInput extends StatelessWidget {
   const CustomerAddressInput(
@@ -43,106 +44,64 @@ class CustomerAddressInput extends StatelessWidget {
     return ListView(
       shrinkWrap: true,
       children: <Widget>[
-        Row(
+        Column(
           children: <Widget>[
-            Flexible(
-              child: TextEditingRow(
-                heading: trans("First Name"),
-                controller: txtControllerFirstName,
-                shouldAutoFocus: true,
-              ),
+            TextEditingRow(
+              heading: trans("First Name"),
+              controller: txtControllerFirstName,
+              shouldAutoFocus: true,
             ),
-            Flexible(
-              child: TextEditingRow(
-                heading: trans("Last Name"),
-                controller: txtControllerLastName,
-              ),
+            TextEditingRow(
+              heading: trans("Last Name"),
+              controller: txtControllerLastName,
             ),
           ],
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         ),
-        Row(
+        Column(
           children: <Widget>[
-            Flexible(
-              child: TextEditingRow(
-                heading: trans("Address Line"),
-                controller: txtControllerAddressLine,
-              ),
+            TextEditingRow(
+              heading: trans("Address Line"),
+              controller: txtControllerAddressLine,
             ),
-            Flexible(
-              child: TextEditingRow(
-                heading: trans("City"),
-                controller: txtControllerCity,
-              ),
+            TextEditingRow(
+              heading: trans("City"),
+              controller: txtControllerCity,
             ),
           ],
         ),
-        Row(
+        Column(
           children: <Widget>[
-            Flexible(
-              child: TextEditingRow(
-                heading: trans("Postal code"),
-                controller: txtControllerPostalCode,
-              ),
+            TextEditingRow(
+              heading: trans("Postal code"),
+              controller: txtControllerPostalCode,
             ),
             if (txtControllerEmailAddress != null)
-              Flexible(
-                child: TextEditingRow(
-                    heading: trans("Email address"),
-                    keyboardType: TextInputType.emailAddress,
-                    controller: txtControllerEmailAddress),
-              ),
+              TextEditingRow(heading: trans("Email address"), keyboardType: TextInputType.emailAddress, controller: txtControllerEmailAddress),
           ],
         ),
         if (txtControllerPhoneNumber != null)
-          Row(
+          Column(
             children: <Widget>[
-              Flexible(
-                child: TextEditingRow(
-                  heading: trans("Phone Number"),
-                  controller: txtControllerPhoneNumber,
-                  keyboardType: TextInputType.phone,
-                ),
+              TextEditingRow(
+                heading: trans("Phone Number"),
+                controller: txtControllerPhoneNumber,
+                keyboardType: TextInputType.phone,
               ),
             ],
           ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Row(
+          child: Column(
             children: <Widget>[
               if (customerCountry?.hasState() ?? false)
-                Flexible(
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 23,
-                        child: Text(
-                          trans("State"),
-                          style: Theme.of(context).textTheme.bodyLarge,
-                          textAlign: TextAlign.left,
-                        ),
-                        width: double.infinity,
-                      ),
-                      Padding(
-                        child: SecondaryButton(
-                          title: (customerCountry!.state != null
-                              ? (customerCountry?.state?.name ?? "")
-                              : trans("Select state")),
-                          action: onTapCountry,
-                        ),
-                        padding: EdgeInsets.all(8),
-                      ),
-                    ],
-                  ),
-                ),
-              Flexible(
-                child: Column(
+                Column(
                   children: [
                     Container(
                       height: 23,
                       child: Text(
-                        trans("Country"),
+                        trans("State"),
                         style: Theme.of(context).textTheme.bodyLarge,
                         textAlign: TextAlign.left,
                       ),
@@ -150,16 +109,32 @@ class CustomerAddressInput extends StatelessWidget {
                     ),
                     Padding(
                       child: SecondaryButton(
-                        title: (customerCountry != null &&
-                                (customerCountry?.name ?? "").isNotEmpty
-                            ? customerCountry!.name
-                            : trans("Select country")),
+                        title: (customerCountry!.state != null ? (customerCountry?.state?.name ?? "") : trans("Select state")),
                         action: onTapCountry,
                       ),
                       padding: EdgeInsets.all(8),
                     ),
                   ],
                 ),
+              Column(
+                children: [
+                  Container(
+                    height: 23,
+                    child: Text(
+                      trans("Country"),
+                      style: Theme.of(context).textTheme.bodyLarge,
+                      textAlign: TextAlign.left,
+                    ),
+                    width: double.infinity,
+                  ),
+                  Padding(
+                    child: SecondaryButton(
+                      title: (customerCountry != null && (customerCountry?.name ?? "").isNotEmpty ? customerCountry!.name : trans("Select country")),
+                      action: onTapCountry,
+                    ),
+                    padding: EdgeInsets.all(8),
+                  ),
+                ],
               ),
             ],
             crossAxisAlignment: CrossAxisAlignment.center,

@@ -11,7 +11,10 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import '/resources/widgets/checkout_customer_note_widget.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/response/tax_rate.dart';
+import 'package:woosignal/models/response/woosignal_app.dart';
+
 import '/app/models/cart.dart';
 import '/app/models/checkout_session.dart';
 import '/app/models/customer_country.dart';
@@ -21,6 +24,7 @@ import '/bootstrap/helpers.dart';
 import '/resources/widgets/app_loader_widget.dart';
 import '/resources/widgets/buttons.dart';
 import '/resources/widgets/checkout_coupon_amount_widget.dart';
+import '/resources/widgets/checkout_customer_note_widget.dart';
 import '/resources/widgets/checkout_payment_type_widget.dart';
 import '/resources/widgets/checkout_select_coupon_widget.dart';
 import '/resources/widgets/checkout_shipping_type_widget.dart';
@@ -28,9 +32,6 @@ import '/resources/widgets/checkout_store_heading_widget.dart';
 import '/resources/widgets/checkout_user_details_widget.dart';
 import '/resources/widgets/safearea_widget.dart';
 import '/resources/widgets/woosignal_ui.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/response/tax_rate.dart';
-import 'package:woosignal/models/response/woosignal_app.dart';
 
 class CheckoutConfirmationPage extends NyStatefulWidget {
   static String path = '/checkout';
@@ -53,11 +54,8 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
     CheckoutSession.getInstance.coupon = null;
     List<PaymentType?> paymentTypes = await getPaymentTypes();
 
-    if (CheckoutSession.getInstance.paymentType == null &&
-        paymentTypes.isNotEmpty) {
-      CheckoutSession.getInstance.paymentType = paymentTypes.firstWhere(
-          (paymentType) => paymentType?.id == 20,
-          orElse: () => paymentTypes.first);
+    if (CheckoutSession.getInstance.paymentType == null && paymentTypes.isNotEmpty) {
+      CheckoutSession.getInstance.paymentType = paymentTypes.firstWhere((paymentType) => paymentType?.id == 20, orElse: () => paymentTypes.first);
     }
     _getTaxes();
   }
@@ -84,8 +82,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
     int pageIndex = 1;
     bool fetchMore = true;
     while (fetchMore == true) {
-      List<TaxRate> tmpTaxRates = await (appWooSignal(
-          (api) => api.getTaxRates(page: pageIndex, perPage: 100)));
+      List<TaxRate> tmpTaxRates = await (appWooSignal((api) => api.getTaxRates(page: pageIndex, perPage: 100)));
 
       if (tmpTaxRates.isNotEmpty) {
         _taxRates.addAll(tmpTaxRates);
@@ -103,14 +100,11 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
       return;
     }
 
-    if (CheckoutSession.getInstance.billingDetails == null ||
-        CheckoutSession.getInstance.billingDetails!.shippingAddress == null) {
+    if (CheckoutSession.getInstance.billingDetails == null || CheckoutSession.getInstance.billingDetails!.shippingAddress == null) {
       return;
     }
-    CustomerCountry? shippingCountry = CheckoutSession
-        .getInstance.billingDetails!.shippingAddress!.customerCountry;
-    String? postalCode =
-        CheckoutSession.getInstance.billingDetails!.shippingAddress!.postalCode;
+    CustomerCountry? shippingCountry = CheckoutSession.getInstance.billingDetails!.shippingAddress!.customerCountry;
+    String? postalCode = CheckoutSession.getInstance.billingDetails!.shippingAddress!.postalCode;
 
     if (shippingCountry == null) {
       return;
@@ -126,9 +120,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
         List<String> stateElements = shippingCountry.state!.code!.split(":");
         String state = stateElements.last;
 
-        if (t.country == shippingCountry.countryCode &&
-            t.state == state &&
-            t.postcode == postalCode) {
+        if (t.country == shippingCountry.countryCode && t.state == state && t.postcode == postalCode) {
           return true;
         }
 
@@ -141,9 +133,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
 
     if (taxRate == null) {
       taxRate = _taxRates.firstWhereOrNull(
-        (t) =>
-            t.country == shippingCountry.countryCode &&
-            t.postcode == postalCode,
+        (t) => t.country == shippingCountry.countryCode && t.postcode == postalCode,
       );
 
       taxRate ??= _taxRates.firstWhereOrNull(
@@ -187,8 +177,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(trans("Checkout")),
-            Text(_wooSignalApp?.appName ?? getEnv('APP_NAME'))
-                .bodySmall(context),
+            Text(_wooSignalApp?.appName ?? getEnv('APP_NAME')).bodySmall(context),
           ],
         ),
         centerTitle: false,
@@ -254,6 +243,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
                             ],
                           ),
                         ),
+                        const SizedBox(height: 24),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -262,57 +252,37 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
                             CheckoutSubtotal(
                               title: trans("Subtotal"),
                             ),
-                            CheckoutCouponAmountWidget(
-                                checkoutSession: checkoutSession),
+                            CheckoutCouponAmountWidget(checkoutSession: checkoutSession),
                             if (_wooSignalApp!.disableShipping != 1)
                               CheckoutMetaLine(
                                   title: trans("Shipping fee"),
-                                  amount: CheckoutSession
-                                              .getInstance.shippingType ==
-                                          null
+                                  amount: CheckoutSession.getInstance.shippingType == null
                                       ? trans("Select shipping")
-                                      : CheckoutSession
-                                          .getInstance.shippingType!
-                                          .getTotal(withFormatting: true)),
-                            if (_taxRate != null)
-                              CheckoutTaxTotal(taxRate: _taxRate),
-                            Padding(
-                                padding:
-                                    EdgeInsets.only(top: 8, left: 8, right: 8)),
+                                      : CheckoutSession.getInstance.shippingType!.getTotal(withFormatting: true)),
+                            if (_taxRate != null) CheckoutTaxTotal(taxRate: _taxRate),
+                            Padding(padding: EdgeInsets.only(top: 8, left: 8, right: 8)),
+                            const SizedBox(height: 24),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 8),
                               child: RichText(
                                 textAlign: TextAlign.left,
                                 text: TextSpan(
-                                  text:
-                                      '${trans('By completing this order, I agree to all')} ',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .copyWith(
+                                  text: '${trans('By completing this order, I agree to all')} ',
+                                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
                                         fontSize: 12,
                                       ),
                                   children: <TextSpan>[
                                     TextSpan(
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = _openTermsLink,
-                                      text: trans("Terms and conditions")
-                                          .toLowerCase(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .copyWith(
-                                            color: ThemeColor.get(context)
-                                                .primaryAccent,
+                                      recognizer: TapGestureRecognizer()..onTap = _openTermsLink,
+                                      text: trans("Terms and conditions").toLowerCase(),
+                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                            color: ThemeColor.get(context).primaryAccent,
                                             fontSize: 12,
                                           ),
                                     ),
                                     TextSpan(
                                       text: ".",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .copyWith(
+                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
                                             color: Colors.black87,
                                             fontSize: 12,
                                           ),
@@ -329,8 +299,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
                 ],
               ),
               Container(
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(16)),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
                 child: Column(
                   children: [
                     CheckoutTotal(title: trans("Total"), taxRate: _taxRate),
@@ -354,8 +323,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
     );
   }
 
-  _openTermsLink() =>
-      openBrowserTab(url: AppHelper.instance.appConfig?.appTermsLink ?? "");
+  _openTermsLink() => openBrowserTab(url: AppHelper.instance.appConfig?.appTermsLink ?? "");
 
   _handleCheckout() async {
     _getUserTax();
@@ -365,16 +333,14 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
       showToastNotification(
         context,
         title: trans("Oops"),
-        description:
-            trans("Please select add your billing/shipping address to proceed"),
+        description: trans("Please select add your billing/shipping address to proceed"),
         style: ToastNotificationStyleType.WARNING,
         icon: Icons.local_shipping,
       );
       return;
     }
 
-    if (checkoutSession.billingDetails?.billingAddress?.hasMissingFields() ??
-        true) {
+    if (checkoutSession.billingDetails?.billingAddress?.hasMissingFields() ?? true) {
       showToastNotification(
         context,
         title: trans("Oops"),
@@ -385,8 +351,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
       return;
     }
 
-    if (_wooSignalApp!.disableShipping == 0 &&
-        checkoutSession.shippingType == null) {
+    if (_wooSignalApp!.disableShipping == 0 && checkoutSession.shippingType == null) {
       showToastNotification(
         context,
         title: trans("Oops"),
@@ -408,14 +373,12 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
       return;
     }
 
-    if (_wooSignalApp!.disableShipping == 0 &&
-        checkoutSession.shippingType?.minimumValue != null) {
+    if (_wooSignalApp!.disableShipping == 0 && checkoutSession.shippingType?.minimumValue != null) {
       String total = await Cart.getInstance.getTotal();
 
       double doubleTotal = double.parse(total);
 
-      double doubleMinimumValue =
-          double.parse(checkoutSession.shippingType!.minimumValue!);
+      double doubleMinimumValue = double.parse(checkoutSession.shippingType!.minimumValue!);
 
       if (doubleTotal < doubleMinimumValue) {
         showToastNotification(context,
@@ -432,10 +395,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
 
     if (!appStatus) {
       showToastNotification(context,
-          title: trans("Sorry"),
-          description: trans("Retry later"),
-          style: ToastNotificationStyleType.INFO,
-          duration: Duration(seconds: 3));
+          title: trans("Sorry"), description: trans("Retry later"), style: ToastNotificationStyleType.INFO, duration: Duration(seconds: 3));
       return;
     }
 
