@@ -35,6 +35,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
   Widget? activeWidget;
 
   int _currentIndex = 0;
+  bool isMainMenuSelected = false;
   List<BottomNavItem> allNavWidgets = [];
 
   late AnimationController _hideBottomBarAnimationController;
@@ -101,6 +102,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
         ),
         onPressed: () {
           _hideBottomBarAnimationController.reset();
+          isMainMenuSelected = !isMainMenuSelected;
           activeWidget = CategoriesPage(wooSignalApp: AppHelper.instance.appConfig);
           setState(() {});
         },
@@ -115,7 +117,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
                 return Icon(
                   iconList[index],
                   size: 24,
-                  color: isActive ? Colors.blue : Colors.white,
+                  color: isActive && !isMainMenuSelected ? Colors.blue : Colors.white,
                 );
               },
               backgroundColor: Colors.black54,
@@ -195,6 +197,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
 
   _changeMainWidget(int currentIndex, List<BottomNavItem> bottomNavWidgets) async {
     _currentIndex = currentIndex;
+    isMainMenuSelected = false;
     activeWidget = bottomNavWidgets[currentIndex].tabWidget;
     setState(() {});
   }
