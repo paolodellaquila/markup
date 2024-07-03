@@ -51,6 +51,10 @@ class _AccountDetailSettingsWidgetState extends NyState<AccountDetailSettingsWid
         ),
         Card(
           child: ListTile(
+              leading: Icon(Icons.track_changes), title: Text(trans("Track Order")), onTap: () => openBrowserTab(url: "https://services.brt.it/it/tracking")),
+        ),
+        Card(
+          child: ListTile(
             leading: Icon(Icons.no_accounts_rounded),
             title: Text(trans("Delete Account")),
             onTap: () => routeTo(AccountDeletePage.path),

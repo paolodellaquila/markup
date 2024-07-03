@@ -8,7 +8,9 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_app/resources/pages/categories_page.dart';
 import 'package:flutter_app/resources/pages/settings_page.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -29,11 +31,32 @@ class CompoThemeWidget extends StatefulWidget {
   CompoThemeWidgetState createState() => CompoThemeWidgetState();
 }
 
-class CompoThemeWidgetState extends State<CompoThemeWidget> {
+class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderStateMixin {
   Widget? activeWidget;
 
   int _currentIndex = 0;
   List<BottomNavItem> allNavWidgets = [];
+
+  late AnimationController _hideBottomBarAnimationController;
+
+  final iconList = [
+    Icons.home,
+    Icons.favorite,
+    Icons.shopping_bag,
+    Icons.settings,
+  ];
+
+  _loadTabs() async {
+    allNavWidgets = await bottomNavWidgets();
+    setState(() {});
+  }
+
+  _loadAnimations() {
+    _hideBottomBarAnimationController = AnimationController(
+      duration: Duration(milliseconds: 200),
+      vsync: this,
+    );
+  }
 
   @override
   void initState() {
@@ -41,33 +64,69 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> {
 
     activeWidget = CompoHomeWidget(wooSignalApp: widget.wooSignalApp);
     _loadTabs();
+    _loadAnimations();
   }
 
-  _loadTabs() async {
-    allNavWidgets = await bottomNavWidgets();
-    setState(() {});
+  bool onScrollNotification(ScrollNotification notification) {
+    if (notification is UserScrollNotification && notification.metrics.axis == Axis.vertical) {
+      switch (notification.direction) {
+        case ScrollDirection.forward:
+          _hideBottomBarAnimationController.reverse();
+          break;
+        case ScrollDirection.reverse:
+          _hideBottomBarAnimationController.forward();
+          break;
+        case ScrollDirection.idle:
+          break;
+      }
+    }
+    return false;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: activeWidget,
+      body: NotificationListener<ScrollNotification>(
+        onNotification: onScrollNotification,
+        child: activeWidget!,
+      ),
       resizeToAvoidBottomInset: false,
+      extendBody: true,
+      floatingActionButton: FloatingActionButton.small(
+        shape: CircleBorder(),
+        backgroundColor: Colors.blue,
+        child: Icon(
+          Icons.menu,
+          color: Colors.white,
+        ),
+        onPressed: () {
+          _hideBottomBarAnimationController.reset();
+          _changeMainWidget(2, allNavWidgets, updateCurrentIndex: false);
+        },
+        //params
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: allNavWidgets.isEmpty
           ? AppLoaderWidget()
-          : BottomNavigationBar(
-              onTap: (currentIndex) => _changeMainWidget(currentIndex, allNavWidgets),
-              currentIndex: _currentIndex,
-              unselectedItemColor: Colors.black54,
-              type: BottomNavigationBarType.fixed,
-              fixedColor: Colors.black87,
-              selectedLabelStyle: TextStyle(color: Colors.black),
-              unselectedLabelStyle: TextStyle(
-                color: Colors.black87,
-              ),
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
-              items: allNavWidgets.map((e) => e.bottomNavigationBarItem).toList(),
+          : AnimatedBottomNavigationBar.builder(
+              itemCount: iconList.length,
+              tabBuilder: (int index, bool isActive) {
+                return Icon(
+                  iconList[index],
+                  size: 24,
+                  color: isActive ? Colors.blue : Colors.white,
+                );
+              },
+              backgroundColor: Colors.black54,
+              activeIndex: _currentIndex,
+              gapLocation: GapLocation.center,
+              splashSpeedInMilliseconds: 300,
+              notchSmoothness: NotchSmoothness.softEdge,
+              leftCornerRadius: 32,
+              rightCornerRadius: 32,
+              hideAnimationController: _hideBottomBarAnimationController,
+              onTap: (index) => _changeMainWidget(index, allNavWidgets),
+              //other params
             ),
     );
   }
@@ -133,9 +192,9 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> {
     return items;
   }
 
-  _changeMainWidget(int currentIndex, List<BottomNavItem> bottomNavWidgets) async {
-    _currentIndex = currentIndex;
-    activeWidget = bottomNavWidgets[_currentIndex].tabWidget;
+  _changeMainWidget(int currentIndex, List<BottomNavItem> bottomNavWidgets, {bool updateCurrentIndex = true}) async {
+    if (updateCurrentIndex) _currentIndex = currentIndex;
+    activeWidget = bottomNavWidgets[currentIndex].tabWidget;
     setState(() {});
   }
 }

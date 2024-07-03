@@ -123,119 +123,98 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
         ],
         elevation: 8,
       ),
-      body: SafeArea(
-        child: categoryAndProducts.isEmpty
-            ? AppLoaderWidget()
-            : ListView(
-                shrinkWrap: true,
-                children: [
-                  ...categoryAndProducts.entries.map((catProds) {
-                    double containerHeight = size.height / 0.8;
-                    bool hasImage = catProds.key.image != null;
-                    if (hasImage == false) {
-                      containerHeight = (containerHeight / 2);
-                    }
-                    return Container(
-                      height: containerHeight,
-                      width: size.width,
-                      margin: EdgeInsets.only(top: 10),
-                      child: Column(
-                        children: [
-                          if (hasImage)
-                            InkWell(
-                              child: CachedImageWidget(
-                                image: catProds.key.image!.src,
-                                height: containerHeight / 1.8,
-                                width: MediaQuery.of(context).size.width,
-                                fit: BoxFit.cover,
-                              ),
-                              onTap: () => _showCategory(catProds.key),
+      body: categoryAndProducts.isEmpty
+          ? AppLoaderWidget()
+          : ListView(
+              shrinkWrap: true,
+              children: [
+                ...categoryAndProducts.entries.map((catProds) {
+                  double containerHeight = size.height / 0.8;
+                  bool hasImage = catProds.key.image != null;
+                  if (hasImage == false) {
+                    containerHeight = (containerHeight / 2);
+                  }
+                  return Container(
+                    height: containerHeight,
+                    width: size.width,
+                    margin: EdgeInsets.only(top: 10),
+                    child: Column(
+                      children: [
+                        if (hasImage)
+                          InkWell(
+                            child: CachedImageWidget(
+                              image: catProds.key.image!.src,
+                              height: containerHeight / 1.8,
+                              width: MediaQuery.of(context).size.width,
+                              fit: BoxFit.cover,
                             ),
-                          const SizedBox(height: 16),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minHeight: 50,
-                              minWidth: double.infinity,
-                              maxHeight: 80.0,
-                              maxWidth: double.infinity,
-                            ),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: AutoSizeText(
-                                      parseHtmlString(catProds.key.name!),
-                                      style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold, fontSize: 22),
-                                      maxLines: 1,
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Container(
-                                      width: size.width / 4,
-                                      child: LinkButton(
-                                        title: trans("View All"),
-                                        action: () => _showCategory(catProds.key),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            onTap: () => _showCategory(catProds.key),
                           ),
-                          Container(
-                            height: hasImage ? (containerHeight / 2.2) / 1.2 : containerHeight / 1.2,
+                        const SizedBox(height: 16),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: 50,
+                            minWidth: double.infinity,
+                            maxHeight: 80.0,
+                            maxWidth: double.infinity,
+                          ),
+                          child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: false,
-                              itemBuilder: (cxt, i) {
-                                Product product = catProds.value[i];
-                                return Container(
-                                  height: MediaQuery.of(cxt).size.height,
-                                  width: size.width / 2.5,
-                                  child: ProductItemContainer(product: product, onTap: () => _showProduct(product)),
-                                );
-                              },
-                              itemCount: catProds.value.length,
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  }),
-                  if (bannerImages.isNotEmpty)
-                    Container(
-                      child: Column(
-                        children: [
-                          ///DONNA
-                          GestureDetector(
-                            child: Stack(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                CachedImageWidget(
-                                  image: bannerImages[0],
-                                  height: size.height / 2.5,
-                                  width: size.width,
-                                  fit: BoxFit.cover,
+                                Expanded(
+                                  child: AutoSizeText(
+                                    parseHtmlString(catProds.key.name!),
+                                    style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold, fontSize: 22),
+                                    maxLines: 1,
+                                  ),
                                 ),
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    "Donna",
-                                    style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
+                                Flexible(
+                                  child: Container(
+                                    width: size.width / 4,
+                                    child: LinkButton(
+                                      title: trans("View All"),
+                                      action: () => _showCategory(catProds.key),
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-
-                          ///UOMO
-                          Stack(
+                        ),
+                        Container(
+                          height: hasImage ? (containerHeight / 2.2) / 1.2 : containerHeight / 1.2,
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            shrinkWrap: false,
+                            itemBuilder: (cxt, i) {
+                              Product product = catProds.value[i];
+                              return Container(
+                                height: MediaQuery.of(cxt).size.height,
+                                width: size.width / 2.5,
+                                child: ProductItemContainer(product: product, onTap: () => _showProduct(product)),
+                              );
+                            },
+                            itemCount: catProds.value.length,
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                }),
+                if (bannerImages.isNotEmpty)
+                  Container(
+                    child: Column(
+                      children: [
+                        ///DONNA
+                        GestureDetector(
+                          child: Stack(
                             children: [
                               CachedImageWidget(
-                                image: bannerImages[1],
+                                image: bannerImages[0],
                                 height: size.height / 2.5,
                                 width: size.width,
                                 fit: BoxFit.cover,
@@ -243,40 +222,59 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
                               Align(
                                 alignment: Alignment.center,
                                 child: Text(
-                                  "Uomo",
-                                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      height: size.height / 2.5,
-                    ),
-                  if (lifestyleBanner != null && _controller != null && _controller!.value.isInitialized)
-                    GestureDetector(
-                      onTap: () => openBrowserTab(url: 'https://markupitalia.com/primavera-estate-2024/'),
-                      child: Container(
-                        child: Center(
-                          child: Stack(
-                            children: [
-                              VideoPlayer(_controller!),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Esplora Lifestyle",
+                                  "Donna",
                                   style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        height: size.height / 2.5,
-                      ),
+
+                        ///UOMO
+                        Stack(
+                          children: [
+                            CachedImageWidget(
+                              image: bannerImages[1],
+                              height: size.height / 2.5,
+                              width: size.width,
+                              fit: BoxFit.cover,
+                            ),
+                            Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Uomo",
+                                style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                ],
-              ),
-      ),
+                    height: size.height / 2.5,
+                  ),
+                if (lifestyleBanner != null && _controller != null && _controller!.value.isInitialized)
+                  GestureDetector(
+                    onTap: () => openBrowserTab(url: 'https://markupitalia.com/primavera-estate-2024/'),
+                    child: Container(
+                      child: Center(
+                        child: Stack(
+                          children: [
+                            VideoPlayer(_controller!),
+                            Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Esplora Lifestyle",
+                                style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      height: size.height / 2.5,
+                    ),
+                  ),
+              ],
+            ),
     );
   }
 

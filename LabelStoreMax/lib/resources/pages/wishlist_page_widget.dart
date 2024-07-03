@@ -72,60 +72,71 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> {
                     ),
                   )
                 : ListView.separated(
-                    padding: EdgeInsets.only(top: 10),
+                    padding: EdgeInsets.all(8),
                     itemBuilder: (BuildContext context, int index) {
                       Product product = _products[index];
                       return InkWell(
                         onTap: () => routeTo(ProductDetailPage.path, data: product),
-                        child: Container(
-                          child: Row(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(left: 8),
-                                child: CachedImageWidget(
-                                  image: (product.images.isNotEmpty ? product.images.first.src : getEnv("PRODUCT_PLACEHOLDER_IMAGE")),
-                                  fit: BoxFit.contain,
-                                  width: double.infinity,
+                        child: Card(
+                          elevation: 8,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.white,
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  child: CachedImageWidget(
+                                    image: (product.images.isNotEmpty ? product.images.first.src : getEnv("PRODUCT_PLACEHOLDER_IMAGE")),
+                                    fit: BoxFit.contain,
+                                    width: double.infinity,
+                                  ),
+                                  width: MediaQuery.of(context).size.width / 4,
                                 ),
-                                width: MediaQuery.of(context).size.width / 4,
-                              ),
-                              Expanded(
-                                child: Container(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        product.name!,
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            product.name!,
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                            formatStringCurrency(total: product.price),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        formatStringCurrency(total: product.price),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 5,
-                                alignment: Alignment.center,
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.favorite,
-                                    color: Colors.red,
+                                Container(
+                                  width: MediaQuery.of(context).size.width / 5,
+                                  alignment: Alignment.center,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.favorite,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: () => _removeFromWishlist(product),
                                   ),
-                                  onPressed: () => _removeFromWishlist(product),
-                                ),
-                              )
-                            ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       );
                     },
                     separatorBuilder: (BuildContext context, int index) {
-                      return Divider();
+                      return Divider(
+                        color: Colors.grey,
+                      );
                     },
                     itemCount: _products.length)),
       ),
