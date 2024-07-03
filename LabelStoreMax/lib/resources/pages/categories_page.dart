@@ -145,7 +145,7 @@ class _CategoriesPageState extends NyState<CategoriesPage> {
                               ProductCategory subCategory = subCategories[category.id.toString()]![index];
                               return ListTile(
                                 title: Text(
-                                  subCategory.name ?? "",
+                                  (subCategory.name ?? "").replaceAll("&amp;", "&"),
                                   style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
                                 ),
                                 trailing: Icon(Icons.keyboard_arrow_right_rounded),
