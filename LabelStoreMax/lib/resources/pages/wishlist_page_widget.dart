@@ -23,7 +23,7 @@ class WishListPageWidget extends StatefulWidget {
   createState() => _WishListPageWidgetState();
 }
 
-class _WishListPageWidgetState extends NyState<WishListPageWidget> {
+class _WishListPageWidgetState extends NyState<WishListPageWidget> with AutomaticKeepAliveClientMixin {
   List<Product> _products = [];
 
   @override
@@ -47,6 +47,8 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -154,4 +156,7 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> {
     _products.remove(product);
     setState(() {});
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

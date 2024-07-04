@@ -22,7 +22,7 @@ class CategoriesPage extends StatefulWidget {
   State<CategoriesPage> createState() => _CategoriesPageState();
 }
 
-class _CategoriesPageState extends NyState<CategoriesPage> {
+class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAliveClientMixin {
   List<ProductCategory> mainCategories = [];
   Map<String, List<ProductCategory>> subCategories = {};
 
@@ -81,6 +81,8 @@ class _CategoriesPageState extends NyState<CategoriesPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -164,4 +166,7 @@ class _CategoriesPageState extends NyState<CategoriesPage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

@@ -32,13 +32,12 @@ class CompoThemeWidget extends StatefulWidget {
 }
 
 class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderStateMixin {
-  Widget? activeWidget;
-
   int _currentIndex = 0;
   bool isMainMenuSelected = false;
   List<BottomNavItem> allNavWidgets = [];
 
   late AnimationController _hideBottomBarAnimationController;
+  late TabController tabController;
 
   final iconList = [
     Icons.home,
@@ -63,7 +62,12 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
   void initState() {
     super.initState();
 
-    activeWidget = CompoHomeWidget(wooSignalApp: widget.wooSignalApp);
+    tabController = TabController(
+      initialIndex: 0,
+      length: 5,
+      vsync: this,
+    );
+
     _loadTabs();
     _loadAnimations();
   }
@@ -88,9 +92,12 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
   Widget build(BuildContext context) {
     return Scaffold(
       body: NotificationListener<ScrollNotification>(
-        onNotification: onScrollNotification,
-        child: activeWidget!,
-      ),
+          onNotification: onScrollNotification,
+          child: TabBarView(
+            physics: NeverScrollableScrollPhysics(),
+            controller: tabController,
+            children: allNavWidgets.map((e) => e.tabWidget).toList(),
+          )),
       resizeToAvoidBottomInset: false,
       extendBody: true,
       floatingActionButton: FloatingActionButton.small(
@@ -100,8 +107,8 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
         onPressed: () {
           _hideBottomBarAnimationController.reset();
           isMainMenuSelected = !isMainMenuSelected;
-          activeWidget = CategoriesPage(wooSignalApp: AppHelper.instance.appConfig);
           setState(() {});
+          tabController.animateTo(2);
         },
         //params
       ),
@@ -117,7 +124,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
                   color: isActive && !isMainMenuSelected ? Colors.blue : Colors.black38,
                 );
               },
-              backgroundColor: Colors.white60,
+              backgroundColor: Colors.white,
               activeIndex: _currentIndex,
               gapLocation: GapLocation.center,
               splashSpeedInMilliseconds: 300,
@@ -125,7 +132,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
               leftCornerRadius: 32,
               rightCornerRadius: 32,
               hideAnimationController: _hideBottomBarAnimationController,
-              onTap: (index) => _changeMainWidget(index, allNavWidgets),
+              onTap: (index) => _changeMainWidget(index >= 2 ? index + 1 : index, allNavWidgets, index >= 2 ? false : true),
               //other params
             ),
     );
@@ -154,13 +161,13 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
       ));
     }
 
-    // items.add(BottomNavItem(
-    //   id: 4,
-    //   bottomNavigationBarItem: BottomNavigationBarItem(icon: Icon(Icons.search_outlined), label: 'Categories'.tr()),
-    //   tabWidget: CategoriesPage(
-    //     wooSignalApp: AppHelper.instance.appConfig,
-    //   ),
-    // ));
+    items.add(BottomNavItem(
+      id: 4,
+      bottomNavigationBarItem: BottomNavigationBarItem(icon: Icon(Icons.search_outlined), label: 'Categories'.tr()),
+      tabWidget: CategoriesPage(
+        wooSignalApp: AppHelper.instance.appConfig,
+      ),
+    ));
 
     items.add(BottomNavItem(
       id: 5,
@@ -192,10 +199,10 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
     return items;
   }
 
-  _changeMainWidget(int currentIndex, List<BottomNavItem> bottomNavWidgets) async {
-    _currentIndex = currentIndex;
+  _changeMainWidget(int currentIndex, List<BottomNavItem> bottomNavWidgets, bool updateIconIndex) async {
+    _currentIndex = currentIndex - (updateIconIndex ? 0 : 1);
     isMainMenuSelected = false;
-    activeWidget = bottomNavWidgets[currentIndex].tabWidget;
+    tabController.animateTo(currentIndex);
     setState(() {});
   }
 }

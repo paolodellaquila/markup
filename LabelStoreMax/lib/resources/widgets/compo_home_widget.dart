@@ -44,7 +44,7 @@ class CompoHomeWidget extends StatefulWidget {
   createState() => _CompoHomeWidgetState();
 }
 
-class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
+class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepAliveClientMixin {
   VideoPlayerController? _controller;
 
   HomeBanner? homeBanner;
@@ -207,6 +207,8 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -407,4 +409,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
   }
 
   _showProduct(Product product) => routeTo(ProductDetailPage.path, data: product);
+
+  @override
+  bool get wantKeepAlive => true;
 }

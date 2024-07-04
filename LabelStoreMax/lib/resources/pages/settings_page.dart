@@ -119,7 +119,7 @@ class SettingsPage extends StatelessWidget {
                     ListTile(
                       contentPadding: const EdgeInsets.all(0.0),
                       title: Text("Contacts".tr()),
-                      leading: Icon(Icons.language),
+                      leading: Icon(Icons.contact_support_rounded),
                       trailing: Icon(Icons.arrow_forward_ios),
                       onTap: () => openBrowserTab(url: "https://markupitalia.com/contatti/"),
                     ),
