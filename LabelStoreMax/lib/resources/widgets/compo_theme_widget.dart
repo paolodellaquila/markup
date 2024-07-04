@@ -95,11 +95,8 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
       extendBody: true,
       floatingActionButton: FloatingActionButton.small(
         shape: CircleBorder(),
-        backgroundColor: Colors.blue,
-        child: Icon(
-          Icons.menu,
-          color: Colors.white,
-        ),
+        backgroundColor: Colors.white,
+        child: Icon(Icons.menu, color: Colors.blue),
         onPressed: () {
           _hideBottomBarAnimationController.reset();
           isMainMenuSelected = !isMainMenuSelected;
@@ -117,10 +114,10 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
                 return Icon(
                   iconList[index],
                   size: 24,
-                  color: isActive && !isMainMenuSelected ? Colors.blue : Colors.white,
+                  color: isActive && !isMainMenuSelected ? Colors.blue : Colors.black38,
                 );
               },
-              backgroundColor: Colors.black54,
+              backgroundColor: Colors.white60,
               activeIndex: _currentIndex,
               gapLocation: GapLocation.center,
               splashSpeedInMilliseconds: 300,

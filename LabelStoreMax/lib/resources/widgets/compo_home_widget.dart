@@ -11,7 +11,15 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/resources/widgets/home_data/home_banner.dart';
+import 'package:flutter_app/resources/widgets/home_data/home_flash_promo.dart';
+import 'package:flutter_app/resources/widgets/home_data/home_hottest.dart';
+import 'package:flutter_app/resources/widgets/home_data/home_influencer.dart';
+import 'package:flutter_app/resources/widgets/home_data/home_new_in_donna.dart';
+import 'package:flutter_app/resources/widgets/home_data/home_new_in_uomo.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
+import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:marquee/marquee.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:video_player/video_player.dart';
 import 'package:woosignal/models/response/product.dart';
@@ -39,21 +47,70 @@ class CompoHomeWidget extends StatefulWidget {
 class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
   VideoPlayerController? _controller;
 
-  ///HOME banner URL
-  String? lifestyleBanner;
+  HomeBanner? homeBanner;
+  HomeFlashPromo? homeFlashPromo;
+  HomeHottest? homeHottest;
+  HomeInfluencer? homeInfluencer;
+  HomeNewInDonna? homeNewInDonna;
+  HomeNewInUomo? homeNewInUomo;
 
   @override
   boot() async {
     await _loadHome();
   }
 
-  _loadFirebaseUrl() async {
+  _loadFirebaseData() async {
     try {
-      final ref = FirebaseDatabase.instance.ref("homeApp").child('lifestyleBanner');
+      final ref = FirebaseDatabase.instance.ref("homeApp");
       final snapshot = await ref.get();
       if (snapshot.exists) {
-        lifestyleBanner = snapshot.value.toString();
-        _controller = VideoPlayerController.networkUrl(Uri.parse(lifestyleBanner ?? ""))
+        final banner = snapshot.child("banner");
+        final flashPromo = snapshot.child("flashPromo");
+        final hottest = snapshot.child("hottest");
+        final influencer = snapshot.child("influencer");
+        final new_donna = snapshot.child("new-donna");
+        final new_uomo = snapshot.child("new-uomo");
+
+        ///Banner
+        homeBanner = HomeBanner(
+          homeTitle: banner.child("title").value.toString(),
+          homeSubtitle: banner.child("subtitle").value.toString(),
+          homeVideoBanner: banner.child("videoUrl").value.toString(),
+          videoLink: banner.child("videoLink").value.toString(),
+        );
+
+        ///flash promo
+        homeFlashPromo = HomeFlashPromo(
+          title: flashPromo.child("title").value.toString(),
+        );
+
+        ///categories
+        homeHottest = HomeHottest(
+          title: hottest.child("title").value.toString(),
+          subtitle: hottest.child("subtitle").value.toString(),
+          images: (hottest.child("images").value as List<dynamic>).map((value) => value.toString()).toList(),
+        );
+
+        homeInfluencer = HomeInfluencer(
+          title: influencer.child("title").value.toString(),
+          subtitle: influencer.child("subtitle").value.toString(),
+          images: (influencer.child("images").value as List<dynamic>).map((value) => value.toString()).toList(),
+        );
+
+        homeNewInDonna = HomeNewInDonna(
+          title: new_donna.child("title").value.toString(),
+          subtitle: new_donna.child("subtitle").value.toString(),
+          images: (new_donna.child("images").value as List<dynamic>).map((value) => value.toString()).toList(),
+        );
+
+        homeNewInUomo = HomeNewInUomo(
+          title: new_uomo.child("title").value.toString(),
+          subtitle: new_uomo.child("subtitle").value.toString(),
+          images: (new_uomo.child("images").value as List<dynamic>).map((value) => value.toString()).toList(),
+        );
+
+        ///video controller
+        _controller = VideoPlayerController.networkUrl(Uri.parse(homeBanner?.homeVideoBanner ?? ""))
           ..initialize().then((_) {
             setState(() {});
             _controller?.setVolume(0);
@@ -69,7 +126,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
   }
 
   _loadHome() async {
-    await _loadFirebaseUrl();
+    await _loadFirebaseData();
 
     //HOME CATEGORIES
     ///influencer 386
@@ -103,13 +160,54 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
     }
   }
 
+  List<String> _getCategoryImages(int catId) {
+    switch (catId) {
+      case 386:
+        return homeInfluencer?.images ?? [];
+      case 387:
+        return homeHottest?.images ?? [];
+      case 196:
+        return homeNewInDonna?.images ?? [];
+      case 195:
+        return homeNewInUomo?.images ?? [];
+    }
+    return [];
+  }
+
+  String _getCatTitle(int catId) {
+    switch (catId) {
+      case 386:
+        return homeInfluencer?.title ?? "";
+      case 387:
+        return homeHottest?.title ?? "";
+      case 196:
+        return homeNewInDonna?.title ?? "";
+      case 195:
+        return homeNewInUomo?.title ?? "";
+    }
+    return "";
+  }
+
+  String _getCatSubtitle(int catId) {
+    switch (catId) {
+      case 386:
+        return homeInfluencer?.subtitle ?? "";
+      case 387:
+        return homeHottest?.subtitle ?? "";
+      case 196:
+        return homeNewInDonna?.subtitle ?? "";
+      case 195:
+        return homeNewInUomo?.subtitle ?? "";
+    }
+    return "";
+  }
+
   List<ProductCategory> categories = [];
   Map<ProductCategory, List<Product>> categoryAndProducts = {};
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    List<String> bannerImages = widget.wooSignalApp?.bannerImages ?? [];
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -128,28 +226,122 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
           : ListView(
               shrinkWrap: true,
               children: [
+                if (homeBanner?.homeVideoBanner != null && _controller != null && _controller!.value.isInitialized)
+                  AnimatedOpacity(
+                    duration: Duration(milliseconds: 500),
+                    opacity: homeBanner?.homeVideoBanner != null ? 1 : 0,
+                    child: GestureDetector(
+                      onTap: () => openBrowserTab(url: homeBanner?.videoLink ?? ""),
+                      child: Container(
+                        child: Center(
+                          child: Stack(
+                            children: [
+                              VideoPlayer(_controller!),
+                              Align(
+                                alignment: Alignment.center,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 16.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        homeBanner?.homeTitle ?? "",
+                                        style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
+                                      ),
+                                      Text(
+                                        homeBanner?.homeSubtitle ?? "",
+                                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        height: size.height / 3,
+                      ),
+                    ),
+                  ),
+                if (homeFlashPromo != null && (homeFlashPromo?.title ?? "").isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 20,
+                    child: Marquee(
+                      text: homeFlashPromo?.title ?? "",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                      scrollAxis: Axis.horizontal,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      blankSpace: 20.0,
+                      velocity: 100.0,
+                      pauseAfterRound: Duration(seconds: 1),
+                      startPadding: 10.0,
+                      accelerationDuration: Duration(seconds: 1),
+                      accelerationCurve: Curves.linear,
+                      decelerationDuration: Duration(milliseconds: 500),
+                      decelerationCurve: Curves.easeOut,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 ...categoryAndProducts.entries.map((catProds) {
-                  double containerHeight = size.height / 0.8;
-                  bool hasImage = catProds.key.image != null;
-                  if (hasImage == false) {
-                    containerHeight = (containerHeight / 2);
-                  }
+                  double containerHeight = size.height;
                   return Container(
                     height: containerHeight,
                     width: size.width,
-                    margin: EdgeInsets.only(top: 10),
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (hasImage)
-                          InkWell(
-                            child: CachedImageWidget(
-                              image: catProds.key.image!.src,
-                              height: containerHeight / 1.8,
-                              width: MediaQuery.of(context).size.width,
-                              fit: BoxFit.cover,
-                            ),
-                            onTap: () => _showCategory(catProds.key),
+                        FlutterCarousel(
+                          options: CarouselOptions(
+                            viewportFraction: 1,
+                            height: containerHeight / 2.2,
+                            showIndicator: true,
+                            slideIndicator: CircularSlideIndicator(),
                           ),
+                          items: _getCategoryImages(catProds.key.id!).map((image) {
+                            return InkWell(
+                              child: Stack(
+                                children: [
+                                  CachedImageWidget(
+                                    image: image,
+                                    height: containerHeight / 2.2,
+                                    width: MediaQuery.of(context).size.width,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  Align(
+                                    alignment: Alignment.bottomLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(bottom: 24.0, left: 8),
+                                      child: Container(
+                                        color: Colors.black38,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                _getCatTitle(catProds.key.id!),
+                                                style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
+                                              ),
+                                              Text(
+                                                _getCatSubtitle(catProds.key.id!),
+                                                style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              onTap: () => _showCategory(catProds.key),
+                            );
+                          }).toList(),
+                        ),
                         const SizedBox(height: 16),
                         ConstrainedBox(
                           constraints: BoxConstraints(
@@ -173,7 +365,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
                                 ),
                                 Flexible(
                                   child: Container(
-                                    width: size.width / 4,
+                                    width: size.width / 3,
                                     child: LinkButton(
                                       title: trans("View All"),
                                       action: () => _showCategory(catProds.key),
@@ -185,7 +377,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
                           ),
                         ),
                         Container(
-                          height: hasImage ? (containerHeight / 2.2) / 1.2 : containerHeight / 1.2,
+                          height: (containerHeight / 2.5) / 1.2,
                           padding: EdgeInsets.symmetric(horizontal: 8),
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
@@ -193,7 +385,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
                             itemBuilder: (cxt, i) {
                               Product product = catProds.value[i];
                               return Container(
-                                height: MediaQuery.of(cxt).size.height,
+                                height: (containerHeight / 2.2) / 1.2,
                                 width: size.width / 2.5,
                                 child: ProductItemContainer(product: product, onTap: () => _showProduct(product)),
                               );
@@ -205,74 +397,6 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> {
                     ),
                   );
                 }),
-                if (bannerImages.isNotEmpty)
-                  Container(
-                    child: Column(
-                      children: [
-                        ///DONNA
-                        GestureDetector(
-                          child: Stack(
-                            children: [
-                              CachedImageWidget(
-                                image: bannerImages[0],
-                                height: size.height / 2.5,
-                                width: size.width,
-                                fit: BoxFit.cover,
-                              ),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Donna",
-                                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        ///UOMO
-                        Stack(
-                          children: [
-                            CachedImageWidget(
-                              image: bannerImages[1],
-                              height: size.height / 2.5,
-                              width: size.width,
-                              fit: BoxFit.cover,
-                            ),
-                            Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "Uomo",
-                                style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    height: size.height / 2.5,
-                  ),
-                if (lifestyleBanner != null && _controller != null && _controller!.value.isInitialized)
-                  GestureDetector(
-                    onTap: () => openBrowserTab(url: 'https://markupitalia.com/primavera-estate-2024/'),
-                    child: Container(
-                      child: Center(
-                        child: Stack(
-                          children: [
-                            VideoPlayer(_controller!),
-                            Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "Esplora Lifestyle",
-                                style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      height: size.height / 2.5,
-                    ),
-                  ),
               ],
             ),
     );
