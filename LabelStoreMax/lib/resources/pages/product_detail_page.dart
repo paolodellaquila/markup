@@ -54,7 +54,7 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
     bool isFetching = true;
     while (isFetching) {
       List<ws_product_variation.ProductVariation> tmp = await (appWooSignal(
-        (api) => api.getProductVariations(_product!.id!, perPage: 100, page: currentPage, status: "publish", stockStatus: "instock"),
+        (api) => api.getProductVariations(_product!.id!, perPage: 150, page: currentPage, status: "publish", stockStatus: "instock"),
       ));
       if (tmp.isNotEmpty) {
         tmpVariations.addAll(tmp);
