@@ -109,7 +109,9 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
       context,
       title: trans("Options"),
       bodyWidget: ListView.separated(
-        itemCount: _product!.attributes.length - 2, //DFP remove season and lines
+        itemCount: _product!.attributes.where((element) => element.name == "Taglia" || element.name == "Colore").toList().length,
+
+        ///FIX to display only taglia colore
         separatorBuilder: (BuildContext context, int index) => Divider(
           color: Colors.black12,
           thickness: 1,
