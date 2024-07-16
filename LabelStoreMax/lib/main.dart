@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/firebase_options.dart';
-import 'package:flutter_app/utils/video_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 import '/bootstrap/app.dart';
@@ -13,7 +12,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Nylo nylo = await Nylo.init(setup: Boot.nylo, setupFinished: Boot.finished);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  VideoManager().initialize();
 
   runApp(
     MediaQuery(
