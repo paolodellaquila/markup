@@ -9,7 +9,9 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/resources/widgets/buttons.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:woosignal/models/response/product.dart';
 
 import '/bootstrap/helpers.dart';
@@ -43,6 +45,7 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> with Automati
           status: "publish",
           stockStatus: "instock",
         )));
+    setState(() {});
   }
 
   @override
@@ -69,11 +72,26 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> with Automati
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: 12),
                         ),
-                        Text(trans("No items in whishlist"), style: Theme.of(context).textTheme.titleLarge!.setColor(context, (color) => color!.primaryContent))
+                        Text(trans("No items in whishlist"), style: Theme.of(context).textTheme.titleLarge!.setColor(context, (color) => Colors.black)),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                        Container(
+                          width: 200,
+                          child: SecondaryButton(
+                            title: trans("Update"),
+                            action: loadProducts,
+                          ),
+                        )
                       ],
                     ),
                   )
-                : ListView.separated(
+                : GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 2,
+                      childAspectRatio: 0.6,
+                    ),
                     padding: EdgeInsets.all(8),
                     itemBuilder: (BuildContext context, int index) {
                       Product product = _products[index];
@@ -86,61 +104,137 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> with Automati
                               borderRadius: BorderRadius.circular(8),
                               color: Colors.white,
                             ),
-                            child: Row(
+                            child: ListView(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
                               children: [
-                                Container(
-                                  child: CachedImageWidget(
-                                    image: (product.images.isNotEmpty ? product.images.first.src : getEnv("PRODUCT_PLACEHOLDER_IMAGE")),
-                                    fit: BoxFit.contain,
-                                    width: double.infinity,
-                                  ),
-                                  width: MediaQuery.of(context).size.width / 4,
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Container(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            product.name!,
-                                            style: TextStyle(fontWeight: FontWeight.bold),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(
-                                            formatStringCurrency(total: product.price),
-                                          ),
-                                        ],
+                                Stack(
+                                  children: [
+                                    Container(
+                                      height: 220,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(3.0),
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              color: Colors.grey[100],
+                                              height: double.infinity,
+                                              width: double.infinity,
+                                            ),
+                                            CachedImageWidget(
+                                              image: (product.images.isNotEmpty ? product.images.first.src : getEnv("PRODUCT_PLACEHOLDER_IMAGE")),
+                                              fit: BoxFit.cover,
+                                              height: 220,
+                                              width: double.maxFinite,
+                                            ),
+                                            if (isProductNew(product))
+                                              Container(
+                                                padding: EdgeInsets.all(4),
+                                                child: Text(
+                                                  "New",
+                                                  style: TextStyle(color: Colors.white),
+                                                ),
+                                                decoration: BoxDecoration(color: Colors.black),
+                                              ),
+                                            if (product!.onSale! && product!.type != "variable")
+                                              Positioned(
+                                                bottom: 0,
+                                                left: 0,
+                                                right: 0,
+                                                child: Container(
+                                                  padding: EdgeInsets.all(3),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white70,
+                                                  ),
+                                                  child: RichText(
+                                                    textAlign: TextAlign.center,
+                                                    text: TextSpan(
+                                                      text: '',
+                                                      style: Theme.of(context).textTheme.bodyLarge,
+                                                      children: <TextSpan>[
+                                                        TextSpan(
+                                                          text:
+                                                              "${workoutSaleDiscount(salePrice: product.salePrice, priceBefore: product.regularPrice)}% ${trans("off")}",
+                                                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                                                color: Colors.black,
+                                                                fontSize: 13,
+                                                              ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                    Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.favorite,
+                                            color: Colors.red,
+                                          ),
+                                          onPressed: () => _removeFromWishlist(product),
+                                        ),
+                                      ),
+                                    )
+                                  ],
                                 ),
                                 Container(
-                                  width: MediaQuery.of(context).size.width / 5,
-                                  alignment: Alignment.center,
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.favorite,
-                                      color: Colors.red,
-                                    ),
-                                    onPressed: () => _removeFromWishlist(product),
+                                  padding: EdgeInsets.all(8),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        product.name!,
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              formatStringCurrency(total: product.price),
+                                              style: TextStyle(fontSize: 18),
+                                            ),
+                                          ),
+                                          if (product.permalink != null) ...[
+                                            Container(
+                                              alignment: Alignment.center,
+                                              child: IconButton(
+                                                icon: Icon(
+                                                  Icons.share,
+                                                  color: Colors.blue,
+                                                ),
+                                                onPressed: () => _shareProduct(product),
+                                              ),
+                                            )
+                                          ],
+                                        ],
+                                      )
+                                    ],
                                   ),
-                                )
+                                ),
                               ],
                             ),
                           ),
                         ),
                       );
                     },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return Divider(
-                        color: Colors.grey,
-                      );
-                    },
-                    itemCount: _products.length)),
+                    itemCount: _products.length,
+                  ),
+            loading: Center(
+              child: CircularProgressIndicator(),
+            )),
       ),
     );
   }
@@ -155,6 +249,10 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> with Automati
     );
     _products.remove(product);
     setState(() {});
+  }
+
+  _shareProduct(Product product) {
+    Share.share(product.permalink!);
   }
 
   @override

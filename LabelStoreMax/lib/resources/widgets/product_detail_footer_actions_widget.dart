@@ -34,99 +34,106 @@ class ProductDetailFooterActionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8),
-      decoration: BoxDecoration(
-        color: ThemeColor.get(context).background,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 15.0,
-            spreadRadius: -17,
-            offset: Offset(
-              0,
-              -10,
-            ),
-          )
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // if (product!.type != "external")
-            //   Row(
-            //     crossAxisAlignment: CrossAxisAlignment.center,
-            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //     children: <Widget>[
-            //       Text(
-            //         trans("Quantity"),
-            //         style: Theme.of(context)
-            //             .textTheme
-            //             .bodyLarge!
-            //             .copyWith(color: Colors.grey),
-            //       ),
-            //       Row(
-            //         children: <Widget>[
-            //           IconButton(
-            //             icon: Icon(
-            //               Icons.remove_circle_outline,
-            //               size: 28,
-            //             ),
-            //             onPressed: onRemoveQuantity as void Function()?,
-            //           ),
-            //           ProductQuantity(productId: product!.id!),
-            //           IconButton(
-            //             icon: Icon(
-            //               Icons.add_circle_outline,
-            //               size: 28,
-            //             ),
-            //             onPressed: onAddQuantity as void Function()?,
-            //           ),
-            //         ],
-            //       )
-            //     ],
-            //   ),
-            Row(
+      child: Card(
+        elevation: 8,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 15.0,
+                spreadRadius: -17,
+                offset: Offset(
+                  0,
+                  -10,
+                ),
+              )
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Flexible(
-                    child: Align(
-                  child: Row(
-                    children: [
-                      AutoSizeText(
-                        "${trans("Price")}:  ",
-                        style: Theme.of(context).textTheme.bodyLarge,
-                        textAlign: TextAlign.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // if (product!.type != "external")
+                //   Row(
+                //     crossAxisAlignment: CrossAxisAlignment.center,
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: <Widget>[
+                //       Text(
+                //         trans("Quantity"),
+                //         style: Theme.of(context)
+                //             .textTheme
+                //             .bodyLarge!
+                //             .copyWith(color: Colors.grey),
+                //       ),
+                //       Row(
+                //         children: <Widget>[
+                //           IconButton(
+                //             icon: Icon(
+                //               Icons.remove_circle_outline,
+                //               size: 28,
+                //             ),
+                //             onPressed: onRemoveQuantity as void Function()?,
+                //           ),
+                //           ProductQuantity(productId: product!.id!),
+                //           IconButton(
+                //             icon: Icon(
+                //               Icons.add_circle_outline,
+                //               size: 28,
+                //             ),
+                //             onPressed: onAddQuantity as void Function()?,
+                //           ),
+                //         ],
+                //       )
+                //     ],
+                //   ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Flexible(
+                        child: Align(
+                      child: Row(
+                        children: [
+                          AutoSizeText(
+                            "${trans("Price")}:  ",
+                            style: Theme.of(context).textTheme.bodyLarge,
+                            textAlign: TextAlign.center,
+                          ),
+                          AutoSizeText(
+                            formatStringCurrency(total: (parseWcPrice(product!.price) * quantity).toString()),
+                            style: Theme.of(context).textTheme.headlineMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
-                      AutoSizeText(
-                        formatStringCurrency(total: (parseWcPrice(product!.price) * quantity).toString()),
-                        style: Theme.of(context).textTheme.headlineMedium,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                  alignment: Alignment.centerLeft,
-                )),
-                product!.type == "external"
-                    ? Flexible(
-                        child: PrimaryButton(
-                          title: trans("Buy Product"),
-                          action: onViewExternalProduct,
-                        ),
-                      )
-                    : Flexible(
-                        child: PrimaryButton(
-                          title: trans("Add to cart"),
-                          action: onAddToCart,
-                        ),
-                      ),
+                      alignment: Alignment.centerLeft,
+                    )),
+                    product!.type == "external"
+                        ? Flexible(
+                            child: SecondaryButton(
+                              title: trans("Buy Product"),
+                              action: onViewExternalProduct,
+                            ),
+                          )
+                        : Flexible(
+                            child: SecondaryButton(
+                              title: trans("Add to cart"),
+                              action: onAddToCart,
+                            ),
+                          ),
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

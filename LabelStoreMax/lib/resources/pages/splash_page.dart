@@ -85,11 +85,11 @@ class _SplashScreenState extends State<SplashScreen> {
       _checkIsAppLocked = true;
       return showRoundedBottomSheet(
         context: context,
-        primaryButtonText: "Aggiorna",
+        primaryButtonText: "Update".tr(),
         isDismissible: false,
         onTapPrimaryButton: () => openBrowserTab(url: 'https://markupitalia.com/app/'),
-        title: "Impossibile avviare l'app",
-        message: "Ti invitiamo ad aggiornare l'applicazione per continuare ad utilizzarla.",
+        title: "App Blocked".tr(),
+        message: "App Blocked Desc".tr(),
         icon: const Icon(Icons.report_outlined, size: 48),
       );
     }

@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/colors_manager.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:woosignal/models/response/product.dart';
 
@@ -247,6 +248,38 @@ class _ProductDetailDescriptionWidgetState extends State<ProductDetailDescriptio
               ),
             ),
           )
+        ],
+
+        const SizedBox(
+          height: 24,
+        ),
+
+        if (widget.product!.permalink != null) ...[
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+            child: GestureDetector(
+              onTap: () {
+                Share.share(widget.product!.permalink!);
+              },
+              child: Row(
+                children: [
+                  Text(
+                    "Share".tr(),
+                    style: context.textTheme().headlineSmall!.copyWith(
+                          color: Colors.blue,
+                        ),
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Icon(
+                    Icons.share,
+                    color: Colors.blue,
+                  )
+                ],
+              ),
+            ),
+          ),
         ],
       ],
     );

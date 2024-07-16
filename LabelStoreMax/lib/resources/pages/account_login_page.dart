@@ -72,7 +72,7 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: (Theme.of(context).brightness == Brightness.light) ? wsBoxShadow() : null,
-                      color: ThemeColor.get(context).backgroundContainer,
+                      color: Colors.black38,
                     ),
                     padding: EdgeInsets.symmetric(vertical: 18, horizontal: 8),
                     margin: EdgeInsets.symmetric(horizontal: 16),

@@ -9,16 +9,16 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import '/resources/pages/product_detail_page.dart';
-import '/resources/widgets/product_item_container_widget.dart';
-import '/bootstrap/helpers.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
 
+import '/bootstrap/helpers.dart';
+import '/resources/pages/product_detail_page.dart';
+import '/resources/widgets/product_item_container_widget.dart';
+
 class ProductDetailRelatedProductsWidget extends StatefulWidget {
-  const ProductDetailRelatedProductsWidget(
-      {super.key, required this.product, required this.wooSignalApp});
+  const ProductDetailRelatedProductsWidget({super.key, required this.product, required this.wooSignalApp});
 
   final Product? product;
   final WooSignalApp? wooSignalApp;
@@ -28,7 +28,6 @@ class ProductDetailRelatedProductsWidget extends StatefulWidget {
 }
 
 class _ProductDetailRelatedProductsWidgetState extends State<ProductDetailRelatedProductsWidget> {
-
   bool hasRelatedProducts = true;
 
   @override
@@ -54,17 +53,15 @@ class _ProductDetailRelatedProductsWidgetState extends State<ProductDetailRelate
             children: <Widget>[
               Text(
                 trans("Related products"),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontSize: 18),
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 18),
                 textAlign: TextAlign.left,
               ),
             ],
           ),
         ),
         Container(
-          height: 300,
+          height: 310,
+          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
           child: NyFutureBuilder<List<Product>>(
             future: fetchRelated(),
             child: (context, relatedProducts) {
@@ -77,14 +74,17 @@ class _ProductDetailRelatedProductsWidgetState extends State<ProductDetailRelate
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
                 children: relatedProducts
-                    .map((product) => Container(
+                    .map(
+                      (product) => Container(
                         width: MediaQuery.of(context).size.width / 2.2,
                         child: ProductItemContainer(
                           product: product,
                           onTap: () {
                             routeTo(ProductDetailPage.path, data: product);
                           },
-                        ),),)
+                        ),
+                      ),
+                    )
                     .toList(),
               );
             },
@@ -95,13 +95,8 @@ class _ProductDetailRelatedProductsWidgetState extends State<ProductDetailRelate
   }
 
   Future<List<Product>> fetchRelated() async {
-    List<Product> products =  await appWooSignal(
-          (api) =>
-          api.getProducts(
-              perPage: 25,
-              include: widget.product?.relatedIds,
-              stockStatus: "instock",
-              status: "publish"),
+    List<Product> products = await appWooSignal(
+      (api) => api.getProducts(perPage: 25, include: widget.product?.relatedIds, stockStatus: "instock", status: "publish"),
     );
 
     if (products.isEmpty) {

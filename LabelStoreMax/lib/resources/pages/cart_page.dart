@@ -270,7 +270,7 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
               ),
               loading: SizedBox.shrink(),
             ),
-            PrimaryButton(title: trans("PROCEED TO CHECKOUT"), action: _actionProceedToCheckout),
+            Card(child: PrimaryButton(title: trans("PROCEED TO CHECKOUT"), action: _actionProceedToCheckout)),
             const SizedBox(height: 24)
           ],
         ),

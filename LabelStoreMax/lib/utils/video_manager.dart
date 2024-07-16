@@ -16,12 +16,16 @@ class VideoManager {
 
   VideoManager._internal();
 
-  Future<void> initialize() async {
+  Future<void> loadDirectory() async {
     final path = await getApplicationSupportDirectory();
     if (!Directory("${path.path}/markup").existsSync()) {
       await Directory("${path.path}/markup").create();
     }
     _localDir = Directory("${path.path}/markup");
+  }
+
+  Future<void> initialize() async {
+    await loadDirectory();
     final result = await areVideosDownloaded();
     if (!result) {
       await _downloadVideos();
@@ -73,6 +77,7 @@ class VideoManager {
   }
 
   Future<File?> getRandomVideo() async {
+    await loadDirectory();
     List<FileSystemEntity> files = _localDir!.listSync();
     if (files.isEmpty) {
       return null;
