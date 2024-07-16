@@ -22,7 +22,7 @@ class ProductItemContainer extends StatelessWidget {
       return SizedBox.shrink();
     }
 
-    double height = 280;
+    double height = 300;
     return InkWell(
       child: Container(
         margin: EdgeInsets.all(4),
@@ -31,7 +31,7 @@ class ProductItemContainer extends StatelessWidget {
           physics: NeverScrollableScrollPhysics(),
           children: <Widget>[
             Container(
-              height: 180,
+              height: 200,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(3.0),
                 child: Stack(
@@ -42,12 +42,10 @@ class ProductItemContainer extends StatelessWidget {
                       width: double.infinity,
                     ),
                     CachedImageWidget(
-                      image: (product!.images.isNotEmpty
-                          ? product!.images.first.src
-                          : getEnv("PRODUCT_PLACEHOLDER_IMAGE")),
-                      fit: BoxFit.contain,
+                      image: (product!.images.isNotEmpty ? product!.images.first.src : getEnv("PRODUCT_PLACEHOLDER_IMAGE")),
+                      fit: BoxFit.cover,
                       height: height,
-                      width: double.infinity,
+                      width: double.maxFinite,
                     ),
                     if (isProductNew(product))
                       Container(
@@ -75,12 +73,8 @@ class ProductItemContainer extends StatelessWidget {
                               style: Theme.of(context).textTheme.bodyLarge,
                               children: <TextSpan>[
                                 TextSpan(
-                                  text:
-                                      "${workoutSaleDiscount(salePrice: product!.salePrice, priceBefore: product!.regularPrice)}% ${trans("off")}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge!
-                                      .copyWith(
+                                  text: "${workoutSaleDiscount(salePrice: product!.salePrice, priceBefore: product!.regularPrice)}% ${trans("off")}",
+                                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                                         color: Colors.black,
                                         fontSize: 13,
                                       ),
@@ -98,10 +92,7 @@ class ProductItemContainer extends StatelessWidget {
               margin: const EdgeInsets.only(top: 2, bottom: 2),
               child: Text(
                 product?.name ?? "",
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(fontSize: 15),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 15),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -114,10 +105,7 @@ class ProductItemContainer extends StatelessWidget {
                 children: [
                   AutoSizeText(
                     formatStringCurrency(total: product?.price),
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontWeight: FontWeight.w800),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w800),
                     textAlign: TextAlign.left,
                   ),
                   if ((product?.onSale ?? false) && product?.type != "variable")
@@ -125,21 +113,19 @@ class ProductItemContainer extends StatelessWidget {
                       text: TextSpan(children: [
                         TextSpan(
                           text: '${trans("Was")}: ',
-                          style:
-                              Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                    fontSize: 11,
-                                  ),
+                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                fontSize: 11,
+                              ),
                         ),
                         TextSpan(
                           text: formatStringCurrency(
                             total: product?.regularPrice,
                           ),
-                          style:
-                              Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                    decoration: TextDecoration.lineThrough,
-                                    color: Colors.grey,
-                                    fontSize: 11,
-                                  ),
+                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                decoration: TextDecoration.lineThrough,
+                                color: Colors.grey,
+                                fontSize: 11,
+                              ),
                         ),
                       ]),
                     ),

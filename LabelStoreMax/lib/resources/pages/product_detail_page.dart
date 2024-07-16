@@ -8,6 +8,7 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -20,11 +21,9 @@ import '/app/models/cart_line_item.dart';
 import '/bootstrap/app_helper.dart';
 import '/bootstrap/enums/wishlist_action_enums.dart';
 import '/bootstrap/helpers.dart';
-import '/resources/widgets/buttons.dart';
 import '/resources/widgets/cart_icon_widget.dart';
 import '/resources/widgets/product_detail_body_widget.dart';
 import '/resources/widgets/product_detail_footer_actions_widget.dart';
-import '/resources/widgets/woosignal_ui.dart';
 
 class ProductDetailPage extends NyStatefulWidget<ProductDetailController> {
   static String path = "/product-detail";
@@ -34,6 +33,7 @@ class ProductDetailPage extends NyStatefulWidget<ProductDetailController> {
 
 class _ProductDetailState extends NyState<ProductDetailPage> {
   ws_product.Product? _product;
+  ws_product_variation.ProductVariation? _selectedProductVariation;
 
   List<ws_product_variation.ProductVariation> _productVariations = [];
   final Map<int, dynamic> _tmpAttributeObj = {};
@@ -54,7 +54,7 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
     bool isFetching = true;
     while (isFetching) {
       List<ws_product_variation.ProductVariation> tmp = await (appWooSignal(
-        (api) => api.getProductVariations(_product!.id!, perPage: 150, page: currentPage, status: "publish", stockStatus: "instock"),
+        (api) => api.getProductVariations(_product!.id!, perPage: 100, page: currentPage, status: "publish", stockStatus: "instock"),
       ));
       if (tmp.isNotEmpty) {
         tmpVariations.addAll(tmp);
@@ -69,7 +69,7 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
     _productVariations = tmpVariations;
   }
 
-  _modalBottomSheetOptionsForAttribute(int attributeIndex) {
+  /*_modalBottomSheetOptionsForAttribute(int attributeIndex) {
     wsModalBottom(
       context,
       title: "${trans("Select a")} ${_product!.attributes[attributeIndex].name}",
@@ -94,7 +94,7 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
               };
               Navigator.pop(context, () {});
               Navigator.pop(context);
-              _modalBottomSheetAttributes();
+              //_modalBottomSheetAttributes();
             },
           );
         },
@@ -102,6 +102,7 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
     );
   }
 
+  ///Replaced from inline details
   _modalBottomSheetAttributes() {
     ws_product_variation.ProductVariation? productVariation =
         widget.controller.findProductVariation(tmpAttributeObj: _tmpAttributeObj, productVariations: _productVariations);
@@ -196,7 +197,7 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
         margin: EdgeInsets.only(bottom: 10),
       ),
     );
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -236,6 +237,8 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
                         child: ProductDetailBodyWidget(
                           wooSignalApp: _wooSignalApp,
                           product: _product,
+                          selectedProductVariation: _selectedProductVariation,
+                          onSizeColorSelected: (size, color) => _onSizedColorSelected(size, color),
                         ),
                       ),
                       // </Product body>
@@ -252,19 +255,52 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
     );
   }
 
-  _addItemToCart() async {
-    if (_product!.type != "simple") {
-      _modalBottomSheetAttributes();
+  _onSizedColorSelected(String? size, String? color) {
+    if (size == null || color == null) {
+      setState(() {
+        _selectedProductVariation = null;
+      });
       return;
     }
+
+    final selectedVariation = _productVariations.firstWhereOrNull((item) {
+      return item.sku!.toLowerCase().contains(size.toLowerCase()) && item.sku!.toLowerCase().contains(color.toLowerCase());
+    });
+
+    setState(() {
+      _selectedProductVariation = selectedVariation;
+    });
+  }
+
+  _addItemToCart() async {
+    /*if (_product!.type != "simple") {
+      _modalBottomSheetAttributes();
+      return;
+    }*/
     if (_product!.stockStatus != "instock") {
       showToastNotification(context,
           title: trans("Sorry"), description: trans("This item is out of stock"), style: ToastNotificationStyleType.WARNING, icon: Icons.local_shipping);
       return;
     }
 
+    CartLineItem cartLineItem;
+
+    if (_selectedProductVariation != null) {
+      cartLineItem = CartLineItem.fromProductVariation(
+        quantityAmount: widget.controller.quantity,
+        product: _product!,
+        productVariation: _selectedProductVariation!,
+        options: [
+          "Taglia: ${_selectedProductVariation?.attributes.firstWhere((element) => element.name == "Taglia").option!}",
+          "Colore: ${_selectedProductVariation?.attributes.firstWhere((element) => element.name == "Colore").option!}",
+        ],
+      );
+    } else {
+      cartLineItem = CartLineItem.fromProduct(quantityAmount: widget.controller.quantity, product: _product!);
+    }
+
     await widget.controller.itemAddToCart(
-      cartLineItem: CartLineItem.fromProduct(quantityAmount: widget.controller.quantity, product: _product!),
+      cartLineItem: cartLineItem,
     );
   }
 }

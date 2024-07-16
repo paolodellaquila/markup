@@ -9,16 +9,16 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import '/resources/widgets/cached_image_widget.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/response/product.dart';
+import 'package:woosignal/models/image.dart' as Im;
+
+import '/resources/widgets/cached_image_widget.dart';
 
 class ProductDetailImageSwiperWidget extends StatelessWidget {
-  const ProductDetailImageSwiperWidget(
-      {super.key, required this.product, required this.onTapImage});
+  const ProductDetailImageSwiperWidget({super.key, required this.images, required this.onTapImage});
 
-  final Product? product;
+  final List<Im.Image> images;
   final void Function(int i) onTapImage;
 
   @override
@@ -28,11 +28,9 @@ class ProductDetailImageSwiperWidget extends StatelessWidget {
       child: SizedBox(
         child: Swiper(
           itemBuilder: (BuildContext context, int index) => CachedImageWidget(
-            image: product!.images.isNotEmpty
-                ? product!.images[index].src
-                : getEnv("PRODUCT_PLACEHOLDER_IMAGE"),
+            image: images.isNotEmpty ? images[index].src : getEnv("PRODUCT_PLACEHOLDER_IMAGE"),
           ),
-          itemCount: product!.images.isEmpty ? 1 : product!.images.length,
+          itemCount: images.isEmpty ? 1 : images.length,
           viewportFraction: 0.85,
           scale: 0.9,
           onTap: onTapImage,

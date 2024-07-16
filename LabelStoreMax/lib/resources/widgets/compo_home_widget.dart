@@ -297,7 +297,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
                         FlutterCarousel(
                           options: CarouselOptions(
                             viewportFraction: 1,
-                            height: containerHeight / 2.2,
+                            height: containerHeight / 1.8,
                             showIndicator: true,
                             slideIndicator: CircularSlideIndicator(),
                           ),
@@ -307,7 +307,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
                                 children: [
                                   CachedImageWidget(
                                     image: image,
-                                    height: containerHeight / 2.2,
+                                    height: containerHeight / 1.6,
                                     width: MediaQuery.of(context).size.width,
                                     fit: BoxFit.cover,
                                   ),
@@ -348,9 +348,9 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
                         ConstrainedBox(
                           constraints: BoxConstraints(
                             minHeight: 50,
-                            minWidth: double.infinity,
+                            minWidth: double.maxFinite,
                             maxHeight: 80.0,
-                            maxWidth: double.infinity,
+                            maxWidth: double.maxFinite,
                           ),
                           child: Container(
                             padding: EdgeInsets.symmetric(horizontal: 8),

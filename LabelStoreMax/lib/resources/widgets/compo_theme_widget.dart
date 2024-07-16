@@ -13,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_app/resources/pages/categories_page.dart';
 import 'package:flutter_app/resources/pages/settings_page.dart';
+import 'package:flutter_app/utils/colors_manager.dart';
+import 'package:flutter_app/utils/video_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
 
@@ -68,6 +70,8 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
       vsync: this,
     );
 
+    ColorsManager().syncColors();
+    VideoManager().initialize();
     _loadTabs();
     _loadAnimations();
   }
