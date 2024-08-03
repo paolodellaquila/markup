@@ -10,6 +10,9 @@
 
 import 'dart:io';
 
+import 'package:woosignal/models/payload/order_wc.dart';
+import 'package:woosignal/models/response/tax_rate.dart';
+import 'package:woosignal/models/response/woosignal_app.dart';
 import 'package:wp_json_api/models/wp_user.dart';
 import 'package:wp_json_api/wp_json_api.dart';
 
@@ -19,9 +22,6 @@ import '/app/models/cart_line_item.dart';
 import '/app/models/checkout_session.dart';
 import '/bootstrap/app_helper.dart';
 import '/bootstrap/helpers.dart';
-import 'package:woosignal/models/payload/order_wc.dart';
-import 'package:woosignal/models/response/tax_rate.dart';
-import 'package:woosignal/models/response/woosignal_app.dart';
 
 Future<OrderWC> buildOrderWC({TaxRate? taxRate, bool markPaid = true}) async {
   CheckoutSession checkoutSession = CheckoutSession.getInstance;
@@ -30,9 +30,7 @@ Future<OrderWC> buildOrderWC({TaxRate? taxRate, bool markPaid = true}) async {
 
   String paymentMethodName = checkoutSession.paymentType!.name;
 
-  orderWC.paymentMethod = Platform.isAndroid
-      ? "$paymentMethodName - Android App"
-      : "$paymentMethodName - IOS App";
+  orderWC.paymentMethod = Platform.isAndroid ? "$paymentMethodName - Android App" : "$paymentMethodName - IOS App";
 
   orderWC.paymentMethodTitle = paymentMethodName.toLowerCase();
 
@@ -55,9 +53,7 @@ Future<OrderWC> buildOrderWC({TaxRate? taxRate, bool markPaid = true}) async {
       tmpLineItem.variationId = cartItem.variationId;
     }
 
-    tmpLineItem.subtotal = (parseWcPrice(cartItem.subtotal) *
-            parseWcPrice(cartItem.quantity.toString()))
-        .toString();
+    tmpLineItem.subtotal = (parseWcPrice(cartItem.subtotal) * parseWcPrice(cartItem.quantity.toString())).toString();
     lineItems.add(tmpLineItem);
   }
 
@@ -84,23 +80,21 @@ Future<OrderWC> buildOrderWC({TaxRate? taxRate, bool markPaid = true}) async {
 
   Shipping shipping = Shipping();
 
-  shipping.firstName = billingDetails.shippingAddress!.firstName;
-  shipping.lastName = billingDetails.shippingAddress!.lastName;
-  shipping.address1 = billingDetails.shippingAddress!.addressLine;
-  shipping.city = billingDetails.shippingAddress!.city;
-  shipping.postcode = billingDetails.shippingAddress!.postalCode;
-  if (billingDetails.shippingAddress!.customerCountry!.hasState()) {
-    billing.state =
-        billingDetails.shippingAddress!.customerCountry!.state!.name;
+  shipping.firstName = billingDetails.shippingAddress?.firstName;
+  shipping.lastName = billingDetails.shippingAddress?.lastName;
+  shipping.address1 = billingDetails.shippingAddress?.addressLine;
+  shipping.city = billingDetails.shippingAddress?.city;
+  shipping.postcode = billingDetails.shippingAddress?.postalCode;
+  if (billingDetails.shippingAddress?.customerCountry?.hasState() ?? false) {
+    shipping.state = billingDetails.shippingAddress?.customerCountry?.state?.name;
   }
-  billing.country = billingDetails.shippingAddress!.customerCountry!.name;
+  shipping.country = billingDetails.shippingAddress?.customerCountry?.name;
 
   orderWC.shipping = shipping;
 
   orderWC.shippingLines = [];
   if (wooSignalApp.disableShipping != 1) {
-    Map<String, dynamic>? shippingLineFeeObj =
-        checkoutSession.shippingType!.toShippingLineFee();
+    Map<String, dynamic>? shippingLineFeeObj = checkoutSession.shippingType!.toShippingLineFee();
     if (shippingLineFeeObj != null) {
       ShippingLines shippingLine = ShippingLines();
       shippingLine.methodId = shippingLineFeeObj['method_id'];

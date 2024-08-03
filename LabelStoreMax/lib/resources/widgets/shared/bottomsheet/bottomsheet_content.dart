@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class BottomSheetContent extends StatelessWidget {
-  static const BorderRadius BOTTOM_SHEET_RADIUS = BorderRadius.only(
-      topLeft: Radius.circular(16), topRight: Radius.circular(16));
+  static const BorderRadius BOTTOM_SHEET_RADIUS = BorderRadius.only(topLeft: Radius.circular(16), topRight: Radius.circular(16));
 
   final VoidCallback? onTapButton;
   final String? buttonText;
@@ -68,10 +67,7 @@ class BottomSheetContent extends StatelessWidget {
             Text(
               title!,
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .headline3
-                  ?.copyWith(color: Colors.black),
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.black),
             ),
             const SizedBox(
               height: 16,
