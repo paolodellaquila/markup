@@ -11,26 +11,22 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/bootstrap/helpers.dart';
 import 'package:flutter_app/utils/colors_manager.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:nylo_framework/nylo_framework.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:woosignal/models/response/product.dart';
 
-import '/resources/widgets/woosignal_ui.dart';
-
-class ProductDetailDescriptionWidget extends StatefulWidget {
-  const ProductDetailDescriptionWidget({super.key, required this.product, required this.onSizeColorSelected});
+class ProductDetailColorSizeWidget extends StatefulWidget {
+  const ProductDetailColorSizeWidget({super.key, required this.product, required this.onSizeColorSelected});
 
   final Product? product;
   final void Function(String? size, String? color) onSizeColorSelected;
 
   @override
-  State<ProductDetailDescriptionWidget> createState() => _ProductDetailDescriptionWidgetState();
+  State<ProductDetailColorSizeWidget> createState() => _ProductDetailColorSizeWidgetState();
 }
 
-class _ProductDetailDescriptionWidgetState extends State<ProductDetailDescriptionWidget> {
+class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWidget> {
   String? selectedColor;
   String? selectedSize;
 
@@ -68,42 +64,13 @@ class _ProductDetailDescriptionWidgetState extends State<ProductDetailDescriptio
       physics: NeverScrollableScrollPhysics(),
       children: [
         Container(
-          height: 50,
-          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                trans("Description"),
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 18),
-                textAlign: TextAlign.left,
-              ),
-              if (widget.product!.shortDescription!.isNotEmpty && widget.product!.description!.isNotEmpty)
-                MaterialButton(
-                  child: Text(
-                    trans("Full description"),
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14),
-                    textAlign: TextAlign.right,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  height: 50,
-                  minWidth: 60,
-                  onPressed: () => _modalBottomSheetMenu(context),
-                ),
-            ],
+            children: <Widget>[],
           ),
         ),
-        Container(
-          padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-          child: HtmlWidget(widget.product!.shortDescription!.isNotEmpty ? widget.product!.shortDescription! : widget.product!.description!,
-              renderMode: RenderMode.column, onTapUrl: (String url) async {
-            await launchUrl(Uri.parse(url));
-            return true;
-          }, textStyle: Theme.of(context).textTheme.bodyMedium),
-        ),
-
-        //TODO: FUTURE implementation: palette of colors
         if (widget.product?.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore")) != null &&
             widget.product!.attributes
                 .firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!
@@ -116,19 +83,12 @@ class _ProductDetailDescriptionWidgetState extends State<ProductDetailDescriptio
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Colore".tr(),
-                  style: context.textTheme().bodyLarge!.copyWith(fontSize: 18),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
                 Wrap(
                   children: [
                     ...ColorsManager()
                         .getColorsFromProductTaxomonies(widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!)
                         .map((color) => Padding(
-                              padding: EdgeInsets.only(right: 8),
+                              padding: EdgeInsets.only(right: 8, top: 8),
                               child: GestureDetector(
                                 onTap: () {
                                   setState(() {
@@ -144,7 +104,7 @@ class _ProductDetailDescriptionWidgetState extends State<ProductDetailDescriptio
                                       decoration: BoxDecoration(
                                         color: HexColor.fromHex(color.hex),
                                         border: Border.all(color: Colors.black38, width: selectedColor == color.name ? 1 : 0.5),
-                                        borderRadius: BorderRadius.circular(6),
+                                        borderRadius: BorderRadius.circular(32),
                                       ),
                                     ),
                                     if (selectedColor == color.name)
@@ -170,7 +130,6 @@ class _ProductDetailDescriptionWidgetState extends State<ProductDetailDescriptio
         const SizedBox(
           height: 16,
         ),
-        //TODO: FUTURE implementation: palette of Taglia
         if (widget.product?.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Taglia")) != null &&
             widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Taglia"))!.options!.isNotEmpty) ...[
           Padding(
@@ -179,18 +138,30 @@ class _ProductDetailDescriptionWidgetState extends State<ProductDetailDescriptio
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Taglia".tr(),
-                  style: context.textTheme().bodyLarge!.copyWith(fontSize: 18),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Select Size".tr(),
+                      style: context.textTheme().bodySmall?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    GestureDetector(
+                      onTap: () => openBrowserTab(url: "https://markupitalia.com/taglie/"),
+                      child: Text(
+                        "Guida alle taglie".tr(),
+                        style: context.textTheme().bodySmall?.copyWith(fontSize: 14, decoration: TextDecoration.underline),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(
-                  height: 16,
+                  height: 8,
                 ),
                 Wrap(
                   children: [
                     ...widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Taglia"))!.options!.map((taglia) {
                       return Padding(
-                        padding: EdgeInsets.only(right: 8),
+                        padding: EdgeInsets.only(right: 8, top: 8),
                         child: GestureDetector(
                           onTap: () {
                             setState(() {
@@ -201,7 +172,7 @@ class _ProductDetailDescriptionWidgetState extends State<ProductDetailDescriptio
                           child: Container(
                             decoration: BoxDecoration(
                               border: Border.all(color: selectedSize == taglia ? Colors.black38 : Colors.grey, width: selectedSize == taglia ? 2 : 0.5),
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             width: selectedSize == taglia ? 36 : 32,
                             height: selectedSize == taglia ? 36 : 32,
@@ -227,7 +198,6 @@ class _ProductDetailDescriptionWidgetState extends State<ProductDetailDescriptio
         const SizedBox(
           height: 16,
         ),
-
         if (selectedColor != null && selectedSize != null) ...[
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
@@ -249,49 +219,7 @@ class _ProductDetailDescriptionWidgetState extends State<ProductDetailDescriptio
             ),
           )
         ],
-
-        const SizedBox(
-          height: 24,
-        ),
-
-        if (widget.product!.permalink != null) ...[
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-            child: GestureDetector(
-              onTap: () {
-                Share.share(widget.product!.permalink!);
-              },
-              child: Row(
-                children: [
-                  Text(
-                    "Share".tr(),
-                    style: context.textTheme().headlineSmall!.copyWith(
-                          color: Colors.blue,
-                        ),
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  Icon(
-                    Icons.share,
-                    color: Colors.blue,
-                  )
-                ],
-              ),
-            ),
-          ),
-        ],
       ],
-    );
-  }
-
-  _modalBottomSheetMenu(BuildContext context) {
-    wsModalBottom(
-      context,
-      title: trans("Description"),
-      bodyWidget: SingleChildScrollView(
-        child: HtmlWidget(widget.product!.description!),
-      ),
     );
   }
 }

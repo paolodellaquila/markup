@@ -238,6 +238,10 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
                           wooSignalApp: _wooSignalApp,
                           product: _product,
                           selectedProductVariation: _selectedProductVariation,
+                          productOnSalePrice:
+                              _product!.onSale == true ? _productVariations.firstWhereOrNull((product) => product.onSale == true)?.salePrice : null,
+                          productOriginalPrice:
+                              _product!.onSale == true ? _productVariations.firstWhereOrNull((product) => product.onSale == true)?.regularPrice : null,
                           onSizeColorSelected: (size, color) => _onSizedColorSelected(size, color),
                         ),
                       ),

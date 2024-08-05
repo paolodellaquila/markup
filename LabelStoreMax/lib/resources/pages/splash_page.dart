@@ -87,7 +87,9 @@ class _SplashScreenState extends State<SplashScreen> {
         context: context,
         primaryButtonText: "Update".tr(),
         isDismissible: false,
-        onTapPrimaryButton: () => openBrowserTab(url: 'https://markupitalia.com/app/'),
+        onTapPrimaryButton: () => Platform.isIOS
+            ? openBrowserTab(url: "https://apps.apple.com/app/markup-italia/id6538726254")
+            : openBrowserTab(url: 'https://play.google.com/store/search?q=Markup%20Italia&c=apps&hl=it'),
         title: "App Blocked".tr(),
         message: "App Blocked Desc".tr(),
         icon: const Icon(Icons.report_outlined, size: 48),

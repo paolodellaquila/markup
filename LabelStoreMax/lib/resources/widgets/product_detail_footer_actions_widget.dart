@@ -8,12 +8,10 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
 
-import '/bootstrap/helpers.dart';
 import '/resources/widgets/buttons.dart';
 
 class ProductDetailFooterActionsWidget extends StatelessWidget {
@@ -36,104 +34,89 @@ class ProductDetailFooterActionsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 8),
-      child: Card(
-        elevation: 8,
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(8)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 15.0,
-                spreadRadius: -17,
-                offset: Offset(
-                  0,
-                  -10,
-                ),
-              )
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // if (product!.type != "external")
+            //   Row(
+            //     crossAxisAlignment: CrossAxisAlignment.center,
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: <Widget>[
+            //       Text(
+            //         trans("Quantity"),
+            //         style: Theme.of(context)
+            //             .textTheme
+            //             .bodyLarge!
+            //             .copyWith(color: Colors.grey),
+            //       ),
+            //       Row(
+            //         children: <Widget>[
+            //           IconButton(
+            //             icon: Icon(
+            //               Icons.remove_circle_outline,
+            //               size: 28,
+            //             ),
+            //             onPressed: onRemoveQuantity as void Function()?,
+            //           ),
+            //           ProductQuantity(productId: product!.id!),
+            //           IconButton(
+            //             icon: Icon(
+            //               Icons.add_circle_outline,
+            //               size: 28,
+            //             ),
+            //             onPressed: onAddQuantity as void Function()?,
+            //           ),
+            //         ],
+            //       )
+            //     ],
+            //   ),
+            Row(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // if (product!.type != "external")
-                //   Row(
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: <Widget>[
-                //       Text(
-                //         trans("Quantity"),
-                //         style: Theme.of(context)
-                //             .textTheme
-                //             .bodyLarge!
-                //             .copyWith(color: Colors.grey),
-                //       ),
-                //       Row(
-                //         children: <Widget>[
-                //           IconButton(
-                //             icon: Icon(
-                //               Icons.remove_circle_outline,
-                //               size: 28,
-                //             ),
-                //             onPressed: onRemoveQuantity as void Function()?,
-                //           ),
-                //           ProductQuantity(productId: product!.id!),
-                //           IconButton(
-                //             icon: Icon(
-                //               Icons.add_circle_outline,
-                //               size: 28,
-                //             ),
-                //             onPressed: onAddQuantity as void Function()?,
-                //           ),
-                //         ],
-                //       )
-                //     ],
-                //   ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Flexible(
-                        child: Align(
-                      child: Row(
-                        children: [
-                          AutoSizeText(
-                            "${trans("Price")}:  ",
-                            style: Theme.of(context).textTheme.bodyLarge,
-                            textAlign: TextAlign.center,
-                          ),
-                          AutoSizeText(
-                            formatStringCurrency(total: (parseWcPrice(product!.price) * quantity).toString()),
-                            style: Theme.of(context).textTheme.headlineMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                /*Flexible(
+                    child: Align(
+                  child: Row(
+                    children: [
+                      AutoSizeText(
+                        "${trans("Price")}:  ",
+                        style: Theme.of(context).textTheme.bodyLarge,
+                        textAlign: TextAlign.center,
                       ),
-                      alignment: Alignment.centerLeft,
-                    )),
-                    product!.type == "external"
-                        ? Flexible(
-                            child: SecondaryButton(
-                              title: trans("Buy Product"),
-                              action: onViewExternalProduct,
-                            ),
-                          )
-                        : Flexible(
-                            child: SecondaryButton(
-                              title: trans("Add to cart"),
-                              action: onAddToCart,
-                            ),
-                          ),
-                  ],
-                ),
+                      AutoSizeText(
+                        formatStringCurrency(total: (parseWcPrice(product!.price) * quantity).toString()),
+                        style: Theme.of(context).textTheme.headlineSmall,
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.centerLeft,
+                )),*/
+                product!.type == "external"
+                    ? Flexible(
+                        child: WooSignalButton(
+                          key: key,
+                          title: trans("Buy Product"),
+                          action: onViewExternalProduct,
+                          textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                          bgColor: Colors.black,
+                        ),
+                      )
+                    : Flexible(
+                        child: WooSignalButton(
+                          key: key,
+                          title: trans("Add to cart"),
+                          action: onAddToCart,
+                          textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                          bgColor: Colors.black,
+                        ),
+                      )
               ],
             ),
-          ),
+          ],
         ),
       ),
     );

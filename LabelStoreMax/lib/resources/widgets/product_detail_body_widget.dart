@@ -23,12 +23,22 @@ import '/resources/widgets/product_detail_reviews_widget.dart';
 import '/resources/widgets/product_detail_upsell_widget.dart';
 
 class ProductDetailBodyWidget extends StatefulWidget {
-  const ProductDetailBodyWidget(
-      {super.key, required this.product, required this.wooSignalApp, required this.onSizeColorSelected, this.selectedProductVariation});
+  const ProductDetailBodyWidget({
+    super.key,
+    required this.product,
+    required this.wooSignalApp,
+    required this.onSizeColorSelected,
+    this.selectedProductVariation,
+    this.productOnSalePrice,
+    this.productOriginalPrice,
+  });
 
   final Product? product;
   final ProductVariation? selectedProductVariation;
   final WooSignalApp? wooSignalApp;
+  final String? productOnSalePrice;
+  final String? productOriginalPrice;
+
   final void Function(String? size, String? color) onSizeColorSelected;
 
   @override
@@ -50,10 +60,15 @@ class _ProductDetailBodyWidgetState extends State<ProductDetailBodyWidget> {
             onTapImage: (i) => _viewProductImages(context, i)),
         // </Image Swiper>
 
-        ProductDetailHeaderWidget(product: widget.product),
+        ProductDetailHeaderWidget(
+          product: widget.product,
+          productOnSalePrice: widget.productOnSalePrice,
+          selectedProductVariation: widget.selectedProductVariation,
+          productOriginalPrice: widget.productOriginalPrice,
+        ),
         // </Header title + price>
 
-        ProductDetailDescriptionWidget(product: widget.product, onSizeColorSelected: widget.onSizeColorSelected),
+        ProductDetailColorSizeWidget(product: widget.product, onSizeColorSelected: widget.onSizeColorSelected),
         // </Description body>
 
         ProductDetailReviewsWidget(product: widget.product, wooSignalApp: widget.wooSignalApp),
@@ -62,7 +77,7 @@ class _ProductDetailBodyWidgetState extends State<ProductDetailBodyWidget> {
         if (widget.product != null) ProductDetailUpsellWidget(productIds: widget.product!.upsellIds, wooSignalApp: widget.wooSignalApp),
         // </You may also like>
 
-        const SizedBox(height: 72),
+        const SizedBox(height: 42),
 
         ProductDetailRelatedProductsWidget(product: widget.product, wooSignalApp: widget.wooSignalApp)
         // </Related products>

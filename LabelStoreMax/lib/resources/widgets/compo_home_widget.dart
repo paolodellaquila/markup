@@ -234,34 +234,38 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
                     opacity: homeBanner?.homeVideoBanner != null ? 1 : 0,
                     child: GestureDetector(
                       onTap: () => openBrowserTab(url: homeBanner?.videoLink ?? ""),
-                      child: Container(
-                        child: Center(
-                          child: Stack(
-                            children: [
-                              VideoPlayer(_controller!),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 16.0),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        homeBanner?.homeTitle ?? "",
-                                        style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
-                                      ),
-                                      Text(
-                                        homeBanner?.homeSubtitle ?? "",
-                                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
-                                      ),
-                                    ],
+                      child: AspectRatio(
+                        aspectRatio: _controller!.value.aspectRatio,
+                        child: Container(
+                          child: Center(
+                            child: Stack(
+                              children: [
+                                VideoPlayer(
+                                  _controller!,
+                                ),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 16.0),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          homeBanner?.homeTitle ?? "",
+                                          style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
+                                        ),
+                                        Text(
+                                          homeBanner?.homeSubtitle ?? "",
+                                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                        height: size.height / 3,
                       ),
                     ),
                   ),
@@ -287,7 +291,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
                   const SizedBox(height: 16),
                 ],
                 ...categoryAndProducts.entries.map((catProds) {
-                  double containerHeight = size.height;
+                  double containerHeight = size.height / 0.8;
                   return Container(
                     height: containerHeight,
                     width: size.width,
@@ -379,7 +383,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
                           ),
                         ),
                         Container(
-                          height: (containerHeight / 2.5) / 1.2,
+                          height: containerHeight / 2.8,
                           padding: EdgeInsets.symmetric(horizontal: 8),
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
@@ -387,7 +391,6 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
                             itemBuilder: (cxt, i) {
                               Product product = catProds.value[i];
                               return Container(
-                                height: (containerHeight / 2.2) / 1.2,
                                 width: size.width / 2.5,
                                 child: ProductItemContainer(product: product, onTap: () => _showProduct(product)),
                               );

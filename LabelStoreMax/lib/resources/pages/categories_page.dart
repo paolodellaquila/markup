@@ -109,7 +109,7 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
                           ),
                           backgroundColor: Colors.grey.shade200,
                           controller: _txtSearchController,
-                          style: Theme.of(context).textTheme.displaySmall,
+                          style: Theme.of(context).textTheme.bodySmall,
                           keyboardType: TextInputType.text,
                           autocorrect: false,
                           autoFocus: false,
