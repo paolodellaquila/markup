@@ -56,6 +56,18 @@ class ProductItemContainer extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(color: Colors.black),
                       ),
+                    if (product!.onSale!)
+                      Positioned(
+                        right: 0,
+                        child: Container(
+                          padding: EdgeInsets.all(4),
+                          child: Text(
+                            "%",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          decoration: BoxDecoration(color: Colors.red),
+                        ),
+                      ),
                     if (product!.onSale! && product!.type != "variable")
                       Positioned(
                         bottom: 0,
@@ -99,7 +111,7 @@ class ProductItemContainer extends StatelessWidget {
             ),
             Container(
               padding: EdgeInsets.only(top: 4),
-              child: Column(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -108,27 +120,6 @@ class ProductItemContainer extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w800),
                     textAlign: TextAlign.left,
                   ),
-                  if ((product?.onSale ?? false) && product?.type != "variable")
-                    RichText(
-                      text: TextSpan(children: [
-                        TextSpan(
-                          text: '${trans("Was")}: ',
-                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                fontSize: 11,
-                              ),
-                        ),
-                        TextSpan(
-                          text: formatStringCurrency(
-                            total: product?.regularPrice,
-                          ),
-                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                decoration: TextDecoration.lineThrough,
-                                color: Colors.grey,
-                                fontSize: 11,
-                              ),
-                        ),
-                      ]),
-                    ),
                 ].toList(),
               ),
             ),

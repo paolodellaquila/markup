@@ -8,6 +8,7 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/woosignal_ui.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
@@ -37,6 +38,20 @@ class ProductDetailHeaderWidget extends StatelessWidget {
     );
   }
 
+  _calculateDiscountPrice() {
+    String? regularPrice = selectedProductVariation?.regularPrice ?? productOriginalPrice;
+    String? salePrice = selectedProductVariation?.salePrice ?? productOnSalePrice;
+
+    double? discountPercentage;
+    if (regularPrice != null && salePrice != null) {
+      double regular = double.parse(regularPrice);
+      double sale = double.parse(salePrice);
+      discountPercentage = ((regular - sale) / regular) * 100;
+    }
+
+    return discountPercentage;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -52,12 +67,14 @@ class ProductDetailHeaderWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                product!.name!,
-                style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontSize: 20),
-                textAlign: TextAlign.left,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
+              Flexible(
+                child: AutoSizeText(
+                  product!.name!,
+                  style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontSize: 20),
+                  textAlign: TextAlign.left,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                ),
               ),
               if (product!.permalink != null) ...[
                 Padding(
@@ -75,6 +92,9 @@ class ProductDetailHeaderWidget extends StatelessWidget {
                 ),
               ],
             ],
+          ),
+          const SizedBox(
+            height: 8,
           ),
           Container(
             child: HtmlWidget(product!.shortDescription!.isNotEmpty ? product!.shortDescription! : product!.description!, renderMode: RenderMode.column,
@@ -114,12 +134,13 @@ class ProductDetailHeaderWidget extends StatelessWidget {
                   textAlign: TextAlign.right,
                 ),
                 const SizedBox(width: 8),
-                Chip(
-                  label: Text("-50% di sconto"),
-                  backgroundColor: Colors.red[200],
-                  side: BorderSide(color: Colors.red[200]!),
-                  padding: EdgeInsets.zero,
-                )
+                if (_calculateDiscountPrice() != null)
+                  Chip(
+                    label: Text("-${_calculateDiscountPrice().toStringAsFixed(0)}% ${"discount".tr()}"),
+                    backgroundColor: Colors.red[200],
+                    side: BorderSide(color: Colors.red[200]!),
+                    padding: EdgeInsets.zero,
+                  )
               ] else ...[
                 Text(
                   formatStringCurrency(total: selectedProductVariation?.price ?? product!.price),
