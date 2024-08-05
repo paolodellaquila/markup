@@ -10,6 +10,7 @@
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app/resources/widgets/woosignal_ui.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -81,6 +82,7 @@ class ProductDetailHeaderWidget extends StatelessWidget {
                   padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
                   child: GestureDetector(
                     onTap: () {
+                      HapticFeedback.mediumImpact();
                       Share.share(product!.permalink!);
                     },
                     child: Icon(

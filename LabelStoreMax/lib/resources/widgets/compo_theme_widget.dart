@@ -11,6 +11,7 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app/resources/pages/categories_page.dart';
 import 'package:flutter_app/resources/pages/settings_page.dart';
 import 'package:flutter_app/utils/colors_manager.dart';
@@ -109,6 +110,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
         backgroundColor: Colors.white,
         child: Icon(Icons.menu, color: Colors.blue),
         onPressed: () {
+          HapticFeedback.mediumImpact();
           _hideBottomBarAnimationController.reset();
           isMainMenuSelected = !isMainMenuSelected;
           setState(() {});
@@ -204,6 +206,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
   }
 
   _changeMainWidget(int currentIndex, List<BottomNavItem> bottomNavWidgets, bool updateIconIndex) async {
+    HapticFeedback.mediumImpact();
     _currentIndex = currentIndex - (updateIconIndex ? 0 : 1);
     isMainMenuSelected = false;
     tabController.animateTo(currentIndex);
