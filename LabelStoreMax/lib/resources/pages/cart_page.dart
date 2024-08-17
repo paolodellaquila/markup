@@ -9,8 +9,11 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app/resources/widgets/cart_item_container_widget.dart';
+import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:wp_json_api/wp_json_api.dart';
 
 import '/app/models/cart.dart';
@@ -194,21 +197,23 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
         ),
         elevation: 1,
         actions: <Widget>[
-          InkWell(
-            highlightColor: Colors.transparent,
-            splashColor: Colors.transparent,
-            child: Align(
-              child: Padding(
-                child: Text(
-                  trans("Clear Cart"),
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                padding: EdgeInsets.only(right: 8),
-              ),
-              alignment: Alignment.centerLeft,
-            ),
-            onTap: _clearCart,
-          )
+          _cartLines.isNotEmpty
+              ? InkWell(
+                  highlightColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  child: Align(
+                    child: Padding(
+                      child: Text(
+                        trans("Clear Cart"),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      padding: EdgeInsets.only(right: 8),
+                    ),
+                    alignment: Alignment.centerLeft,
+                  ),
+                  onTap: _clearCart,
+                )
+              : SizedBox.shrink()
         ],
         centerTitle: true,
       ),
@@ -248,11 +253,39 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
                           itemCount: _cartLines.length,
                           itemBuilder: (BuildContext context, int index) {
                             CartLineItem cartLineItem = _cartLines[index];
-                            return CartItemContainer(
-                              cartLineItem: cartLineItem,
-                              actionIncrementQuantity: () => actionIncrementQuantity(cartLineItem: cartLineItem),
-                              actionDecrementQuantity: () => actionDecrementQuantity(cartLineItem: cartLineItem),
-                              actionRemoveItem: () => actionRemoveItem(index: index),
+                            return SwipeActionCell(
+                              key: ObjectKey(cartLineItem),
+                              trailingActions: [
+                                SwipeAction(
+                                  onTap: (CompletionHandler handler) async {
+                                    handler(false);
+                                    HapticFeedback.mediumImpact();
+                                    Share.share(cartLineItem.permalink!);
+                                  },
+                                  color: Colors.green,
+                                  icon: Icon(
+                                    Icons.share,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SwipeAction(
+                                  onTap: (CompletionHandler handler) async {
+                                    handler(false);
+                                    actionRemoveItem(index: index);
+                                  },
+                                  color: Colors.red,
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                              child: CartItemContainer(
+                                cartLineItem: cartLineItem,
+                                actionIncrementQuantity: () => actionIncrementQuantity(cartLineItem: cartLineItem),
+                                actionDecrementQuantity: () => actionDecrementQuantity(cartLineItem: cartLineItem),
+                                actionRemoveItem: () => actionRemoveItem(index: index),
+                              ),
                             );
                           })),
             ),

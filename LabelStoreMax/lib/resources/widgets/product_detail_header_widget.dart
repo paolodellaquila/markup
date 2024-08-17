@@ -138,7 +138,7 @@ class ProductDetailHeaderWidget extends StatelessWidget {
                 const SizedBox(width: 8),
                 if (_calculateDiscountPrice() != null)
                   Chip(
-                    label: Text("-${_calculateDiscountPrice().toStringAsFixed(0)}% ${"discount".tr()}"),
+                    label: Text("-${_calculateDiscountPrice().toStringAsFixed(0)}% ${"Discount".tr()}"),
                     backgroundColor: Colors.red[200],
                     side: BorderSide(color: Colors.red[200]!),
                     padding: EdgeInsets.zero,

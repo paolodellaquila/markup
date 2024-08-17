@@ -9,12 +9,6 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import '/app/events/login_event.dart';
-import '/bootstrap/app_helper.dart';
-import '/bootstrap/helpers.dart';
-import '/resources/widgets/buttons.dart';
-import '/resources/widgets/safearea_widget.dart';
-import '/resources/widgets/woosignal_ui.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
 import 'package:wp_json_api/exceptions/empty_username_exception.dart';
@@ -25,6 +19,13 @@ import 'package:wp_json_api/exceptions/user_already_exist_exception.dart';
 import 'package:wp_json_api/exceptions/username_taken_exception.dart';
 import 'package:wp_json_api/models/responses/wp_user_register_response.dart';
 import 'package:wp_json_api/wp_json_api.dart';
+
+import '/app/events/login_event.dart';
+import '/bootstrap/app_helper.dart';
+import '/bootstrap/helpers.dart';
+import '/resources/widgets/buttons.dart';
+import '/resources/widgets/safearea_widget.dart';
+import '/resources/widgets/woosignal_ui.dart';
 
 class AccountRegistrationPage extends StatefulWidget {
   static String path = "/account-register";
@@ -37,8 +38,7 @@ class AccountRegistrationPage extends StatefulWidget {
 class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
   _AccountRegistrationPageState();
 
-  final TextEditingController _tfEmailAddressController =
-          TextEditingController(),
+  final TextEditingController _tfEmailAddressController = TextEditingController(),
       _tfPasswordController = TextEditingController(),
       _tfFirstNameController = TextEditingController(),
       _tfLastNameController = TextEditingController();
@@ -62,23 +62,19 @@ class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
           children: <Widget>[
             Container(
                 margin: EdgeInsets.only(top: 10),
-                child: Row(
+                child: Column(
                   children: <Widget>[
-                    Flexible(
-                      child: TextEditingRow(
-                        heading: trans("First Name"),
-                        controller: _tfFirstNameController,
-                        shouldAutoFocus: true,
-                        keyboardType: TextInputType.text,
-                      ),
+                    TextEditingRow(
+                      heading: trans("First Name"),
+                      controller: _tfFirstNameController,
+                      shouldAutoFocus: true,
+                      keyboardType: TextInputType.text,
                     ),
-                    Flexible(
-                      child: TextEditingRow(
-                        heading: trans("Last Name"),
-                        controller: _tfLastNameController,
-                        shouldAutoFocus: false,
-                        keyboardType: TextInputType.text,
-                      ),
+                    TextEditingRow(
+                      heading: trans("Last Name"),
+                      controller: _tfLastNameController,
+                      shouldAutoFocus: false,
+                      keyboardType: TextInputType.text,
                     ),
                   ],
                 )),
@@ -106,22 +102,13 @@ class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
               child: InkWell(
                 child: RichText(
                   text: TextSpan(
-                    text:
-                        '${trans("By tapping \"Register\" you agree to ")} ${AppHelper.instance.appConfig!.appName!}\'s ',
+                    text: '${trans("By tapping \"Register\" you agree to ")} ${AppHelper.instance.appConfig!.appName!}\'s ',
                     children: <TextSpan>[
-                      TextSpan(
-                          text: trans("terms and conditions"),
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      TextSpan(text: trans("terms and conditions"), style: TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline)),
                       TextSpan(text: '  ${trans("and")}  '),
-                      TextSpan(
-                          text: trans("privacy policy"),
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      TextSpan(text: trans("privacy policy"), style: TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline)),
                     ],
-                    style: TextStyle(
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? Colors.black45
-                                : Colors.white70),
+                    style: TextStyle(color: (Theme.of(context).brightness == Brightness.light) ? Colors.black45 : Colors.white70),
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -146,18 +133,12 @@ class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
     }
 
     if (!isEmail(email)) {
-      showToastNotification(context,
-          title: trans("Oops"),
-          description: trans("That email address is not valid"),
-          style: ToastNotificationStyleType.DANGER);
+      showToastNotification(context, title: trans("Oops"), description: trans("That email address is not valid"), style: ToastNotificationStyleType.DANGER);
       return;
     }
 
     if (password.length <= 5) {
-      showToastNotification(context,
-          title: trans("Oops"),
-          description: trans("Password must be a min 6 characters"),
-          style: ToastNotificationStyleType.DANGER);
+      showToastNotification(context, title: trans("Oops"), description: trans("Password must be a min 6 characters"), style: ToastNotificationStyleType.DANGER);
       return;
     }
 
@@ -175,41 +156,20 @@ class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
           ),
         );
       } on UsernameTakenException catch (e) {
-        showToastNotification(context,
-            title: trans("Oops!"),
-            description: trans(e.message),
-            style: ToastNotificationStyleType.DANGER);
+        showToastNotification(context, title: trans("Oops!"), description: trans(e.message), style: ToastNotificationStyleType.DANGER);
       } on InvalidNonceException catch (_) {
         showToastNotification(context,
-            title: trans("Invalid details"),
-            description:
-                trans("Something went wrong, please contact our store"),
-            style: ToastNotificationStyleType.DANGER);
+            title: trans("Invalid details"), description: trans("Something went wrong, please contact our store"), style: ToastNotificationStyleType.DANGER);
       } on ExistingUserLoginException catch (_) {
-        showToastNotification(context,
-            title: trans("Oops!"),
-            description: trans("A user already exists"),
-            style: ToastNotificationStyleType.DANGER);
+        showToastNotification(context, title: trans("Oops!"), description: trans("A user already exists"), style: ToastNotificationStyleType.DANGER);
       } on ExistingUserEmailException catch (_) {
-        showToastNotification(context,
-            title: trans("Oops!"),
-            description: trans("That email is taken, try another"),
-            style: ToastNotificationStyleType.DANGER);
+        showToastNotification(context, title: trans("Oops!"), description: trans("That email is taken, try another"), style: ToastNotificationStyleType.DANGER);
       } on UserAlreadyExistException catch (_) {
-        showToastNotification(context,
-            title: trans("Oops!"),
-            description: trans("A user already exists"),
-            style: ToastNotificationStyleType.DANGER);
+        showToastNotification(context, title: trans("Oops!"), description: trans("A user already exists"), style: ToastNotificationStyleType.DANGER);
       } on EmptyUsernameException catch (e) {
-        showToastNotification(context,
-            title: trans("Oops!"),
-            description: trans(e.message),
-            style: ToastNotificationStyleType.DANGER);
+        showToastNotification(context, title: trans("Oops!"), description: trans(e.message), style: ToastNotificationStyleType.DANGER);
       } on Exception catch (_) {
-        showToastNotification(context,
-            title: trans("Oops!"),
-            description: trans("Something went wrong"),
-            style: ToastNotificationStyleType.DANGER);
+        showToastNotification(context, title: trans("Oops!"), description: trans("Something went wrong"), style: ToastNotificationStyleType.DANGER);
       }
 
       if (wpUserRegisterResponse == null) {
@@ -227,8 +187,7 @@ class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
           description: trans("you're now logged in"),
           style: ToastNotificationStyleType.SUCCESS,
           icon: Icons.account_circle);
-      navigatorPush(context,
-          routeName: UserAuth.instance.redirect, forgetLast: 2);
+      navigatorPush(context, routeName: UserAuth.instance.redirect, forgetLast: 2);
     });
   }
 

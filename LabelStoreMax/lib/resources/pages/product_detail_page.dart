@@ -246,14 +246,17 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
                         ),
                       ),
                       // </Product body>
-                      ProductDetailFooterActionsWidget(
-                        onAddToCart: _addItemToCart,
-                        onViewExternalProduct: widget.controller.viewExternalProduct,
-                        onAddQuantity: () => widget.controller.addQuantityTapped(),
-                        onRemoveQuantity: () => widget.controller.removeQuantityTapped(),
-                        product: _product,
-                        quantity: widget.controller.quantity,
-                      )
+                      _selectedProductVariation != null
+                          ? ProductDetailFooterActionsWidget(
+                              disabled: _selectedProductVariation == null,
+                              onAddToCart: _addItemToCart,
+                              onViewExternalProduct: widget.controller.viewExternalProduct,
+                              onAddQuantity: () => widget.controller.addQuantityTapped(),
+                              onRemoveQuantity: () => widget.controller.removeQuantityTapped(),
+                              product: _product,
+                              quantity: widget.controller.quantity,
+                            )
+                          : SizedBox.shrink(),
                     ],
                   ))),
     );

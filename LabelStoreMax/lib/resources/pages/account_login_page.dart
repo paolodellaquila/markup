@@ -40,6 +40,16 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: widget.showBackButton
+          ? AppBar(
+              leading: IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+              title: Text(trans("Login")),
+              centerTitle: true,
+            )
+          : null,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
@@ -52,27 +62,11 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   StoreLogo(height: 100),
-                  Flexible(
-                    child: Container(
-                      height: 70,
-                      padding: EdgeInsets.only(bottom: 20),
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      alignment: Alignment.bottomLeft,
-                      child: Text(
-                        trans("Login"),
-                        textAlign: TextAlign.left,
-                        style: Theme.of(context).textTheme.headlineMedium!.copyWith(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w700,
-                            ),
-                      ),
-                    ),
-                  ),
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: (Theme.of(context).brightness == Brightness.light) ? wsBoxShadow() : null,
-                      color: Colors.black38,
+                      color: Colors.black12,
                     ),
                     padding: EdgeInsets.symmetric(vertical: 18, horizontal: 8),
                     margin: EdgeInsets.symmetric(horizontal: 16),
@@ -81,8 +75,10 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         TextEditingRow(heading: trans("Email"), controller: _tfEmailController, keyboardType: TextInputType.emailAddress),
+                        const SizedBox(height: 16),
                         TextEditingRow(
                             heading: trans("Password"), controller: _tfPasswordController, keyboardType: TextInputType.visiblePassword, obscureText: true),
+                        const SizedBox(height: 24),
                         PrimaryButton(
                           title: trans("Login"),
                           isLoading: isLocked('login_button'),
@@ -124,19 +120,9 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
                     NyLogger.info("No URL found for \"forgot password\".\nAdd your forgot password URL here https://woosignal.com/dashboard/apps");
                   }
                 }),
-            widget.showBackButton
-                ? Column(
-                    children: [
-                      Divider(),
-                      LinkButton(
-                        title: trans("Back"),
-                        action: () => Navigator.pop(context),
-                      ),
-                    ],
-                  )
-                : Padding(
-                    padding: EdgeInsets.only(bottom: 20),
-                  )
+            Padding(
+              padding: EdgeInsets.only(bottom: 20),
+            ),
           ],
         ),
       ),

@@ -8,10 +8,11 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-import '/bootstrap/helpers.dart';
 import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/response/product_variation.dart';
 import 'package:woosignal/models/response/product.dart' as ws_product;
+import 'package:woosignal/models/response/product_variation.dart';
+
+import '/bootstrap/helpers.dart';
 
 class CartLineItem {
   String? name;
@@ -33,6 +34,7 @@ class CartLineItem {
   String? salePrice;
   String? regularPrice;
   String? stockStatus;
+  String? permalink;
   List<Map<String?, dynamic>> metaData = [];
   List<Map<String?, dynamic>> appMetaData = [];
 
@@ -56,7 +58,12 @@ class CartLineItem {
       this.salePrice,
       this.regularPrice,
       this.total,
+      this.permalink,
       this.metaData = const []});
+
+  List<String> getVariantOptions() {
+    return variationOptions.toString().split("; ");
+  }
 
   String getCartTotal() {
     return (quantity * parseWcPrice(subtotal)).toStringAsFixed(2);
@@ -64,14 +71,12 @@ class CartLineItem {
 
   String getPrice({bool formatToCurrency = false}) {
     if (formatToCurrency) {
-      return formatStringCurrency(
-          total: (parseWcPrice(subtotal)).toStringAsFixed(2));
+      return formatStringCurrency(total: (parseWcPrice(subtotal)).toStringAsFixed(2));
     }
     return (parseWcPrice(subtotal)).toStringAsFixed(2);
   }
 
-  CartLineItem.fromProduct(
-      {int? quantityAmount, required ws_product.Product product}) {
+  CartLineItem.fromProduct({int? quantityAmount, required ws_product.Product product}) {
     name = product.name;
     productId = product.id;
     quantity = quantityAmount ?? 1;
@@ -86,21 +91,16 @@ class CartLineItem {
     onSale = product.onSale;
     regularPrice = product.regularPrice;
     shippingIsTaxable = product.shippingTaxable;
-    List<Map<String?, String?>> data =
-        product.metaData.map((e) => {e.key: e.value}).toList();
+    List<Map<String?, String?>> data = product.metaData.map((e) => {e.key: e.value}).toList();
     metaData.addAll(data);
-    imageSrc = product.images.isEmpty
-        ? getEnv("PRODUCT_PLACEHOLDER_IMAGE")
-        : product.images.first.src;
+    imageSrc = product.images.isEmpty ? getEnv("PRODUCT_PLACEHOLDER_IMAGE") : product.images.first.src;
     total = product.price;
     appMetaData = product.metaData.map((e) => {e.key: e.value}).toList();
+    permalink = product.permalink;
   }
 
   CartLineItem.fromProductVariation(
-      {int? quantityAmount,
-      required List<String> options,
-      required ws_product.Product product,
-      required ProductVariation productVariation}) {
+      {int? quantityAmount, required List<String> options, required ws_product.Product product, required ProductVariation productVariation}) {
     String? imageSrc = getEnv("PRODUCT_PLACEHOLDER_IMAGE");
     if (product.images.isNotEmpty) {
       imageSrc = product.images.first.src;
@@ -122,15 +122,14 @@ class CartLineItem {
     onSale = productVariation.onSale;
     this.imageSrc = imageSrc;
     salePrice = productVariation.salePrice;
-    List<Map<String?, String?>> data =
-        product.metaData.map((e) => {e.key: e.value}).toList();
+    List<Map<String?, String?>> data = product.metaData.map((e) => {e.key: e.value}).toList();
     metaData.addAll(data);
     regularPrice = productVariation.regularPrice;
     shippingIsTaxable = product.shippingTaxable;
     variationOptions = options.join("; ");
     total = productVariation.price;
-    appMetaData =
-        product.metaData.map((e) => {"key": e.key, "value": e.value}).toList();
+    appMetaData = product.metaData.map((e) => {"key": e.key, "value": e.value}).toList();
+    permalink = product.permalink;
   }
 
   CartLineItem.fromJson(Map<String, dynamic> json) {
@@ -141,10 +140,7 @@ class CartLineItem {
     shippingClassId = json['shipping_class_id'].toString();
     taxStatus = json['tax_status'];
     stockQuantity = json['stock_quantity'];
-    isManagedStock =
-        (json['is_managed_stock'] != null && json['is_managed_stock'] is bool)
-            ? json['is_managed_stock']
-            : false;
+    isManagedStock = (json['is_managed_stock'] != null && json['is_managed_stock'] is bool) ? json['is_managed_stock'] : false;
     shippingIsTaxable = json['shipping_is_taxable'];
     subtotal = json['subtotal'];
     total = json['total'];
@@ -153,11 +149,7 @@ class CartLineItem {
     imageSrc = json['image_src'];
     salePrice = json['sale_price'];
     regularPrice = json['regular_price'];
-    categories = json['categories'] == null
-        ? null
-        : List.of(json['categories'] as List)
-            .map((e) => ws_product.Category.fromJson(e))
-            .toList();
+    categories = json['categories'] == null ? null : List.of(json['categories'] as List).map((e) => ws_product.Category.fromJson(e)).toList();
     onSale = json['on_sale'];
     variationOptions = json['variation_options'];
     metaData = [];
@@ -166,9 +158,9 @@ class CartLineItem {
     }
     appMetaData = [];
     if (json['app_meta_data'] != null) {
-      appMetaData =
-          List.from(json['app_meta_data']).cast<Map<String, dynamic>>();
+      appMetaData = List.from(json['app_meta_data']).cast<Map<String, dynamic>>();
     }
+    permalink = json['permalink'];
   }
 
   Map<String, dynamic> toJson() => {
@@ -184,14 +176,13 @@ class CartLineItem {
         'stock_quantity': stockQuantity,
         'shipping_is_taxable': shippingIsTaxable,
         'image_src': imageSrc,
-        'categories': categories != null
-            ? categories!.map((e) => e.toJson()).toList()
-            : [],
+        'categories': categories != null ? categories!.map((e) => e.toJson()).toList() : [],
         'variation_options': variationOptions,
         'subtotal': subtotal,
         'on_sale': onSale,
         'total': total,
         'meta_data': metaData,
         'app_meta_data': appMetaData,
+        'permalink': permalink,
       };
 }

@@ -22,13 +22,16 @@ class ProductDetailFooterActionsWidget extends StatelessWidget {
       required this.onAddToCart,
       required this.onViewExternalProduct,
       required this.onAddQuantity,
-      required this.onRemoveQuantity});
+      required this.onRemoveQuantity,
+      this.disabled = false});
+
   final Product? product;
   final Function onViewExternalProduct;
   final Function onAddToCart;
   final Function onAddQuantity;
   final Function onRemoveQuantity;
   final int quantity;
+  final bool disabled;
 
   @override
   Widget build(BuildContext context) {
@@ -102,16 +105,16 @@ class ProductDetailFooterActionsWidget extends StatelessWidget {
                           title: trans("Buy Product"),
                           action: onViewExternalProduct,
                           textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                          bgColor: Colors.black,
+                          bgColor: disabled ? Colors.grey : Colors.black,
                         ),
                       )
                     : Flexible(
                         child: WooSignalButton(
                           key: key,
                           title: trans("Add to cart"),
-                          action: onAddToCart,
+                          action: disabled ? null : onAddToCart,
                           textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                          bgColor: Colors.black,
+                          bgColor: disabled ? Colors.grey : Colors.black,
                         ),
                       )
               ],
