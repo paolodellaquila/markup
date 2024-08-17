@@ -11,6 +11,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app/bootstrap/helpers.dart';
 import 'package:flutter_app/utils/colors_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -91,6 +92,7 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                               padding: EdgeInsets.only(right: 8, top: 8),
                               child: GestureDetector(
                                 onTap: () {
+                                  HapticFeedback.mediumImpact();
                                   setState(() {
                                     selectedColor = color.name;
                                     checkSizeColorSelected();
@@ -164,6 +166,7 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                         padding: EdgeInsets.only(right: 8, top: 8),
                         child: GestureDetector(
                           onTap: () {
+                            HapticFeedback.mediumImpact();
                             setState(() {
                               selectedSize = taglia;
                               checkSizeColorSelected();

@@ -57,9 +57,9 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
 
   @override
   boot() async {
-    await _loadHome();
     // Start listening for shake events
     ShakeService().startListening(context);
+    await _loadHome();
   }
 
   @override
