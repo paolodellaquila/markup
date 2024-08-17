@@ -9,11 +9,12 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import '/resources/pages/checkout_confirmation_page.dart';
-import 'package:woosignal/models/response/coupon.dart';
-import '/resources/pages/coupon_page.dart';
-import '/app/models/checkout_session.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/response/coupon.dart';
+
+import '/app/models/checkout_session.dart';
+import '/resources/pages/checkout_confirmation_page.dart';
+import '/resources/pages/coupon_page.dart';
 
 class CheckoutSelectCouponWidget extends StatefulWidget {
   const CheckoutSelectCouponWidget({
@@ -28,12 +29,10 @@ class CheckoutSelectCouponWidget extends StatefulWidget {
   static String state = "checkout_select_coupon_widget";
 
   @override
-  State<CheckoutSelectCouponWidget> createState() =>
-      _CheckoutSelectCouponWidgetState();
+  State<CheckoutSelectCouponWidget> createState() => _CheckoutSelectCouponWidgetState();
 }
 
-class _CheckoutSelectCouponWidgetState
-    extends NyState<CheckoutSelectCouponWidget> {
+class _CheckoutSelectCouponWidgetState extends NyState<CheckoutSelectCouponWidget> {
   _CheckoutSelectCouponWidgetState() {
     stateName = CheckoutSelectCouponWidget.state;
   }
@@ -42,7 +41,7 @@ class _CheckoutSelectCouponWidgetState
   Widget build(BuildContext context) {
     bool hasCoupon = widget.checkoutSession.coupon != null;
     return Container(
-      height: 50,
+      height: 70,
       padding: EdgeInsets.symmetric(vertical: 5),
       child: InkWell(
         onTap: _actionCoupon,
@@ -51,9 +50,7 @@ class _CheckoutSelectCouponWidgetState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              hasCoupon
-                  ? "Coupon Applied: ${widget.checkoutSession.coupon!.code!}"
-                  : trans('Apply Coupon'),
+              hasCoupon ? "Coupon Applied: ${widget.checkoutSession.coupon!.code!}" : trans('Apply Coupon'),
               style: Theme.of(context).textTheme.titleSmall,
             ),
             if (hasCoupon == true)
@@ -64,9 +61,7 @@ class _CheckoutSelectCouponWidgetState
                     Icons.close,
                     size: 19,
                   )),
-            if (hasCoupon == false)
-              Icon(Icons.arrow_forward_ios,
-                  size: 16, color: Colors.grey.shade600),
+            if (hasCoupon == false) Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade600),
           ],
         ).paddingSymmetric(horizontal: 16),
       ),
@@ -83,17 +78,14 @@ class _CheckoutSelectCouponWidgetState
       showToastNotification(
         widget.context,
         title: trans("Oops"),
-        description:
-            trans("Please select add your billing/shipping address to proceed"),
+        description: trans("Please select add your billing/shipping address to proceed"),
         style: ToastNotificationStyleType.WARNING,
         icon: Icons.local_shipping,
       );
 
       return;
     }
-    if (widget.checkoutSession.billingDetails?.billingAddress
-            ?.hasMissingFields() ??
-        true) {
+    if (widget.checkoutSession.billingDetails?.billingAddress?.hasMissingFields() ?? true) {
       showToastNotification(
         widget.context,
         title: trans("Oops"),

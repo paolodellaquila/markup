@@ -16,7 +16,7 @@ class CheckoutCustomerNote extends StatelessWidget {
   Widget build(BuildContext context) {
     bool hasCustomerNote = checkoutSession.customerNote != null;
     return Container(
-      height: 50,
+      height: 70,
       width: double.infinity,
       padding: EdgeInsets.symmetric(vertical: 5),
       child: InkWell(
@@ -27,9 +27,7 @@ class CheckoutCustomerNote extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                hasCustomerNote
-                    ? "${'Order Note'.tr()}: ${checkoutSession.customerNote ?? ""}"
-                    : 'Order Note'.tr(),
+                hasCustomerNote ? "${'Order Note'.tr()}: ${checkoutSession.customerNote ?? ""}" : 'Order Note'.tr(),
                 style: Theme.of(context).textTheme.titleSmall,
                 overflow: TextOverflow.ellipsis,
                 maxLines: 2,
@@ -56,48 +54,59 @@ class CheckoutCustomerNote extends StatelessWidget {
       context: context,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
+          topLeft: Radius.circular(30.0),
+          topRight: Radius.circular(30.0),
         ),
       ),
       builder: (BuildContext context) {
         return SafeArea(
           minimum: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Padding(
-              padding: MediaQuery.of(context).viewInsets,
+            padding: MediaQuery.of(context).viewInsets,
+            child: FractionallySizedBox(
+              heightFactor: 0.6,
               child: Container(
-                  child: Wrap(
-                    spacing: 20,
-                    children: <Widget>[
-                      TextFormField(
-                        autofocus: true,
-                        maxLines: 3,
-                        controller: textEditingController,
-                        decoration: InputDecoration(
-                          labelText: "Order Note".tr(),
-                          hintText: "Enter order note".tr(),
-                        ),
-                        onChanged: (value) {
-                          CheckoutSession.getInstance.customerNote = value;
-                        },
+                child: Wrap(
+                  spacing: 20,
+                  children: <Widget>[
+                    TextFormField(
+                      autofocus: true,
+                      maxLines: 3,
+                      controller: textEditingController,
+                      decoration: InputDecoration(
+                        labelText: "Order Note".tr(),
+                        hintText: "Enter order note".tr(),
                       ),
-                      Padding(padding: EdgeInsets.only(top: 16)),
-                      PrimaryButton(title: "Save Note".tr(), action: () {
-                        if (CheckoutSession.getInstance.customerNote == "") {
-                          CheckoutSession.getInstance.customerNote = null;
-                        }
-                        bool isSuccessful = NyValidator.isSuccessful(rules: {
-                          "Order Note".tr(): [CheckoutSession.getInstance.customerNote ?? "", "max:100"]
-                        });
-                        if (isSuccessful == false) {
-                          showToastNotification(context, title: "Error".tr(), description: "Order note must be less than 100 characters".tr(), style: ToastNotificationStyleType.DANGER, icon: Icons.error);
-                          return;
-                        }
-                        StateAction.refreshPage(CheckoutConfirmationPage.path, setState: () {});
-                        Navigator.pop(context);
-                      }),
-                    ],
-                  ),),),
+                      onChanged: (value) {
+                        CheckoutSession.getInstance.customerNote = value;
+                      },
+                    ),
+                    Padding(padding: EdgeInsets.only(top: 16)),
+                    PrimaryButton(
+                        title: "Save Note".tr(),
+                        action: () {
+                          if (CheckoutSession.getInstance.customerNote == "") {
+                            CheckoutSession.getInstance.customerNote = null;
+                          }
+                          bool isSuccessful = NyValidator.isSuccessful(rules: {
+                            "Order Note".tr(): [CheckoutSession.getInstance.customerNote ?? "", "max:100"]
+                          });
+                          if (isSuccessful == false) {
+                            showToastNotification(context,
+                                title: "Error".tr(),
+                                description: "Order note must be less than 100 characters".tr(),
+                                style: ToastNotificationStyleType.DANGER,
+                                icon: Icons.error);
+                            return;
+                          }
+                          StateAction.refreshPage(CheckoutConfirmationPage.path, setState: () {});
+                          Navigator.pop(context);
+                        }),
+                  ],
+                ),
+              ),
+            ),
+          ),
         );
       },
     );

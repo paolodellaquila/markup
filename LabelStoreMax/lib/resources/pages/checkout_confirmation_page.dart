@@ -28,7 +28,6 @@ import '/resources/widgets/checkout_customer_note_widget.dart';
 import '/resources/widgets/checkout_payment_type_widget.dart';
 import '/resources/widgets/checkout_select_coupon_widget.dart';
 import '/resources/widgets/checkout_shipping_type_widget.dart';
-import '/resources/widgets/checkout_store_heading_widget.dart';
 import '/resources/widgets/checkout_user_details_widget.dart';
 import '/resources/widgets/safearea_widget.dart';
 import '/resources/widgets/woosignal_ui.dart';
@@ -202,7 +201,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 children: [
-                  CheckoutStoreHeadingWidget(),
+                  //CheckoutStoreHeadingWidget(),
                   CheckoutUserDetailsWidget(
                     context: context,
                     checkoutSession: checkoutSession,
