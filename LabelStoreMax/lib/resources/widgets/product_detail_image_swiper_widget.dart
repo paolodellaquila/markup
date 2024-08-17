@@ -44,8 +44,8 @@ class ProductDetailImageSwiperWidget extends StatelessWidget {
           errorWidget: (context, url, error) => Icon(Icons.error),
         ),
         itemCount: images.isEmpty ? 1 : images.length,
-        viewportFraction: 0.6,
-        scale: 0.9,
+        viewportFraction: 0.7,
+        scale: 0.8,
         onTap: onTapImage,
       ),
     );

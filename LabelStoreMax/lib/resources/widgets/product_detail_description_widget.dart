@@ -56,10 +56,6 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
 
   @override
   Widget build(BuildContext context) {
-    if (widget.product!.shortDescription!.isEmpty && widget.product!.description!.isEmpty) {
-      return SizedBox.shrink();
-    }
-
     return ListView(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
