@@ -252,6 +252,8 @@
   "Delete my account": "删除我的账户",
   "View Order": "查看订单",
   "Read": "读",
+  "You need help?": "你需要帮助吗？",
+  "Contact our support team": "联系我们的支持团队",
   "({{itemCount}}) items from {{appName}}": "({{itemCount}}) 物品来自 {{appName}}",
   "Invalid email address": "无效的邮件地址",
   "By completing this order, I agree to all": "通过完成此订单，我同意所有",

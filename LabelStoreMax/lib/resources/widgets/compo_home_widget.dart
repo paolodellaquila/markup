@@ -18,6 +18,7 @@ import 'package:flutter_app/resources/widgets/home_data/home_influencer.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_new_in_donna.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_new_in_uomo.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
+import 'package:flutter_app/utils/shake_service.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:marquee/marquee.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -57,6 +58,15 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
   @override
   boot() async {
     await _loadHome();
+    // Start listening for shake events
+    ShakeService().startListening(context);
+  }
+
+  @override
+  void dispose() {
+    // Stop listening for shake events
+    ShakeService().dispose();
+    super.dispose();
   }
 
   _loadFirebaseData() async {
