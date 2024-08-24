@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/bootstrap/helpers.dart';
 import 'package:flutter_app/resources/pages/home_page.dart';
-import 'package:flutter_app/resources/widgets/shared/bottomsheet/rounded_bottomsheet.dart';
+import 'package:flutter_app/resources/widgets/buttons.dart';
+import 'package:flutter_app/resources/widgets/woosignal_ui.dart';
 import 'package:flutter_app/utils/video_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -83,17 +84,24 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (isAppLocked) {
       _checkIsAppLocked = true;
-      return showRoundedBottomSheet(
-        context: context,
-        primaryButtonText: "Update".tr(),
-        isDismissible: false,
-        onTapPrimaryButton: () => Platform.isIOS
-            ? openBrowserTab(url: "https://apps.apple.com/app/markup-italia/id6538726254")
-            : openBrowserTab(url: 'https://play.google.com/store/search?q=Markup%20Italia&c=apps&hl=it'),
-        title: "App Blocked".tr(),
-        message: "App Blocked Desc".tr(),
-        icon: const Icon(Icons.report_outlined, size: 48),
-      );
+      wsModalBottom(context,
+          title: "App Blocked".tr(),
+          bodyWidget: Column(
+            children: [
+              Icon(Icons.report_outlined, size: 48),
+              SizedBox(height: 16),
+              Text("App Blocked Desc".tr()),
+              SizedBox(height: 16),
+              LinkButton(
+                title: "Update".tr(),
+                action: () => Platform.isIOS
+                    ? openBrowserTab(url: "https://apps.apple.com/app/markup-italia/id6538726254")
+                    : openBrowserTab(url: 'https://play.google.com/store/search?q=Markup%20Italia&c=apps&hl=it'),
+              ),
+            ],
+          ));
+
+      return;
     }
   }
 
