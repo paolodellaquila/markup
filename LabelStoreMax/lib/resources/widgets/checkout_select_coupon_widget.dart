@@ -43,6 +43,11 @@ class _CheckoutSelectCouponWidgetState extends NyState<CheckoutSelectCouponWidge
     return Container(
       height: 70,
       padding: EdgeInsets.symmetric(vertical: 5),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.black12, width: 1),
+        ),
+      ),
       child: InkWell(
         onTap: _actionCoupon,
         child: Row(
@@ -50,7 +55,7 @@ class _CheckoutSelectCouponWidgetState extends NyState<CheckoutSelectCouponWidge
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              hasCoupon ? "Coupon Applied: ${widget.checkoutSession.coupon!.code!}" : trans('Apply Coupon'),
+              hasCoupon ? "${"Coupon Applied".tr()}: ${widget.checkoutSession.coupon!.code!}" : trans('Apply Coupon'),
               style: Theme.of(context).textTheme.titleSmall,
             ),
             if (hasCoupon == true)

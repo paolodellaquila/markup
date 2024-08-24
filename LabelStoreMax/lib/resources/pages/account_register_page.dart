@@ -58,7 +58,7 @@ class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
       ),
       resizeToAvoidBottomInset: false,
       body: SafeAreaWidget(
-        child: Column(
+        child: ListView(
           children: <Widget>[
             Container(
                 margin: EdgeInsets.only(top: 10),
@@ -90,6 +90,39 @@ class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
               shouldAutoFocus: true,
               obscureText: true,
             ),
+            const SizedBox(height: 16),
+            Container(
+              padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 6.0,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Password Rules:'.tr(),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  Text('- 10 characters minimum length'.tr()),
+                  Text('- 1 uppercase letter minimum'.tr()),
+                  Text('- 1 number minimum'.tr()),
+                  Text('- 1 special character minimum'.tr()),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
             Padding(
               child: PrimaryButton(
                 title: trans("Sign up"),

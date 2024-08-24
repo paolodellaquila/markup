@@ -14,7 +14,6 @@ import 'package:validated/validated.dart' as validate;
 import 'package:wp_json_api/models/responses/wp_user_info_response.dart';
 import 'package:wp_json_api/wp_json_api.dart';
 
-import '../../app/models/default_shipping.dart';
 import '/app/models/billing_details.dart';
 import '/app/models/checkout_session.dart';
 import '/app/models/customer_address.dart';
@@ -27,7 +26,7 @@ import '/resources/widgets/buttons.dart';
 import '/resources/widgets/customer_address_input.dart';
 import '/resources/widgets/safearea_widget.dart';
 import '/resources/widgets/switch_address_tab.dart';
-import '/resources/widgets/woosignal_ui.dart';
+import '../../app/models/default_shipping.dart';
 
 class CheckoutDetailsPage extends StatefulWidget {
   static String path = "/checkout-details";
@@ -237,15 +236,11 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
                               height: 60,
                             ),
                           Expanded(
-                            child: Container(
-                                decoration: BoxDecoration(
-                                  color: ThemeColor.get(context).backgroundContainer,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: (Theme.of(context).brightness == Brightness.light) ? wsBoxShadow() : null,
-                                ),
-                                padding: EdgeInsets.only(left: 8, right: 8, top: 8),
-                                margin: EdgeInsets.only(top: 8),
-                                child: (activeTab ?? tabBillingDetails())),
+                            child: Card(
+                              elevation: 8,
+                              child: Container(
+                                  padding: EdgeInsets.only(left: 8, right: 8, top: 8), margin: EdgeInsets.all(8), child: (activeTab ?? tabBillingDetails())),
+                            ),
                           ),
                         ],
                       ),

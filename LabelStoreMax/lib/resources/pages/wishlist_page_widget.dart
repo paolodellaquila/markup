@@ -193,7 +193,7 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> with Automati
                                     children: [
                                       Text(
                                         product.name!,
-                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),

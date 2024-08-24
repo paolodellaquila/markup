@@ -9,11 +9,12 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+
 import '/app/models/default_shipping.dart';
 import '/bootstrap/helpers.dart';
 import '/resources/widgets/safearea_widget.dart';
 import '/resources/widgets/woosignal_ui.dart';
-import 'package:nylo_framework/nylo_framework.dart';
 
 class CustomerCountriesPage extends StatefulWidget {
   static String path = "/customer-countries";
@@ -57,6 +58,7 @@ class _CustomerCountriesPageState extends State<CustomerCountriesPage> {
               margin: EdgeInsets.only(bottom: 10, top: 10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.grey.withOpacity(0.4)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.1),
@@ -65,7 +67,7 @@ class _CustomerCountriesPageState extends State<CustomerCountriesPage> {
                       offset: Offset(0, 2),
                     ),
                   ],
-                  color: ThemeColor.get(context).background),
+                  color: Colors.white),
               height: 60,
               child: Row(
                 children: [
@@ -109,8 +111,7 @@ class _CustomerCountriesPageState extends State<CustomerCountriesPage> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.grey[200]!)),
                         margin: EdgeInsets.symmetric(vertical: 4),
-                        padding:
-                            EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                         child: Text(defaultShipping.country!),
                       ),
                     );
@@ -124,10 +125,7 @@ class _CustomerCountriesPageState extends State<CustomerCountriesPage> {
   }
 
   _handleOnChanged(String value) {
-    _activeShippingResults = _defaultShipping
-        .where((element) =>
-            element.country!.toLowerCase().contains(value.toLowerCase()))
-        .toList();
+    _activeShippingResults = _defaultShipping.where((element) => element.country!.toLowerCase().contains(value.toLowerCase())).toList();
     setState(() {});
   }
 
@@ -167,14 +165,13 @@ class _CustomerCountriesPageState extends State<CustomerCountriesPage> {
         },
         separatorBuilder: (cxt, i) => Divider(
           height: 0,
-          color: Colors.black12,
+          color: Colors.white,
         ),
       ),
     );
   }
 
-  _popWithShippingResult(DefaultShipping defaultShipping,
-      {DefaultShippingState? state}) {
+  _popWithShippingResult(DefaultShipping defaultShipping, {DefaultShippingState? state}) {
     if (state != null) {
       defaultShipping.states = [];
       defaultShipping.states.add(state);

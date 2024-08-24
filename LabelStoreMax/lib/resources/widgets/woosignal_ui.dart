@@ -116,7 +116,7 @@ class TextEditingRow extends StatelessWidget {
                 child: Padding(
                   child: AutoSizeText(
                     heading!,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: ThemeColor.get(context).primaryContent),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.black),
                   ),
                   padding: EdgeInsets.only(bottom: 2),
                 ),
@@ -193,7 +193,7 @@ wsModalBottom(BuildContext context, {String? title, Widget? bodyWidget, Widget? 
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: ThemeColor.get(context).background,
+              color: Colors.white,
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(10.0),
                 topRight: const Radius.circular(10.0),
@@ -210,15 +210,18 @@ wsModalBottom(BuildContext context, {String? title, Widget? bodyWidget, Widget? 
                   ),
                 ),
                 Expanded(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      boxShadow: (Theme.of(context).brightness == Brightness.light) ? wsBoxShadow() : null,
-                      color: ThemeColor.get(context).background,
-                      borderRadius: BorderRadius.circular(8),
+                  child: Card(
+                    elevation: 8,
+                    color: Colors.white,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: bodyWidget,
                     ),
-                    child: bodyWidget,
                   ),
                 ),
                 if (extraWidget != null) extraWidget

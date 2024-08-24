@@ -10,22 +10,22 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '/resources/widgets/product_item_container_widget.dart';
-import '/resources/pages/product_detail_page.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/response/product.dart' as ws_product;
+import 'package:woosignal/models/response/product_category.dart';
+
 import '/bootstrap/enums/sort_enums.dart';
 import '/bootstrap/helpers.dart';
+import '/resources/pages/product_detail_page.dart';
 import '/resources/widgets/buttons.dart';
+import '/resources/widgets/product_item_container_widget.dart';
 import '/resources/widgets/safearea_widget.dart';
 import '/resources/widgets/woosignal_ui.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/response/product_category.dart';
-import 'package:woosignal/models/response/product.dart' as ws_product;
 
 class BrowseCategoryPage extends NyStatefulWidget {
   static String path = "/browse-category";
 
-  BrowseCategoryPage({Key? key})
-      : super(path, key: key, child: _BrowseCategoryPageState());
+  BrowseCategoryPage({Key? key}) : super(path, key: key, child: _BrowseCategoryPageState());
 }
 
 class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
@@ -47,11 +47,8 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(trans("Browse"),
-                style: Theme.of(context).textTheme.titleMedium),
-            afterNotNull(productCategory,
-                child: () => Text(parseHtmlString(productCategory!.name)),
-                loading: CupertinoActivityIndicator())
+            Text(trans("Browse"), style: Theme.of(context).textTheme.titleMedium),
+            afterNotNull(productCategory, child: () => Text(parseHtmlString(productCategory!.name)), loading: CupertinoActivityIndicator())
           ],
         ),
         centerTitle: true,
@@ -65,14 +62,13 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
       body: SafeAreaWidget(
           child: NyPullToRefresh.grid(
         data: (page) async {
-          List<ws_product.Product> products =
-              await appWooSignal((api) => api.getProducts(
-                    perPage: 25,
-                    category: productCategory?.id.toString(),
-                    page: page,
-                    status: "publish",
-                    stockStatus: "instock",
-                  ));
+          List<ws_product.Product> products = await appWooSignal((api) => api.getProducts(
+                perPage: 25,
+                category: productCategory?.id.toString(),
+                page: page,
+                status: "publish",
+                stockStatus: "instock",
+              ));
           return products;
         },
         child: (context, product) {
@@ -86,8 +82,7 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
         },
         stateName: 'browse_category_pull_to_refresh',
         sort: (products) {
-          return _sortProducts(products,
-              by: _sortByType ?? SortByType.dateDesc);
+          return _sortProducts(products, by: _sortByType ?? SortByType.dateDesc);
         },
       )),
     );
@@ -97,14 +92,12 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
     switch (by) {
       case SortByType.lowToHigh:
         products.sort(
-          (product1, product2) => (parseWcPrice(product1.price))
-              .compareTo((parseWcPrice(product2.price))),
+          (product1, product2) => (parseWcPrice(product1.price)).compareTo((parseWcPrice(product2.price))),
         );
         break;
       case SortByType.highToLow:
         products.sort(
-          (product1, product2) => (parseWcPrice(product2.price))
-              .compareTo((parseWcPrice(product1.price))),
+          (product1, product2) => (parseWcPrice(product2.price)).compareTo((parseWcPrice(product1.price))),
         );
         break;
       case SortByType.nameAZ:
@@ -145,8 +138,7 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
             selected: _sortByType == SortByType.lowToHigh,
             action: () {
               _sortByType = SortByType.lowToHigh;
-              StateAction.refreshPage('browse_category_pull_to_refresh',
-                  setState: () {});
+              StateAction.refreshPage('browse_category_pull_to_refresh', setState: () {});
               pop();
             },
           ),
@@ -158,8 +150,7 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
             selected: _sortByType == SortByType.highToLow,
             action: () {
               _sortByType = SortByType.highToLow;
-              StateAction.refreshPage('browse_category_pull_to_refresh',
-                  setState: () {});
+              StateAction.refreshPage('browse_category_pull_to_refresh', setState: () {});
               pop();
             },
           ),
@@ -171,8 +162,7 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
             selected: _sortByType == SortByType.nameAZ,
             action: () {
               _sortByType = SortByType.nameAZ;
-              StateAction.refreshPage('browse_category_pull_to_refresh',
-                  setState: () {});
+              StateAction.refreshPage('browse_category_pull_to_refresh', setState: () {});
               pop();
             },
           ),
@@ -184,8 +174,7 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
             selected: _sortByType == SortByType.nameZA,
             action: () {
               _sortByType = SortByType.nameZA;
-              StateAction.refreshPage('browse_category_pull_to_refresh',
-                  setState: () {});
+              StateAction.refreshPage('browse_category_pull_to_refresh', setState: () {});
               pop();
             },
           ),
@@ -197,8 +186,7 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
             selected: _sortByType == SortByType.dateDesc,
             action: () {
               _sortByType = SortByType.dateDesc;
-              StateAction.refreshPage('browse_category_pull_to_refresh',
-                  setState: () {});
+              StateAction.refreshPage('browse_category_pull_to_refresh', setState: () {});
               pop();
             },
           ),
@@ -210,8 +198,7 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
             selected: _sortByType == SortByType.dateAsc,
             action: () {
               _sortByType = SortByType.dateAsc;
-              StateAction.refreshPage('browse_category_pull_to_refresh',
-                  setState: () {});
+              StateAction.refreshPage('browse_category_pull_to_refresh', setState: () {});
               pop();
             },
           ),

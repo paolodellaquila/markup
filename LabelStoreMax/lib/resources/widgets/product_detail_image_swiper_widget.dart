@@ -28,8 +28,8 @@ class ProductDetailImageSwiperWidget extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) => CachedNetworkImage(
           imageUrl: images.isNotEmpty ? images[index].src : getEnv("PRODUCT_PLACEHOLDER_IMAGE"),
           imageBuilder: (context, imageProvider) => Container(
-            width: 70.0,
-            height: 70.0,
+            width: 80.0,
+            height: 80.0,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(16)),
               image: DecorationImage(
@@ -44,7 +44,7 @@ class ProductDetailImageSwiperWidget extends StatelessWidget {
           errorWidget: (context, url, error) => Icon(Icons.error),
         ),
         itemCount: images.isEmpty ? 1 : images.length,
-        viewportFraction: 0.7,
+        viewportFraction: 0.6,
         scale: 0.8,
         onTap: onTapImage,
       ),

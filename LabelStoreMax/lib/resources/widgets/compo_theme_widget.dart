@@ -109,7 +109,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
       floatingActionButton: FloatingActionButton.small(
         shape: CircleBorder(),
         backgroundColor: Colors.white,
-        child: Icon(Icons.menu, color: Colors.blue),
+        child: Icon(Icons.menu, color: Colors.black),
         onPressed: () {
           HapticFeedback.mediumImpact();
           _hideBottomBarAnimationController.reset();
@@ -128,7 +128,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
                 return Icon(
                   iconList[index],
                   size: 24,
-                  color: isActive && !isMainMenuSelected ? Colors.blue : Colors.black38,
+                  color: isActive && !isMainMenuSelected ? Colors.black : Colors.black26,
                 );
               },
               backgroundColor: Colors.white,

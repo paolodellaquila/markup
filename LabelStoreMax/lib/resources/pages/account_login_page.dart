@@ -9,6 +9,7 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/bootstrap/app_helper.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:wp_json_api/exceptions/incorrect_password_exception.dart';
@@ -19,7 +20,6 @@ import 'package:wp_json_api/models/responses/wp_user_login_response.dart';
 import 'package:wp_json_api/wp_json_api.dart';
 
 import '/app/events/login_event.dart';
-import '/bootstrap/app_helper.dart';
 import '/bootstrap/helpers.dart';
 import '/resources/pages/account_register_page.dart';
 import '/resources/widgets/buttons.dart';
@@ -62,29 +62,41 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   StoreLogo(height: 100),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: (Theme.of(context).brightness == Brightness.light) ? wsBoxShadow() : null,
-                      color: Colors.black12,
-                    ),
-                    padding: EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+                  Card(
+                    elevation: 8,
                     margin: EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        TextEditingRow(heading: trans("Email"), controller: _tfEmailController, keyboardType: TextInputType.emailAddress),
-                        const SizedBox(height: 16),
-                        TextEditingRow(
-                            heading: trans("Password"), controller: _tfPasswordController, keyboardType: TextInputType.visiblePassword, obscureText: true),
-                        const SizedBox(height: 24),
-                        PrimaryButton(
-                          title: trans("Login"),
-                          isLoading: isLocked('login_button'),
-                          action: _loginUser,
-                        ),
-                      ],
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+                      margin: EdgeInsets.symmetric(horizontal: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          TextEditingRow(heading: trans("Email"), controller: _tfEmailController, keyboardType: TextInputType.emailAddress),
+                          const SizedBox(height: 16),
+                          TextEditingRow(
+                              heading: trans("Password"), controller: _tfPasswordController, keyboardType: TextInputType.visiblePassword, obscureText: true),
+                          const SizedBox(height: 16),
+                          LinkButton(
+                            title: trans("Forgot Password"),
+                            underline: true,
+                            action: () {
+                              String? forgotPasswordUrl = AppHelper.instance.appConfig!.wpLoginForgotPasswordUrl;
+                              if (forgotPasswordUrl != null) {
+                                openBrowserTab(url: forgotPasswordUrl);
+                              } else {
+                                NyLogger.info("No URL found for \"forgot password\".\nAdd your forgot password URL here https://woosignal.com/dashboard/apps");
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          PrimaryButton(
+                            title: trans("Login"),
+                            isLoading: isLocked('login_button'),
+                            action: _loginUser,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -97,12 +109,13 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
                 children: <Widget>[
                   Icon(
                     Icons.account_circle,
+                    size: 28,
                     color: (Theme.of(context).brightness == Brightness.light) ? Colors.black38 : Colors.white70,
                   ),
                   Padding(
                     child: Text(
                       trans("Create an account"),
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                     padding: EdgeInsets.only(left: 8),
                   )
@@ -110,16 +123,6 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
               ),
               onPressed: () => routeTo(AccountRegistrationPage.path),
             ),
-            LinkButton(
-                title: trans("Forgot Password"),
-                action: () {
-                  String? forgotPasswordUrl = AppHelper.instance.appConfig!.wpLoginForgotPasswordUrl;
-                  if (forgotPasswordUrl != null) {
-                    openBrowserTab(url: forgotPasswordUrl);
-                  } else {
-                    NyLogger.info("No URL found for \"forgot password\".\nAdd your forgot password URL here https://woosignal.com/dashboard/apps");
-                  }
-                }),
             Padding(
               padding: EdgeInsets.only(bottom: 20),
             ),

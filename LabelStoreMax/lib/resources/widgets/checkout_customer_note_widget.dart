@@ -41,6 +41,7 @@ class CheckoutCustomerNote extends StatelessWidget {
                     Icons.close,
                     size: 19,
                   )),
+            if (hasCustomerNote == false) Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade600),
           ],
         ).paddingSymmetric(horizontal: 16),
       ),
@@ -76,6 +77,7 @@ class CheckoutCustomerNote extends StatelessWidget {
                       decoration: InputDecoration(
                         labelText: "Order Note".tr(),
                         hintText: "Enter order note".tr(),
+                        hintStyle: TextStyle(color: Colors.black),
                       ),
                       onChanged: (value) {
                         CheckoutSession.getInstance.customerNote = value;

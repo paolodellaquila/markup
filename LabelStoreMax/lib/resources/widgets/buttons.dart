@@ -10,12 +10,11 @@
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import '/bootstrap/helpers.dart';
+
 import '/resources/widgets/app_loader_widget.dart';
 
 class PrimaryButton extends StatelessWidget {
-  const PrimaryButton(
-      {super.key, this.title, this.action, this.isLoading = false});
+  const PrimaryButton({super.key, this.title, this.action, this.isLoading = false});
 
   final String? title;
   final Function? action;
@@ -27,11 +26,8 @@ class PrimaryButton extends StatelessWidget {
         title: title,
         action: action,
         isLoading: isLoading,
-        textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: ThemeColor.get(context).buttonPrimaryContent),
-        bgColor: ThemeColor.get(context).buttonBackground,
+        textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        bgColor: Colors.black,
       );
 }
 
@@ -58,11 +54,12 @@ class SecondaryButton extends StatelessWidget {
 }
 
 class LinkButton extends StatelessWidget {
-  const LinkButton({super.key, this.title, this.action, this.selected});
+  const LinkButton({super.key, this.title, this.action, this.selected, this.underline = false});
 
   final String? title;
   final Function? action;
   final bool? selected;
+  final bool underline;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +80,9 @@ class LinkButton extends StatelessWidget {
               ? Theme.of(context).textTheme.bodyLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                   )
-              : Theme.of(context).textTheme.bodyLarge,
+              : Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    decoration: underline ? TextDecoration.underline : null,
+                  ),
         )),
       ),
       onTap: action == null ? null : () async => await action!(),
