@@ -22,11 +22,9 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   VideoPlayerController? _controller;
-  bool _isSplashCompleted = false;
   bool _checkIsAppLocked = false;
 
   _navigateToHome() {
-    _isSplashCompleted = true;
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
     routeTo(HomePage.path, navigationType: NavigationType.pushReplace, pageTransition: PageTransitionType.fade);
   }
@@ -35,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await _initializeVideoPlayer();
 
     Future.delayed(Duration(seconds: 5), () {
-      if (_isSplashCompleted && !_checkIsAppLocked) return;
+      if (_checkIsAppLocked) return;
       _navigateToHome();
     });
   }
@@ -102,8 +100,8 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-    _checkVideos();
     _checkAppVersion();
+    _checkVideos();
   }
 
   Future<void> _initializeVideoPlayer() async {

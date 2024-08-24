@@ -21,7 +21,7 @@ class FirebaseNotifications {
 
     _firebaseMessaging!.getToken().then((value) async {
       //await _webRepository.registerFCMToken(value ?? "");
-      print("FCM Token: $value");
+      //print("FCM Token: $value");
     });
 
     firebaseCloudMessaging_Listeners(context);

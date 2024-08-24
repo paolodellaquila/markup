@@ -14,19 +14,12 @@ String compareVersions({
 
   var localVersionSplit = localVersion.split(".");
   var storeVersionSplit = storeVersion.split(".");
-  var majorVersionUpdated =
-      int.parse(localVersionSplit[0]) == int.parse(storeVersionSplit[0]);
-  var minorVersionUpdated =
-      int.parse(localVersionSplit[1]) == int.parse(storeVersionSplit[1]);
-  var patchVersionUpdated =
-      int.parse(localVersionSplit[2]) == int.parse(storeVersionSplit[2]);
-  var buildNumberUpdated =
-      checkBuildNumber ? localBuildNumber == storeBuildNumber : true;
+  var majorVersionUpdated = int.parse(localVersionSplit[0]) == int.parse(storeVersionSplit[0]);
+  var minorVersionUpdated = int.parse(localVersionSplit[1]) == int.parse(storeVersionSplit[1]);
+  var patchVersionUpdated = int.parse(localVersionSplit[2]) == int.parse(storeVersionSplit[2]);
+  var buildNumberUpdated = checkBuildNumber ? localBuildNumber == storeBuildNumber : true;
 
-  if (majorVersionUpdated &&
-      minorVersionUpdated &&
-      patchVersionUpdated &&
-      buildNumberUpdated) {
+  if (majorVersionUpdated && minorVersionUpdated && patchVersionUpdated && buildNumberUpdated) {
     return "";
   }
 

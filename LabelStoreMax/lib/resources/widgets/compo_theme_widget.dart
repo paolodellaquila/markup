@@ -50,8 +50,14 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
   ];
 
   _loadTabs() async {
-    allNavWidgets = await bottomNavWidgets();
+    allNavWidgets = bottomNavWidgets();
     setState(() {});
+
+    tabController = TabController(
+      initialIndex: 0,
+      length: 5,
+      vsync: this,
+    );
   }
 
   _loadAnimations() {
@@ -65,16 +71,11 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
   void initState() {
     super.initState();
 
-    tabController = TabController(
-      initialIndex: 0,
-      length: 5,
-      vsync: this,
-    );
+    _loadTabs();
+    _loadAnimations();
 
     ColorsManager().syncColors();
     VideoManager().initialize();
-    _loadTabs();
-    _loadAnimations();
   }
 
   bool onScrollNotification(ScrollNotification notification) {
@@ -144,7 +145,7 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
     );
   }
 
-  Future<List<BottomNavItem>> bottomNavWidgets() async {
+  List<BottomNavItem> bottomNavWidgets() {
     List<BottomNavItem> items = [];
     items.add(
       BottomNavItem(
