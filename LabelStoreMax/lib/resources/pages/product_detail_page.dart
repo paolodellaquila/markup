@@ -271,8 +271,15 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
     }
 
     final selectedVariation = _productVariations.firstWhereOrNull((item) {
-      return item.sku!.toLowerCase().contains(size.toLowerCase()) && item.sku!.toLowerCase().contains(color.toLowerCase());
+      return item.attributes.firstWhere((item) => item.name!.contains("Taglia")).option!.toLowerCase() == size.toLowerCase() &&
+          item.attributes.firstWhere((item) => item.name!.contains("Colore")).option!.toLowerCase() == color.toLowerCase();
     });
+
+    if (selectedVariation == null) {
+      showToastNotification(context,
+          title: trans("Sorry"), description: trans("This item is out of stock"), style: ToastNotificationStyleType.WARNING, icon: Icons.local_shipping);
+      return;
+    }
 
     setState(() {
       _selectedProductVariation = selectedVariation;
