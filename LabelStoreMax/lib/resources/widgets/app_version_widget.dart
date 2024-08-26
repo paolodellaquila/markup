@@ -20,7 +20,7 @@ class AppVersionWidget extends StatelessWidget {
     return NyFutureBuilder<PackageInfo>(
       future: PackageInfo.fromPlatform(),
       child: (BuildContext context, data) => Padding(
-        child: Text("${trans("Version")} App: ${data?.version}",
+        child: Text("${trans("Version")} App: ${data?.version} (${data?.buildNumber})",
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.w800, color: Colors.grey)),
         padding: EdgeInsets.only(top: 15, bottom: 15),
       ),
