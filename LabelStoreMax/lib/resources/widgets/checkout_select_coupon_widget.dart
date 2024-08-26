@@ -100,6 +100,17 @@ class _CheckoutSelectCouponWidgetState extends NyState<CheckoutSelectCouponWidge
       );
       return;
     }
+    if (widget.checkoutSession.shippingType == null) {
+      showToastNotification(
+        widget.context,
+        title: trans("Oops"),
+        description: trans("Your billing/shipping details are incomplete"),
+        style: ToastNotificationStyleType.WARNING,
+        icon: Icons.local_shipping,
+      );
+      return;
+    }
+
     routeTo(CouponPage.path, onPop: (value) {
       if (value is Coupon) {
         StateAction.refreshPage(CheckoutConfirmationPage.path, setState: () {});

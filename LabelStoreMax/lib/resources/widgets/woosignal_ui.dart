@@ -252,9 +252,10 @@ class CheckoutTotal extends StatelessWidget {
 }
 
 class CheckoutTaxTotal extends StatelessWidget {
-  const CheckoutTaxTotal({super.key, this.taxRate});
+  const CheckoutTaxTotal({super.key, this.taxRate, this.taxIncluded = false});
 
   final TaxRate? taxRate;
+  final bool taxIncluded;
 
   @override
   Widget build(BuildContext context) => NyFutureBuilder<String>(
@@ -263,7 +264,7 @@ class CheckoutTaxTotal extends StatelessWidget {
             ? Container()
             : Padding(
                 child: CheckoutMetaLine(
-                  title: trans("Tax"),
+                  title: taxIncluded ? ('incl. tax'.tr()) : ('excl. tax'.tr()),
                   amount: formatStringCurrency(total: data),
                 ),
                 padding: EdgeInsets.only(bottom: 0, top: 0),

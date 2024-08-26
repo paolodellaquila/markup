@@ -252,7 +252,8 @@
   "- 1 number minimum": "- 至少 1 个数字",
   "- 1 special character minimum": "- 至少 1 个特殊字符",
   "Coupon Applied": "优惠券已应用",
-  "Checkout as guest or login to continue",: "以访客身份结帐或登录以继续",
+  "Accept": "接受",
+  "Checkout as guest or login to continue": "以访客身份结帐或登录以继续",
   "Login / Create an account": "登录/创建帐户",
   "Contact us for any questions on your order.": "如果您对订单有任何疑问，请联系我们。",
   "Delete my account": "删除我的账户",
@@ -268,5 +269,10 @@
   "Save Note": "保存备注",
   "Enter order note": "输入订单备注",
   "Order note must be less than 100 characters": "订单备注必须少于 100 个字符",
-  "Select your language": "选择你的语言"
+  "Select your language": "选择你的语言",
+  "Attention": "注意",
+  "incl. tax": "含税",
+  "excl. tax": "不含税",
+  "please contact us": "请联系我们",
+  "Free (Coupon)": "免费（优惠券）"
 }

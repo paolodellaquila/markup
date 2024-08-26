@@ -47,6 +47,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
   List<TaxRate> _taxRates = [];
   TaxRate? _taxRate;
   final WooSignalApp? _wooSignalApp = AppHelper.instance.appConfig;
+  bool termsAccepted = false;
 
   @override
   init() async {
@@ -92,6 +93,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
         fetchMore = false;
       }
     }
+    _getUserTax();
   }
 
   _getUserTax() {
@@ -132,7 +134,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
 
     if (taxRate == null) {
       taxRate = _taxRates.firstWhereOrNull(
-        (t) => t.country == shippingCountry.countryCode && t.postcode == postalCode,
+        (t) => t.state == shippingCountry.countryCode && t.postcode == postalCode,
       );
 
       taxRate ??= _taxRates.firstWhereOrNull(
@@ -141,7 +143,9 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
     }
 
     if (taxRate != null) {
-      _taxRate = taxRate;
+      setState(() {
+        _taxRate = taxRate;
+      });
     }
   }
 
@@ -257,38 +261,48 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
                                   title: trans("Shipping fee"),
                                   amount: CheckoutSession.getInstance.shippingType == null
                                       ? trans("Select shipping")
-                                      : CheckoutSession.getInstance.shippingType!.getTotal(withFormatting: true)),
-                            if (_taxRate != null) CheckoutTaxTotal(taxRate: _taxRate),
+                                      : CheckoutSession.getInstance.coupon?.freeShipping == true
+                                          ? trans("Free (Coupon)")
+                                          : CheckoutSession.getInstance.shippingType!.getTotal(withFormatting: true)),
+                            if (_taxRate != null)
+                              CheckoutTaxTotal(
+                                taxRate: _taxRate,
+                                taxIncluded: _wooSignalApp!.productPricesIncludeTax == 1,
+                              ),
                             Padding(padding: EdgeInsets.only(top: 8, left: 8, right: 8)),
                             const SizedBox(height: 24),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8),
-                              child: RichText(
-                                textAlign: TextAlign.left,
-                                text: TextSpan(
-                                  text: '${trans('By completing this order, I agree to all')} ',
-                                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                        fontSize: 12,
+                            Row(
+                              children: [
+                                Checkbox(value: termsAccepted, onChanged: (value) => setState(() => termsAccepted = value ?? false)),
+                                RichText(
+                                  textAlign: TextAlign.left,
+                                  text: TextSpan(
+                                    text: '${trans('Accept')} ',
+                                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                          fontSize: 12,
+                                        ),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        recognizer: TapGestureRecognizer()..onTap = _openTermsLink,
+                                        text: trans("Terms and conditions").toLowerCase(),
+                                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                              color: Colors.black,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              decoration: TextDecoration.underline,
+                                            ),
                                       ),
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      recognizer: TapGestureRecognizer()..onTap = _openTermsLink,
-                                      text: trans("Terms and conditions").toLowerCase(),
-                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                            color: ThemeColor.get(context).primaryAccent,
-                                            fontSize: 12,
-                                          ),
-                                    ),
-                                    TextSpan(
-                                      text: ".",
-                                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                                            color: Colors.black87,
-                                            fontSize: 12,
-                                          ),
-                                    ),
-                                  ],
+                                      TextSpan(
+                                        text: ".",
+                                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                                              color: Colors.black87,
+                                              fontSize: 12,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
@@ -301,15 +315,25 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
                 child: Column(
                   children: [
-                    CheckoutTotal(title: trans("Total"), taxRate: _taxRate),
+                    CheckoutTotal(
+                      title: trans("Total"),
+                      taxRate: _taxRate,
+                    ),
                     Padding(padding: EdgeInsets.only(bottom: 8)),
                     PrimaryButton(
                       isLoading: isLocked('payment'),
                       title: trans("CHECKOUT"),
                       action: () async {
-                        lockRelease('payment', perform: () async {
-                          await _handleCheckout();
-                        });
+                        if (termsAccepted == false) {
+                          showToastNotification(context,
+                              title: "Attention".tr(),
+                              description: '${trans('Accept')} ${trans('Terms and conditions')}',
+                              style: ToastNotificationStyleType.WARNING);
+                        } else {
+                          lockRelease('payment', perform: () async {
+                            await _handleCheckout();
+                          });
+                        }
                       },
                     ),
                   ],
@@ -325,8 +349,6 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
   _openTermsLink() => openBrowserTab(url: AppHelper.instance.appConfig?.appTermsLink ?? "");
 
   _handleCheckout() async {
-    _getUserTax();
-
     CheckoutSession checkoutSession = CheckoutSession.getInstance;
     if (checkoutSession.billingDetails!.billingAddress == null) {
       showToastNotification(

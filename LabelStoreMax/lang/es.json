@@ -30,7 +30,8 @@
   "- 1 number minimum": "- 1 número mínimo",
   "- 1 special character minimum": "- 1 carácter especial mínimo",
   "Coupon Applied": "Cupón aplicado",
-  "Browse",: "Vistazo",
+  "Accept": "Aceptar",
+  "Browse": "Vistazo",
   "Search results for": "Resultados de búsqueda para",
   "Select a": "Seleccione un",
   "Added to cart": "Agregado al carrito",
@@ -268,5 +269,10 @@
   "Save Note": "Guardar nota",
   "Enter order note": "Introducir nota de pedido",
   "Order note must be less than 100 characters": "La nota del pedido debe tener menos de 100 caracteres.",
-  "Select your language": "elige tu idioma"
+  "Select your language": "elige tu idioma",
+  "Attention": "Atención",
+  "incl. tax": "incl. impuestos",
+  "excl. tax": "excl. impuestos",
+  "please contact us": "Por favor contáctenos",
+  "Free (Coupon)": "Gratis (Cupón)"
 }

@@ -28,7 +28,6 @@ import 'package:wp_json_api/models/responses/wp_user_info_response.dart';
 import 'package:wp_json_api/models/wp_user.dart';
 import 'package:wp_json_api/wp_json_api.dart';
 
-import '../resources/themes/styles/color_styles.dart';
 import '/app/models/billing_details.dart';
 import '/app/models/cart.dart';
 import '/app/models/cart_line_item.dart';
@@ -41,6 +40,7 @@ import '/bootstrap/extensions.dart';
 import '/bootstrap/shared_pref/shared_key.dart';
 import '/config/currency.dart';
 import '/config/payment_gateways.dart';
+import '../resources/themes/styles/color_styles.dart';
 
 Future<WpUser?> getUser() async {
   return await WPJsonAPI.wpUser();
@@ -169,6 +169,7 @@ double? strCal({required String sum}) {
     return 0;
   }
   Parser p = Parser();
+  sum = sum.replaceAll(",", "."); //TEMPORARY FIX TO BAD NUMBER FORMATTER
   Expression exp = p.parse(sum);
   ContextModel cm = ContextModel();
   return exp.evaluate(EvaluationType.REAL, cm);

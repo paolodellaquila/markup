@@ -31,7 +31,8 @@
   "- 1 number minimum": "- 1 chiffre minimum",
   "- 1 special character minimum": "- 1 caractère spécial minimum",
   "Coupon Applied": "Coupon appliqué",
-  "Browse",: "Parcourir",
+  "Accept": "Accepter",
+  "Browse": "Parcourir",
   "Search results for": "Résultats de recherche pour",
   "Select a": "Sélectionner un",
   "Added to cart": "Ajouté au panier",
@@ -268,5 +269,10 @@
   "Save Note": "Enregistrer la note",
   "Enter order note": "Saisir le bon de commande",
   "Order note must be less than 100 characters": "Le bon de commande doit comporter moins de 100 caractères",
-  "Select your language": "choisissez votre langue"
+  "Select your language": "choisissez votre langue",
+  "Attention": "Attention",
+  "incl. tax": "TTC",
+  "excl. tax": "HT",
+  "please contact us": "Veuillez nous contacter",
+  "Free (Coupon)": "Gratuit (Coupon)"
 }

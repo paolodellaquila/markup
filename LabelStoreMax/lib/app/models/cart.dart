@@ -11,15 +11,16 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/response/shipping_method.dart';
+import 'package:woosignal/models/response/tax_rate.dart';
+
 import '/app/models/cart_line_item.dart';
 import '/app/models/checkout_session.dart';
 import '/app/models/shipping_type.dart';
 import '/bootstrap/app_helper.dart';
 import '/bootstrap/helpers.dart';
 import '/bootstrap/shared_pref/shared_key.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/response/shipping_method.dart';
-import 'package:woosignal/models/response/tax_rate.dart';
 
 class Cart {
   Cart._privateConstructor();
@@ -30,9 +31,7 @@ class Cart {
     String? currentCartArrJSON = await (NyStorage.read(SharedKey.cart));
 
     if (currentCartArrJSON != null) {
-      cartLineItems = (jsonDecode(currentCartArrJSON) as List<dynamic>)
-          .map((i) => CartLineItem.fromJson(i))
-          .toList();
+      cartLineItems = (jsonDecode(currentCartArrJSON) as List<dynamic>).map((i) => CartLineItem.fromJson(i)).toList();
     }
 
     return cartLineItems;
@@ -43,22 +42,14 @@ class Cart {
 
     if (cartLineItem.variationId != null &&
         cartLineItems.firstWhereOrNull((i) =>
-                (i.productId == cartLineItem.productId &&
-                    i.variationId == cartLineItem.variationId &&
-                    i.variationOptions == cartLineItem.variationOptions)) !=
+                (i.productId == cartLineItem.productId && i.variationId == cartLineItem.variationId && i.variationOptions == cartLineItem.variationOptions)) !=
             null) {
       cartLineItems.removeWhere((item) =>
-          item.productId == cartLineItem.productId &&
-          item.variationId == cartLineItem.variationId &&
-          item.variationOptions == cartLineItem.variationOptions);
+          item.productId == cartLineItem.productId && item.variationId == cartLineItem.variationId && item.variationOptions == cartLineItem.variationOptions);
     }
 
-    if (cartLineItem.variationId == null &&
-        cartLineItems.firstWhereOrNull(
-                (i) => i.productId == cartLineItem.productId) !=
-            null) {
-      cartLineItems
-          .removeWhere((item) => item.productId == cartLineItem.productId);
+    if (cartLineItem.variationId == null && cartLineItems.firstWhereOrNull((i) => i.productId == cartLineItem.productId) != null) {
+      cartLineItems.removeWhere((item) => item.productId == cartLineItem.productId);
     }
 
     cartLineItems.add(cartLineItem);
@@ -91,20 +82,18 @@ class Cart {
     for (var cartItem in cartLineItems) {
       subtotal += (parseWcPrice(cartItem.subtotal) * cartItem.quantity);
     }
+
     if (withFormat == true) {
       return formatDoubleCurrency(total: subtotal);
     }
     return subtotal.toStringAsFixed(2);
   }
 
-  updateQuantity(
-      {required CartLineItem cartLineItem,
-      required int incrementQuantity}) async {
+  updateQuantity({required CartLineItem cartLineItem, required int incrementQuantity}) async {
     List<CartLineItem> cartLineItems = await getCart();
     List<CartLineItem> tmpCartItem = [];
     for (var cartItem in cartLineItems) {
-      if (cartItem.variationId == cartLineItem.variationId &&
-          cartItem.productId == cartLineItem.productId) {
+      if (cartItem.variationId == cartLineItem.variationId && cartItem.productId == cartLineItem.productId) {
         if ((cartItem.quantity + incrementQuantity) > 0) {
           cartItem.quantity += incrementQuantity;
         }
@@ -116,11 +105,7 @@ class Cart {
 
   Future<String> cartShortDesc() async {
     List<CartLineItem> cartLineItems = await getCart();
-    return cartLineItems
-        .map((cartItem) =>
-            "${cartItem.quantity.toString()} x | ${cartItem.name}")
-        .toList()
-        .join(",");
+    return cartLineItems.map((cartItem) => "${cartItem.quantity.toString()} x | ${cartItem.name}").toList().join(",");
   }
 
   removeCartItemForIndex({required int index}) async {
@@ -145,15 +130,15 @@ class Cart {
     if (cartItems.every((c) => c.taxStatus == 'none')) {
       return "0";
     }
-    List<CartLineItem> taxableCartLines =
-        cartItems.where((c) => c.taxStatus == 'taxable').toList();
+    List<CartLineItem> taxableCartLines = cartItems.where((c) => c.taxStatus == 'taxable').toList();
     double cartSubtotal = 0;
 
-    if (AppHelper.instance.appConfig!.productPricesIncludeTax == 1 &&
-        taxableCartLines.isNotEmpty) {
-      cartSubtotal = taxableCartLines
-          .map<double>((m) => parseWcPrice(m.subtotal) * m.quantity)
-          .reduce((a, b) => a + b);
+    //VAT
+    if (AppHelper.instance.appConfig!.productPricesIncludeTax == 1 && taxableCartLines.isNotEmpty) {
+      cartSubtotal = taxableCartLines.map<double>((m) => parseWcPrice(m.subtotal) * m.quantity).reduce((a, b) => a + b);
+
+      ///DISCOUNT
+      //Coupon Discount
       if (CheckoutSession.getInstance.coupon != null) {
         String discountAmount = await Cart.getInstance.couponDiscountAmount();
         cartSubtotal = cartSubtotal - double.parse(discountAmount);
@@ -169,17 +154,13 @@ class Cart {
         case "flat_rate":
           FlatRate flatRate = (shippingType.object as FlatRate);
           if (flatRate.taxable != null && flatRate.taxable!) {
-            shippingTotal +=
-                parseWcPrice(shippingType.cost == "" ? "0" : shippingType.cost);
+            shippingTotal += parseWcPrice(shippingType.cost == "" ? "0" : shippingType.cost);
           }
           break;
         case "local_pickup":
           LocalPickup localPickup = (shippingType.object as LocalPickup);
           if (localPickup.taxable != null && localPickup.taxable!) {
-            shippingTotal += parseWcPrice(
-                (localPickup.cost == null || localPickup.cost == ""
-                    ? "0"
-                    : localPickup.cost));
+            shippingTotal += parseWcPrice((localPickup.cost == null || localPickup.cost == "" ? "0" : localPickup.cost));
           }
           break;
         default:
@@ -211,11 +192,8 @@ class Cart {
       bool canContinue = true;
 
       if (checkoutSession.coupon!.excludedProductCategories!.isNotEmpty) {
-        for (var excludedProductCategory
-            in checkoutSession.coupon!.excludedProductCategories!) {
-          if (cartItem.categories!
-              .map((category) => category.id)
-              .contains(excludedProductCategory)) {
+        for (var excludedProductCategory in checkoutSession.coupon!.excludedProductCategories!) {
+          if (cartItem.categories!.map((category) => category.id).contains(excludedProductCategory)) {
             canContinue = false;
             break;
           }
@@ -223,12 +201,8 @@ class Cart {
       }
 
       if (checkoutSession.coupon!.productCategories!.isNotEmpty) {
-        for (var productCategories
-            in checkoutSession.coupon!.productCategories!) {
-          if (cartItem.categories!
-                  .map((category) => category.id)
-                  .contains(productCategories) ==
-              false) {
+        for (var productCategories in checkoutSession.coupon!.productCategories!) {
+          if (cartItem.categories!.map((category) => category.id).contains(productCategories) == false) {
             canContinue = false;
             break;
           }
@@ -239,19 +213,15 @@ class Cart {
         continue;
       }
 
-      if (checkoutSession.coupon!.excludeSaleItems == true &&
-          cartItem.onSale == true) {
+      if (checkoutSession.coupon!.excludeSaleItems == true && cartItem.onSale == true) {
         continue;
       }
 
-      if (checkoutSession.coupon!.excludedProductIds!.isNotEmpty &&
-          checkoutSession.coupon!.excludedProductIds!
-              .contains(cartItem.productId)) {
+      if (checkoutSession.coupon!.excludedProductIds!.isNotEmpty && checkoutSession.coupon!.excludedProductIds!.contains(cartItem.productId)) {
         continue;
       }
 
-      if (checkoutSession.coupon!.productIds!.isNotEmpty &&
-          !checkoutSession.coupon!.productIds!.contains(cartItem.productId)) {
+      if (checkoutSession.coupon!.productIds!.isNotEmpty && !checkoutSession.coupon!.productIds!.contains(cartItem.productId)) {
         continue;
       }
       subtotal += (parseWcPrice(cartItem.subtotal) * cartItem.quantity);
@@ -273,8 +243,7 @@ class Cart {
 
     // Fixed product
     if (discountType == 'fixed_product') {
-      return (eligibleCartLineItems.length * double.parse(amount!))
-          .toStringAsFixed(2);
+      return (eligibleCartLineItems.length * double.parse(amount!)).toStringAsFixed(2);
     }
     return "0";
   }

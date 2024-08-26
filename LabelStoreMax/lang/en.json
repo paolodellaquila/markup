@@ -221,7 +221,8 @@
   "- 1 number minimum": "- 1 number minimum",
   "- 1 special character minimum": "- 1 special character minimum",
   "Coupon Applied": "Coupon Applied",
-  "Apply",: "Apply",
+  "Accept": "Accept",
+  "Apply": "Apply",
   "Apply Coupon": "Apply Coupon",
   "Spend a minimum of minimumAmount to redeem": "Spend a minimum of {{minimumAmount}} to redeem",
   "Spend less than maximumAmount to redeem": "Spend less than {{maximumAmount}} to redeem",
@@ -269,5 +270,10 @@
   "Save Note": "Save Note",
   "Enter order note": "Enter order note",
   "Order note must be less than 100 characters": "Order note must be less than 100 characters",
-  "Select your language": "Select your language"
+  "Select your language": "Select your language",
+  "Attention": "Attention",
+  "incl. tax": "incl. tax",
+  "excl. tax": "excl. tax",
+  "please contact us": "Please contact us",
+  "Free (Coupon)": "Free (Coupon)"
 }

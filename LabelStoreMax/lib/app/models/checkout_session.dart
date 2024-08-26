@@ -9,6 +9,12 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'dart:convert';
+
+import 'package:flutter_app/bootstrap/app_helper.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/response/coupon.dart';
+import 'package:woosignal/models/response/tax_rate.dart';
+
 import '/app/models/billing_details.dart';
 import '/app/models/cart.dart';
 import '/app/models/customer_address.dart';
@@ -16,16 +22,12 @@ import '/app/models/payment_type.dart';
 import '/app/models/shipping_type.dart';
 import '/bootstrap/helpers.dart';
 import '/bootstrap/shared_pref/shared_key.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/response/coupon.dart';
-import 'package:woosignal/models/response/tax_rate.dart';
 
 class CheckoutSession {
   bool? shipToDifferentAddress = false;
 
   CheckoutSession._privateConstructor();
-  static final CheckoutSession getInstance =
-      CheckoutSession._privateConstructor();
+  static final CheckoutSession getInstance = CheckoutSession._privateConstructor();
 
   BillingDetails? billingDetails;
   ShippingType? shippingType;
@@ -46,8 +48,7 @@ class CheckoutSession {
   }
 
   saveBillingAddress() async {
-    CustomerAddress? customerAddress =
-        CheckoutSession.getInstance.billingDetails!.billingAddress;
+    CustomerAddress? customerAddress = CheckoutSession.getInstance.billingDetails!.billingAddress;
 
     if (customerAddress == null) {
       return;
@@ -58,8 +59,7 @@ class CheckoutSession {
   }
 
   Future<CustomerAddress?> getBillingAddress() async {
-    String? strCheckoutDetails =
-        await (NyStorage.read(SharedKey.customerBillingDetails));
+    String? strCheckoutDetails = await (NyStorage.read(SharedKey.customerBillingDetails));
 
     if (strCheckoutDetails != null && strCheckoutDetails != "") {
       return CustomerAddress.fromJson(jsonDecode(strCheckoutDetails));
@@ -67,12 +67,10 @@ class CheckoutSession {
     return null;
   }
 
-  clearBillingAddress() async =>
-      await NyStorage.delete(SharedKey.customerBillingDetails);
+  clearBillingAddress() async => await NyStorage.delete(SharedKey.customerBillingDetails);
 
   saveShippingAddress() async {
-    CustomerAddress? customerAddress =
-        CheckoutSession.getInstance.billingDetails!.shippingAddress;
+    CustomerAddress? customerAddress = CheckoutSession.getInstance.billingDetails!.shippingAddress;
     if (customerAddress == null) {
       return;
     }
@@ -81,16 +79,14 @@ class CheckoutSession {
   }
 
   Future<CustomerAddress?> getShippingAddress() async {
-    String? strCheckoutDetails =
-        await (NyStorage.read(SharedKey.customerShippingDetails));
+    String? strCheckoutDetails = await (NyStorage.read(SharedKey.customerShippingDetails));
     if (strCheckoutDetails != null && strCheckoutDetails != "") {
       return CustomerAddress.fromJson(jsonDecode(strCheckoutDetails));
     }
     return null;
   }
 
-  clearShippingAddress() async =>
-      await NyStorage.delete(SharedKey.customerShippingDetails);
+  clearShippingAddress() async => await NyStorage.delete(SharedKey.customerShippingDetails);
 
   Future<String> total({bool withFormat = false, TaxRate? taxRate}) async {
     double totalCart = parseWcPrice(await Cart.getInstance.getTotal());
@@ -111,9 +107,16 @@ class CheckoutSession {
       }
     }
 
-    double total = totalCart + totalShipping;
+    ///CHECK COUPON DISCOUNT WITH FREE SHIPPING
+    if (CheckoutSession.getInstance.coupon?.freeShipping == true) {
+      totalShipping = 0;
+    }
 
-    if (taxRate != null) {
+    double total = 0;
+    total += double.parse((totalCart + totalShipping).toStringAsFixed(2));
+
+    ///TAX RATE
+    if (taxRate != null && !(AppHelper.instance.appConfig!.productPricesIncludeTax == 1)) {
       String taxAmount = await Cart.getInstance.taxAmount(taxRate);
       total += parseWcPrice(taxAmount);
     }
@@ -121,6 +124,7 @@ class CheckoutSession {
     if (withFormat == true) {
       return formatDoubleCurrency(total: total);
     }
+
     return total.toStringAsFixed(2);
   }
 }
