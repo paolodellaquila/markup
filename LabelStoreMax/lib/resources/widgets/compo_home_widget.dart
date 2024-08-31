@@ -55,6 +55,8 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
   HomeNewInDonna? homeNewInDonna;
   HomeNewInUomo? homeNewInUomo;
 
+  bool loadHomeCompleted = false;
+
   @override
   boot() async {
     // Start listening for shake events
@@ -66,10 +68,13 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
   void dispose() {
     // Stop listening for shake events
     ShakeService().dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
   _loadFirebaseData() async {
+    if (loadHomeCompleted) return;
+
     try {
       final ref = FirebaseDatabase.instance.ref("homeApp");
       final snapshot = await ref.get();
@@ -127,8 +132,10 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
             _controller?.play();
             _controller?.setLooping(true);
           });
+
+        loadHomeCompleted = true;
       } else {
-        return true;
+        return;
       }
     } catch (e) {
       print("error: $e");
