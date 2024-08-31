@@ -17,58 +17,49 @@ class ShakeService {
   void startListening(BuildContext context) {
     if (_shakeDetector == null) {
       _shakeDetector = ShakeDetector.autoStart(onPhoneShake: () {
-        showModalBottomSheet<void>(
-          isScrollControlled: true,
+        showModalBottomSheet(
           context: context,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30.0),
-              topRight: Radius.circular(30.0),
+          builder: (BuildContext context) => Container(
+            child: Padding(
+              padding: EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'You need help?'.tr(),
+                    textAlign: TextAlign.center,
+                    style: context.textTheme().headlineSmall,
+                  ),
+                  Text(
+                    'Contact our support team'.tr(),
+                    textAlign: TextAlign.center,
+                    style: context.textTheme().bodyMedium,
+                  ),
+                  SizedBox(
+                    height: 32,
+                  ),
+                  PrimaryButton(
+                    title: "Continue".tr(),
+                    action: () {
+                      openBrowserTab(url: "https://markupitalia.com/contatti/");
+                      Navigator.pop(context);
+                    },
+                  ),
+                  SizedBox(
+                    height: 16,
+                  ),
+                  SecondaryButton(
+                    title: "Cancel".tr(),
+                    action: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-          builder: (BuildContext context) {
-            return SafeArea(
-              minimum: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Padding(
-                padding: MediaQuery.of(context).viewInsets,
-                child: FractionallySizedBox(
-                  heightFactor: 0.35,
-                  child: Container(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          'You need help?'.tr(),
-                          textAlign: TextAlign.center,
-                          style: context.textTheme().headlineSmall,
-                        ),
-                        Text(
-                          'Contact our support team'.tr(),
-                          textAlign: TextAlign.center,
-                          style: context.textTheme().bodyMedium,
-                        ),
-                        Padding(padding: EdgeInsets.only(top: 24)),
-                        PrimaryButton(
-                          title: "Continue".tr(),
-                          action: () {
-                            openBrowserTab(url: "https://markupitalia.com/contatti/");
-                            Navigator.pop(context);
-                          },
-                        ),
-                        SecondaryButton(
-                          title: "Cancel".tr(),
-                          action: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            );
-          },
         );
       });
     } else {
