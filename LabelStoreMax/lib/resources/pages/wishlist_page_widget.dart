@@ -9,7 +9,6 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/resources/widgets/buttons.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:woosignal/models/response/product.dart';
@@ -25,7 +24,7 @@ class WishListPageWidget extends StatefulWidget {
   createState() => _WishListPageWidgetState();
 }
 
-class _WishListPageWidgetState extends NyState<WishListPageWidget> with AutomaticKeepAliveClientMixin {
+class _WishListPageWidgetState extends NyState<WishListPageWidget> {
   List<Product> _products = [];
 
   @override
@@ -34,6 +33,8 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> with Automati
   }
 
   loadProducts() async {
+    setState(() {});
+
     List<dynamic> favouriteProducts = await getWishlistProducts();
     List<int> productIds = favouriteProducts.map((e) => e['id']).cast<int>().toList();
     if (productIds.isEmpty) {
@@ -45,13 +46,12 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> with Automati
           status: "publish",
           stockStatus: "instock",
         )));
+
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -73,24 +73,15 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> with Automati
                           padding: EdgeInsets.symmetric(vertical: 12),
                         ),
                         Text(trans("No items in whishlist"), style: Theme.of(context).textTheme.titleLarge!.setColor(context, (color) => Colors.black)),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        Container(
-                          width: 200,
-                          child: SecondaryButton(
-                            title: trans("Update"),
-                            action: loadProducts,
-                          ),
-                        )
                       ],
                     ),
                   )
                 : GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      crossAxisSpacing: 2,
+                      crossAxisSpacing: 8,
                       childAspectRatio: 0.6,
+                      mainAxisSpacing: 16,
                     ),
                     padding: EdgeInsets.all(8),
                     itemBuilder: (BuildContext context, int index) {
@@ -197,14 +188,13 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> with Automati
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      const SizedBox(height: 8),
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         children: [
                                           Expanded(
                                             child: Text(
                                               formatStringCurrency(total: product.price),
-                                              style: TextStyle(fontSize: 18),
+                                              style: context.textTheme().bodyLarge,
                                             ),
                                           ),
                                           if (product.permalink != null) ...[
@@ -214,6 +204,7 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> with Automati
                                                 icon: Icon(
                                                   Icons.share,
                                                   color: Colors.blue,
+                                                  size: 20,
                                                 ),
                                                 onPressed: () => _shareProduct(product),
                                               ),
@@ -254,7 +245,4 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> with Automati
   _shareProduct(Product product) {
     Share.share(product.permalink!);
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

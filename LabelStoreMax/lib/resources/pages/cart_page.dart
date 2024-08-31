@@ -45,6 +45,14 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
   boot() async {
     await _cartCheck();
     CheckoutSession.getInstance.coupon = null;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      showToastNotification(
+        context,
+        description: 'Swipe left to share or delete an item'.tr(),
+        style: ToastNotificationStyleType.INFO,
+      );
+    });
   }
 
   _cartCheck() async {
@@ -256,18 +264,20 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
                             return SwipeActionCell(
                               key: ObjectKey(cartLineItem),
                               trailingActions: [
-                                SwipeAction(
-                                  onTap: (CompletionHandler handler) async {
-                                    handler(false);
-                                    HapticFeedback.mediumImpact();
-                                    Share.share(cartLineItem.permalink!);
-                                  },
-                                  color: Colors.green,
-                                  icon: Icon(
-                                    Icons.share,
-                                    color: Colors.white,
+                                if (cartLineItem.permalink != null) ...[
+                                  SwipeAction(
+                                    onTap: (CompletionHandler handler) async {
+                                      handler(false);
+                                      HapticFeedback.mediumImpact();
+                                      Share.share(cartLineItem.permalink!);
+                                    },
+                                    color: Colors.green,
+                                    icon: Icon(
+                                      Icons.share,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
+                                ],
                                 SwipeAction(
                                   onTap: (CompletionHandler handler) async {
                                     handler(false);
