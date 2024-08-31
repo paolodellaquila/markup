@@ -1,18 +1,15 @@
 import 'dart:io';
 
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/bootstrap/helpers.dart';
 import 'package:flutter_app/resources/pages/home_page.dart';
 import 'package:flutter_app/resources/widgets/buttons.dart';
-import 'package:flutter_app/resources/widgets/woosignal_ui.dart';
+import 'package:flutter_app/utils/app_version/app_version_check.dart';
+import 'package:flutter_app/utils/remote_config_manager.dart';
 import 'package:flutter_app/utils/video_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:video_player/video_player.dart';
-
-import '../../utils/app_version_comparator.dart';
 
 class SplashScreen extends StatefulWidget {
   static String path = "/splash";
@@ -41,67 +38,41 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-  Future<bool> _isAppLocked() async {
-    var minAppVersion = "";
-    var minBuildVersion = "";
-
-    try {
-      final ref = FirebaseDatabase.instance.ref("settings").child('minAppVersion');
-      final snapshot = await ref.get();
-      if (snapshot.exists) {
-        minAppVersion = snapshot.value.toString();
-      } else {
-        return true;
-      }
-
-      final ref2 = FirebaseDatabase.instance.ref("settings").child('minBuildVersion');
-      final snapshot2 = await ref2.get();
-      if (snapshot2.exists) {
-        minBuildVersion = snapshot2.value.toString();
-      } else {
-        return true;
-      }
-
-      var packageInfo = await PackageInfo.fromPlatform();
-      String localVersion = packageInfo.version;
-      String localBuildNumber = packageInfo.buildNumber;
-
-      var checkVersion = compareVersions(
-        localVersion: localVersion,
-        storeVersion: minAppVersion,
-        localBuildNumber: int.parse(localBuildNumber),
-        storeBuildNumber: int.parse(minBuildVersion),
-      );
-
-      return checkVersion.isNotEmpty;
-    } catch (e) {
-      return false;
-    }
-  }
-
   _checkAppVersion() async {
-    var isAppLocked = await this._isAppLocked();
+    await RemoteConfigManager.instance.init();
+    _checkIsAppLocked = await AppVersionCheck.checkAppVersion();
 
-    if (isAppLocked) {
-      _checkIsAppLocked = true;
-      wsModalBottom(context,
-          title: "App Blocked".tr(),
-          bodyWidget: Column(
-            children: [
-              Icon(Icons.report_outlined, size: 48),
-              SizedBox(height: 16),
-              Text("App Blocked Desc".tr()),
-              SizedBox(height: 16),
-              LinkButton(
-                title: "Update".tr(),
-                action: () => Platform.isIOS
-                    ? openBrowserTab(url: "https://apps.apple.com/app/markup-italia/id6538726254")
-                    : openBrowserTab(url: 'https://play.google.com/store/search?q=Markup%20Italia&c=apps&hl=it'),
-              ),
-            ],
-          ));
-
-      return;
+    if (_checkIsAppLocked) {
+      showModalBottomSheet(
+          context: context,
+          builder: (BuildContext context) => Padding(
+                padding: EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.report_outlined, size: 48),
+                    SizedBox(height: 16),
+                    Text(
+                      "Update Needed".tr(),
+                      style: context.textTheme().headlineMedium,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      "App Blocked Desc".tr(),
+                      style: context.textTheme().bodyLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 16),
+                    PrimaryButton(
+                      title: "Update".tr(),
+                      action: () => Platform.isIOS
+                          ? openBrowserTab(url: RemoteConfigManager.instance.appStoreUrl)
+                          : openBrowserTab(url: RemoteConfigManager.instance.playStoreUrl),
+                    ),
+                    SizedBox(height: 16),
+                  ],
+                ),
+              ));
     }
   }
 
