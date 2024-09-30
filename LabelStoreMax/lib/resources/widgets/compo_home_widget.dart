@@ -150,6 +150,9 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     ///new in uomo 195
     ///trend 393
     ///hottest 387
+    List<int> productCategoryId = [393, 387];
+    categories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, include: productCategoryId)));
+
     List<int> subNewproductCategoryId = [196, 195];
     categories.addAll(await (appWooSignal((api) => api.getProductCategories(parent: 193, perPage: 50, include: subNewproductCategoryId))));
 
@@ -159,8 +162,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     categories[indexUomo].name = "New in Uomo";
     categories[indexDonna].name = "New in Donna";
 
-    List<int> productCategoryId = [393, 387];
-    categories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, include: productCategoryId)));
+    categories.sort((a, b) => a.id!.compareTo(b.id!));
 
     for (var category in categories) {
       List<Product> products = await (appWooSignal(
@@ -326,7 +328,7 @@ Widget _categoryCoverSection(BuildContext context, MapEntry<ProductCategory, Lis
     HomeNewInDonna? homeNewInDonna, HomeNewInUomo? homeNewInUomo) {
   List<String> _getCategoryImages(int catId) {
     switch (catId) {
-      case 386:
+      case 393:
         return homeTrend?.images ?? [];
       case 387:
         return homeHottest?.images ?? [];
@@ -340,7 +342,7 @@ Widget _categoryCoverSection(BuildContext context, MapEntry<ProductCategory, Lis
 
   String _getCatTitle(int catId) {
     switch (catId) {
-      case 386:
+      case 393:
         return homeTrend?.title ?? "";
       case 387:
         return homeHottest?.title ?? "";
@@ -354,7 +356,7 @@ Widget _categoryCoverSection(BuildContext context, MapEntry<ProductCategory, Lis
 
   String _getCatSubtitle(int catId) {
     switch (catId) {
-      case 386:
+      case 393:
         return homeTrend?.subtitle ?? "";
       case 387:
         return homeHottest?.subtitle ?? "";
