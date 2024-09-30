@@ -8,9 +8,9 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/resources/widgets/cached_image_widget.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_banner.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_flash_promo.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_hottest.dart';
@@ -29,12 +29,8 @@ import 'package:woosignal/models/response/woosignal_app.dart';
 
 import '/bootstrap/helpers.dart';
 import '/resources/pages/browse_category_page.dart';
-import '/resources/pages/product_detail_page.dart';
 import '/resources/widgets/app_loader_widget.dart';
-import '/resources/widgets/buttons.dart';
-import '/resources/widgets/cached_image_widget.dart';
 import '/resources/widgets/notification_icon_widget.dart';
-import '/resources/widgets/product_item_container_widget.dart';
 
 class CompoHomeWidget extends StatefulWidget {
   CompoHomeWidget({super.key, required this.wooSignalApp});
@@ -55,6 +51,10 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
   HomeNewInDonna? homeNewInDonna;
   HomeNewInUomo? homeNewInUomo;
 
+  List<ProductCategory> categories = [];
+  Map<ProductCategory, List<Product>> categoryAndProducts = {};
+
+  PageController controller = PageController(initialPage: 0);
   bool loadHomeCompleted = false;
 
   @override
@@ -177,6 +177,153 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     }
   }
 
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: StoreLogo(),
+        actions: [
+          Flexible(
+              child: Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: NotificationIcon(),
+          )),
+        ],
+        elevation: 8,
+      ),
+      body: categoryAndProducts.isEmpty
+          ? AppLoaderWidget()
+          : PageView(
+              controller: controller,
+              scrollDirection: Axis.vertical,
+              children: [
+                ///1. Video Section
+                _videoSectionWidget(
+                  context,
+                  homeBanner,
+                  _controller,
+                  homeFlashPromo,
+                ),
+
+                ///2. Category Cover Sections
+                ...categoryAndProducts.entries.map((catProds) {
+                  return _categoryCoverSection(context, catProds, homeInfluencer, homeHottest, homeNewInDonna, homeNewInUomo);
+                }),
+              ],
+            ),
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+///1. Video Section
+Widget _videoSectionWidget(BuildContext context, HomeBanner? homeBanner, VideoPlayerController? _controller, HomeFlashPromo? homeFlashPromo) {
+  ///1A. Flash Promo Section
+  Widget _flashPromoSectionWidget(BuildContext context, HomeFlashPromo? homeFlashPromo) {
+    return Container(
+      child: (homeFlashPromo != null && (homeFlashPromo.title ?? "").isNotEmpty)
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 22,
+                  child: Marquee(
+                    text: homeFlashPromo.title ?? "",
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 20),
+                    scrollAxis: Axis.horizontal,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    blankSpace: 20.0,
+                    velocity: 100.0,
+                    pauseAfterRound: Duration(seconds: 1),
+                    startPadding: 10.0,
+                    accelerationDuration: Duration(seconds: 1),
+                    accelerationCurve: Curves.linear,
+                    decelerationDuration: Duration(milliseconds: 500),
+                    decelerationCurve: Curves.easeOut,
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            )
+          : SizedBox.shrink(),
+    );
+  }
+
+  if (homeBanner?.homeVideoBanner != null && _controller != null && _controller.value.isInitialized) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: AnimatedOpacity(
+        duration: Duration(milliseconds: 500),
+        opacity: homeBanner?.homeVideoBanner != null ? 1 : 0,
+        child: GestureDetector(
+          onTap: () => openBrowserTab(url: homeBanner?.videoLink ?? ""),
+          child: AspectRatio(
+            aspectRatio: _controller.value.aspectRatio,
+            child: Container(
+              child: Center(
+                child: Stack(
+                  children: [
+                    VideoPlayer(
+                      _controller,
+                    ),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 2.5),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              homeBanner?.homeTitle ?? "",
+                              style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
+                            ),
+                            Text(
+                              homeBanner?.homeSubtitle ?? "",
+                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+                            ),
+                            SizedBox(height: 32),
+                            AnimatedOpacity(
+                              opacity: 1.0,
+                              duration: Duration(seconds: 1),
+                              child: Icon(
+                                Icons.keyboard_double_arrow_down,
+                                color: Colors.white,
+                                size: 32,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: _flashPromoSectionWidget(context, homeFlashPromo),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  return SizedBox.shrink();
+}
+
+///2. Category Cover Sections
+Widget _categoryCoverSection(BuildContext context, MapEntry<ProductCategory, List<Product>> catProds, HomeInfluencer? homeInfluencer, HomeHottest? homeHottest,
+    HomeNewInDonna? homeNewInDonna, HomeNewInUomo? homeNewInUomo) {
   List<String> _getCategoryImages(int catId) {
     switch (catId) {
       case 386:
@@ -219,217 +366,74 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     return "";
   }
 
-  List<ProductCategory> categories = [];
-  Map<ProductCategory, List<Product>> categoryAndProducts = {};
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-
-    Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: StoreLogo(),
-        actions: [
-          Flexible(
-              child: Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: NotificationIcon(),
-          )),
-        ],
-        elevation: 8,
-      ),
-      body: categoryAndProducts.isEmpty
-          ? AppLoaderWidget()
-          : ListView(
-              shrinkWrap: true,
-              children: [
-                if (homeBanner?.homeVideoBanner != null && _controller != null && _controller!.value.isInitialized)
-                  AnimatedOpacity(
-                    duration: Duration(milliseconds: 500),
-                    opacity: homeBanner?.homeVideoBanner != null ? 1 : 0,
-                    child: GestureDetector(
-                      onTap: () => openBrowserTab(url: homeBanner?.videoLink ?? ""),
-                      child: AspectRatio(
-                        aspectRatio: _controller!.value.aspectRatio,
-                        child: Container(
-                          child: Center(
-                            child: Stack(
-                              children: [
-                                VideoPlayer(
-                                  _controller!,
-                                ),
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 16.0),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          homeBanner?.homeTitle ?? "",
-                                          style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
-                                        ),
-                                        Text(
-                                          homeBanner?.homeSubtitle ?? "",
-                                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                if (homeFlashPromo != null && (homeFlashPromo?.title ?? "").isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 20,
-                    child: Marquee(
-                      text: homeFlashPromo?.title ?? "",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                      scrollAxis: Axis.horizontal,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      blankSpace: 20.0,
-                      velocity: 100.0,
-                      pauseAfterRound: Duration(seconds: 1),
-                      startPadding: 10.0,
-                      accelerationDuration: Duration(seconds: 1),
-                      accelerationCurve: Curves.linear,
-                      decelerationDuration: Duration(milliseconds: 500),
-                      decelerationCurve: Curves.easeOut,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                ...categoryAndProducts.entries.map((catProds) {
-                  double containerHeight = size.height / 0.8;
-                  return Container(
-                    height: containerHeight,
-                    width: size.width,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        FlutterCarousel(
-                          options: CarouselOptions(
-                            viewportFraction: 1,
-                            height: containerHeight / 1.8,
-                            showIndicator: true,
-                            slideIndicator: CircularSlideIndicator(),
-                          ),
-                          items: _getCategoryImages(catProds.key.id!).map((image) {
-                            return InkWell(
-                              child: Stack(
-                                children: [
-                                  CachedImageWidget(
-                                    image: image,
-                                    height: containerHeight / 1.6,
-                                    width: MediaQuery.of(context).size.width,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  Align(
-                                    alignment: Alignment.bottomLeft,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(bottom: 24.0, left: 8),
-                                      child: Container(
-                                        color: Colors.black38,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment: MainAxisAlignment.end,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                _getCatTitle(catProds.key.id!),
-                                                style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
-                                              ),
-                                              Text(
-                                                _getCatSubtitle(catProds.key.id!),
-                                                style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              onTap: () => _showCategory(catProds.key),
-                            );
-                          }).toList(),
-                        ),
-                        const SizedBox(height: 16),
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minHeight: 50,
-                            minWidth: double.maxFinite,
-                            maxHeight: 80.0,
-                            maxWidth: double.maxFinite,
-                          ),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: AutoSizeText(
-                                    parseHtmlString(catProds.key.name!),
-                                    style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold, fontSize: 22),
-                                    maxLines: 1,
-                                  ),
-                                ),
-                                Flexible(
-                                  child: Container(
-                                    width: size.width / 3,
-                                    child: LinkButton(
-                                      title: trans("View All"),
-                                      action: () => _showCategory(catProds.key),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Container(
-                          height: containerHeight / 2.8,
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: false,
-                            itemBuilder: (cxt, i) {
-                              Product product = catProds.value[i];
-                              return Container(
-                                width: size.width / 2.5,
-                                child: ProductItemContainer(product: product, onTap: () => _showProduct(product)),
-                              );
-                            },
-                            itemCount: catProds.value.length,
-                          ),
-                        )
-                      ],
-                    ),
-                  );
-                }),
-              ],
-            ),
-    );
-  }
-
   _showCategory(ProductCategory productCategory) {
     routeTo(BrowseCategoryPage.path, data: productCategory);
   }
 
-  _showProduct(Product product) => routeTo(ProductDetailPage.path, data: product);
-
-  @override
-  bool get wantKeepAlive => true;
+  return FlutterCarousel(
+    options: CarouselOptions(
+      viewportFraction: 1,
+      height: MediaQuery.of(context).size.height,
+      showIndicator: true,
+      slideIndicator: CircularSlideIndicator(),
+      indicatorMargin: 96,
+    ),
+    items: _getCategoryImages(catProds.key.id!).map((image) {
+      return InkWell(
+        child: Stack(
+          children: [
+            CachedImageWidget(
+              image: image,
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              fit: BoxFit.cover,
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 2.2, bottom: 24.0, left: 8),
+                child: Container(
+                  color: Colors.black38,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _getCatTitle(catProds.key.id!),
+                          style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
+                        ),
+                        Text(
+                          _getCatSubtitle(catProds.key.id!),
+                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+                        ),
+                        SizedBox(height: 16),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "View More".tr(),
+                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.white,
+                              size: 16,
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        onTap: () => _showCategory(catProds.key),
+      );
+    }).toList(),
+  );
 }
