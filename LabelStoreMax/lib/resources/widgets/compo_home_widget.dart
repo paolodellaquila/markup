@@ -47,7 +47,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
   HomeBanner? homeBanner;
   HomeFlashPromo? homeFlashPromo;
   HomeHottest? homeHottest;
-  HomeInfluencer? homeInfluencer;
+  HomeTrend? homeTrend;
   HomeNewInDonna? homeNewInDonna;
   HomeNewInUomo? homeNewInUomo;
 
@@ -82,7 +82,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
         final banner = snapshot.child("banner");
         final flashPromo = snapshot.child("flashPromo");
         final hottest = snapshot.child("hottest");
-        final influencer = snapshot.child("influencer");
+        final trend = snapshot.child("trend");
         final new_donna = snapshot.child("new-donna");
         final new_uomo = snapshot.child("new-uomo");
 
@@ -106,10 +106,10 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
           images: (hottest.child("images").value as List<dynamic>).map((value) => value.toString()).toList(),
         );
 
-        homeInfluencer = HomeInfluencer(
-          title: influencer.child("title").value.toString(),
-          subtitle: influencer.child("subtitle").value.toString(),
-          images: (influencer.child("images").value as List<dynamic>).map((value) => value.toString()).toList(),
+        homeTrend = HomeTrend(
+          title: trend.child("title").value.toString(),
+          subtitle: trend.child("subtitle").value.toString(),
+          images: (trend.child("images").value as List<dynamic>).map((value) => value.toString()).toList(),
         );
 
         homeNewInDonna = HomeNewInDonna(
@@ -146,13 +146,10 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     await _loadFirebaseData();
 
     //HOME CATEGORIES
-    ///influencer 386
-    ///hottest 387
     ///new in donna 196
     ///new in uomo 195
-    List<int> productCategoryId = [386, 387];
-    categories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, include: productCategoryId)));
-
+    ///trend 393
+    ///hottest 387
     List<int> subNewproductCategoryId = [196, 195];
     categories.addAll(await (appWooSignal((api) => api.getProductCategories(parent: 193, perPage: 50, include: subNewproductCategoryId))));
 
@@ -161,6 +158,9 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     final indexDonna = categories.indexWhere((cat) => (cat.slug ?? "").contains("donna_173"));
     categories[indexUomo].name = "New in Uomo";
     categories[indexDonna].name = "New in Donna";
+
+    List<int> productCategoryId = [393, 387];
+    categories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, include: productCategoryId)));
 
     for (var category in categories) {
       List<Product> products = await (appWooSignal(
@@ -210,7 +210,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
 
                 ///2. Category Cover Sections
                 ...categoryAndProducts.entries.map((catProds) {
-                  return _categoryCoverSection(context, catProds, homeInfluencer, homeHottest, homeNewInDonna, homeNewInUomo);
+                  return _categoryCoverSection(context, catProds, homeTrend, homeHottest, homeNewInDonna, homeNewInUomo);
                 }),
               ],
             ),
@@ -322,12 +322,12 @@ Widget _videoSectionWidget(BuildContext context, HomeBanner? homeBanner, VideoPl
 }
 
 ///2. Category Cover Sections
-Widget _categoryCoverSection(BuildContext context, MapEntry<ProductCategory, List<Product>> catProds, HomeInfluencer? homeInfluencer, HomeHottest? homeHottest,
+Widget _categoryCoverSection(BuildContext context, MapEntry<ProductCategory, List<Product>> catProds, HomeTrend? homeTrend, HomeHottest? homeHottest,
     HomeNewInDonna? homeNewInDonna, HomeNewInUomo? homeNewInUomo) {
   List<String> _getCategoryImages(int catId) {
     switch (catId) {
       case 386:
-        return homeInfluencer?.images ?? [];
+        return homeTrend?.images ?? [];
       case 387:
         return homeHottest?.images ?? [];
       case 196:
@@ -341,7 +341,7 @@ Widget _categoryCoverSection(BuildContext context, MapEntry<ProductCategory, Lis
   String _getCatTitle(int catId) {
     switch (catId) {
       case 386:
-        return homeInfluencer?.title ?? "";
+        return homeTrend?.title ?? "";
       case 387:
         return homeHottest?.title ?? "";
       case 196:
@@ -355,7 +355,7 @@ Widget _categoryCoverSection(BuildContext context, MapEntry<ProductCategory, Lis
   String _getCatSubtitle(int catId) {
     switch (catId) {
       case 386:
-        return homeInfluencer?.subtitle ?? "";
+        return homeTrend?.subtitle ?? "";
       case 387:
         return homeHottest?.subtitle ?? "";
       case 196:
