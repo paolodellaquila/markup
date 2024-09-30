@@ -11,12 +11,14 @@ class CartItemContainer extends StatelessWidget {
     required this.actionIncrementQuantity,
     required this.actionDecrementQuantity,
     required this.actionRemoveItem,
+    this.actionShareItem,
   });
 
   final CartLineItem cartLineItem;
   final void Function() actionIncrementQuantity;
   final void Function() actionDecrementQuantity;
   final void Function() actionRemoveItem;
+  final void Function()? actionShareItem;
 
   @override
   Widget build(BuildContext context) {
@@ -51,8 +53,10 @@ class CartItemContainer extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               Expanded(
+                                flex: 3,
                                 child: Text(
                                   cartLineItem.name!,
                                   style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.bold),
@@ -60,12 +64,29 @@ class CartItemContainer extends StatelessWidget {
                                   maxLines: 3,
                                 ),
                               ),
-                              // IconButton(
-                              //   alignment: Alignment.centerRight,
-                              //   icon: Icon(Icons.delete_outline, color: Colors.deepOrangeAccent, size: 20),
-                              //   onPressed: actionRemoveItem,
-                              //   highlightColor: Colors.transparent,
-                              // )
+                              Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: actionRemoveItem,
+                                    child: Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.deepOrangeAccent,
+                                      size: 18,
+                                    ),
+                                  ),
+                                  if (actionShareItem != null) ...[
+                                    SizedBox(width: 16),
+                                    GestureDetector(
+                                      onTap: actionShareItem,
+                                      child: Icon(
+                                        Icons.share,
+                                        color: Colors.blue,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
                             ],
                           ),
                           SizedBox(height: 8),

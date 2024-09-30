@@ -278,7 +278,6 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
     if (selectedVariation == null) {
       showToastNotification(context,
           title: trans("Sorry"), description: trans("This item is out of stock"), style: ToastNotificationStyleType.WARNING, icon: Icons.local_shipping);
-      return;
     }
 
     setState(() {

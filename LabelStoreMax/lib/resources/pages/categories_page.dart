@@ -115,7 +115,6 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
                           autoFocus: false,
                           textCapitalization: TextCapitalization.sentences,
                           onSubmitted: (_) => _actionSearch,
-                          onTapOutside: (_) => _actionSearch(),
                         ),
                         const SizedBox(height: 16),
                         PrimaryButton(
