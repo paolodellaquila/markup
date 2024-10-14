@@ -18,16 +18,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   bool _checkIsAppLocked = false;
 
-  _navigateToHome() {
-    routeTo(HomePage.path, navigationType: NavigationType.pushReplace, pageTransition: PageTransitionType.fade);
-  }
-
-  _initTimer() async {
-    Future.delayed(Duration(seconds: 1), () {
-      _navigateToHome();
-    });
-  }
-
   _checkAppVersion() async {
     await RemoteConfigManager.instance.init();
     _checkIsAppLocked = await AppVersionCheck.checkAppVersion();
@@ -65,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ));
     }
 
-    _initTimer();
+    routeTo(HomePage.path, navigationType: NavigationType.pushReplace, pageTransition: PageTransitionType.fade);
   }
 
   @override
@@ -80,18 +70,15 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       extendBody: true,
-      body: GestureDetector(
-        onTap: () => _navigateToHome(),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset(width: 196, height: 196, "public/assets/app_icon/appicon.png"),
-              SizedBox(height: 4),
-              CircularProgressIndicator(),
-            ],
-          ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(width: 196, height: 196, "public/assets/app_icon/appicon.png"),
+            SizedBox(height: 4),
+            CircularProgressIndicator(),
+          ],
         ),
       ),
     );
