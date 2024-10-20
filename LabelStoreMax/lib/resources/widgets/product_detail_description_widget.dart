@@ -16,11 +16,13 @@ import 'package:flutter_app/bootstrap/helpers.dart';
 import 'package:flutter_app/utils/colors_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
+import 'package:woosignal/models/response/product_variation.dart';
 
 class ProductDetailColorSizeWidget extends StatefulWidget {
-  const ProductDetailColorSizeWidget({super.key, required this.product, required this.onSizeColorSelected});
+  const ProductDetailColorSizeWidget({super.key, required this.product, required this.onSizeColorSelected, required this.productVariations});
 
   final Product? product;
+  final List<ProductVariation> productVariations;
   final void Function(String? size, String? color) onSizeColorSelected;
 
   @override
@@ -43,12 +45,19 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ///check monovariante for color
-      if (widget.product?.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore")) != null &&
+      /*if (widget.product?.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore")) != null &&
           widget.product!.attributes
               .firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!
               .options!
-              .where((e) => !e.toLowerCase().contains("variante"))
+              .where((e) => !e.toLowerCase().contains("variante") && !e.toLowerCase().contains("VARI. 1"))
               .isEmpty) {
+        selectedColor = widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!.first;
+      }*/
+
+      ///Maybe the above code is not needed, so we can remove it and use the below code
+      ///Check if color is 1, stop
+      if (widget.product?.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore")) != null &&
+          widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!.length == 1) {
         selectedColor = widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!.first;
       }
     });
@@ -69,11 +78,7 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
           ),
         ),
         if (widget.product?.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore")) != null &&
-            widget.product!.attributes
-                .firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!
-                .options!
-                .where((e) => !e.toLowerCase().contains("variante"))
-                .isNotEmpty) ...[
+            widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!.length != 1) ...[
           Padding(
             padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
             child: Column(
@@ -99,11 +104,15 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                               padding: EdgeInsets.only(right: 8, top: 8),
                               child: GestureDetector(
                                 onTap: () {
-                                  HapticFeedback.mediumImpact();
-                                  setState(() {
-                                    selectedColor = color.name;
-                                    checkSizeColorSelected();
-                                  });
+                                  if (widget.productVariations
+                                      .where((variations) => variations.sku!.toLowerCase().contains("-${color.name.toLowerCase()}"))
+                                      .isNotEmpty) {
+                                    HapticFeedback.mediumImpact();
+                                    setState(() {
+                                      selectedColor = color.name;
+                                      checkSizeColorSelected();
+                                    });
+                                  }
                                 },
                                 child: Stack(
                                   children: [
@@ -113,7 +122,7 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                                       decoration: BoxDecoration(
                                         color: HexColor.fromHex(color.hex),
                                         border: Border.all(color: Colors.black38, width: selectedColor == color.name ? 1 : 0.5),
-                                        borderRadius: BorderRadius.circular(32),
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
                                     ),
                                     if (selectedColor == color.name)
@@ -125,7 +134,21 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                                           color: color.name.contains("Nero") ? Colors.white : Colors.black,
                                           size: 16,
                                         ),
-                                      )
+                                      ),
+                                    if (widget.productVariations
+                                        .where((variations) => variations.sku!.toLowerCase().contains("-${color.name.toLowerCase()}"))
+                                        .isEmpty) ...[
+                                      Positioned.fill(
+                                        top: 0,
+                                        right: 0,
+                                        child: Text("/",
+                                            textAlign: TextAlign.center,
+                                            style: context.textTheme().bodySmall?.copyWith(
+                                                  fontSize: 24,
+                                                  color: Colors.grey,
+                                                )),
+                                      ),
+                                    ]
                                   ],
                                 ),
                               ),
@@ -173,28 +196,51 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                         padding: EdgeInsets.only(right: 8, top: 8),
                         child: GestureDetector(
                           onTap: () {
-                            HapticFeedback.mediumImpact();
-                            setState(() {
-                              selectedSize = taglia;
-                              checkSizeColorSelected();
-                            });
+                            if (widget.productVariations
+                                .where((variations) => variations.sku!.toLowerCase().contains("${selectedColor?.toLowerCase()}-${taglia.toLowerCase()}"))
+                                .isNotEmpty) {
+                              HapticFeedback.mediumImpact();
+                              setState(() {
+                                selectedSize = taglia;
+                                checkSizeColorSelected();
+                              });
+                            }
                           },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: selectedSize == taglia ? Colors.black38 : Colors.grey, width: selectedSize == taglia ? 2 : 0.5),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            width: selectedSize == taglia ? 42 : 38,
-                            height: selectedSize == taglia ? 42 : 38,
-                            child: Center(
-                              child: AutoSizeText(
-                                taglia,
-                                style: context.textTheme().titleSmall?.copyWith(
-                                      color: selectedSize == taglia ? Colors.black : Colors.grey,
-                                      fontWeight: selectedSize == taglia ? FontWeight.w700 : FontWeight.w500,
-                                    ),
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: selectedSize == taglia ? Colors.black38 : Colors.grey, width: selectedSize == taglia ? 2 : 0.5),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                width: selectedSize == taglia ? 42 : 38,
+                                height: selectedSize == taglia ? 42 : 38,
+                                child: Center(
+                                  child: AutoSizeText(
+                                    taglia,
+                                    style: context.textTheme().titleSmall?.copyWith(
+                                          color: selectedSize == taglia ? Colors.black : Colors.grey,
+                                          fontWeight: selectedSize == taglia ? FontWeight.w700 : FontWeight.w500,
+                                        ),
+                                  ),
+                                ),
                               ),
-                            ),
+                              if (widget.productVariations
+                                      .where((variations) => variations.sku!.toLowerCase().contains("${selectedColor?.toLowerCase()}-${taglia.toLowerCase()}"))
+                                      .isEmpty &&
+                                  selectedColor != null) ...[
+                                Positioned.fill(
+                                  top: 0,
+                                  right: 0,
+                                  child: Text("/",
+                                      textAlign: TextAlign.center,
+                                      style: context.textTheme().bodySmall?.copyWith(
+                                            fontSize: 32,
+                                            color: Colors.grey,
+                                          )),
+                                ),
+                              ]
+                            ],
                           ),
                         ),
                       );
@@ -213,6 +259,7 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
             padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
             child: GestureDetector(
               onTap: () {
+                HapticFeedback.mediumImpact();
                 setState(() {
                   selectedColor = null;
                   selectedSize = null;

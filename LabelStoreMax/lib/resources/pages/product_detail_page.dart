@@ -237,6 +237,7 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
                         child: ProductDetailBodyWidget(
                           wooSignalApp: _wooSignalApp,
                           product: _product,
+                          productVariations: _productVariations,
                           selectedProductVariation: _selectedProductVariation,
                           productOnSalePrice:
                               _product!.onSale == true ? _productVariations.firstWhereOrNull((product) => product.onSale == true)?.salePrice : null,

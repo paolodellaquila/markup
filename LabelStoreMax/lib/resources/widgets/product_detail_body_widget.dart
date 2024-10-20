@@ -26,6 +26,7 @@ class ProductDetailBodyWidget extends StatefulWidget {
   const ProductDetailBodyWidget({
     super.key,
     required this.product,
+    required this.productVariations,
     required this.wooSignalApp,
     required this.onSizeColorSelected,
     this.selectedProductVariation,
@@ -34,6 +35,7 @@ class ProductDetailBodyWidget extends StatefulWidget {
   });
 
   final Product? product;
+  final List<ProductVariation> productVariations;
   final ProductVariation? selectedProductVariation;
   final WooSignalApp? wooSignalApp;
   final String? productOnSalePrice;
@@ -68,7 +70,7 @@ class _ProductDetailBodyWidgetState extends State<ProductDetailBodyWidget> {
         ),
         // </Header title + price>
 
-        ProductDetailColorSizeWidget(product: widget.product, onSizeColorSelected: widget.onSizeColorSelected),
+        ProductDetailColorSizeWidget(product: widget.product, productVariations: widget.productVariations, onSizeColorSelected: widget.onSizeColorSelected),
         // </Description body>
 
         ProductDetailReviewsWidget(product: widget.product, wooSignalApp: widget.wooSignalApp),

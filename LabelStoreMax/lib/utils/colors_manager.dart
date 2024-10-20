@@ -33,7 +33,10 @@ class ColorsManager {
     List<ProductColor> colorList = [];
     for (var color in colors) {
       final colorData = this.colors.firstWhereOrNull((element) => element.name.toLowerCase() == color.toLowerCase());
-      if (colorData != null) colorList.add(colorData);
+      if (colorData != null)
+        colorList.add(colorData);
+      else
+        colorList.add(ProductColor(name: color, hex: "#D3D3D3"));
     }
     return colorList;
   }
