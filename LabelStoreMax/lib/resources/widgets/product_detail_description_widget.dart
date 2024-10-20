@@ -196,6 +196,13 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                         padding: EdgeInsets.only(right: 8, top: 8),
                         child: GestureDetector(
                           onTap: () {
+                            if (selectedColor == null) {
+                              HapticFeedback.mediumImpact();
+                              showToastNotification(context,
+                                  title: "Attention".tr(), description: "Please select a color first".tr(), style: ToastNotificationStyleType.WARNING);
+                              return;
+                            }
+
                             if (widget.productVariations
                                 .where((variations) => variations.sku!.toLowerCase().contains("${selectedColor?.toLowerCase()}-${taglia.toLowerCase()}"))
                                 .isNotEmpty) {
