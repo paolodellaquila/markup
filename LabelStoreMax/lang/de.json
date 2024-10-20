@@ -30,7 +30,7 @@
   "Choose your options": "Wählen Sie Ihre Optionen",
   "Out of stock": "Ausverkauft",
   "Clear Selection": "Auswahl löschen",
-  "Select Size": "Größe wählen",
+  "Select Size": "Wählen",
   "Discount": "Rabatt",
   "View Order": "Bestellung anzeigen",
   "Read": "Lesen",
@@ -277,5 +277,6 @@
   "Free (Coupon)": "Kostenlos (Gutschein)",
   "Update Needed": "Update benötigt",
   "Swipe left to share or delete an item": "Wischen Sie nach links, um einen Artikel zu teilen oder zu löschen",
-  "View More": "Mehr anzeigen"
+  "View More": "Mehr anzeigen",
+  "Color": "Farbe"
 }

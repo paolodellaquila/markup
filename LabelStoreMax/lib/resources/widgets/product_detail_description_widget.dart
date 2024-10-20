@@ -80,6 +80,17 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Color".tr() + ":" + " ${selectedColor ?? ''} ",
+                      style: context.textTheme().bodySmall?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 Wrap(
                   children: [
                     ...ColorsManager()
@@ -140,7 +151,7 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Select Size".tr(),
+                      "Select Size".tr() + ":" + " ${selectedSize ?? ''} ",
                       style: context.textTheme().bodySmall?.copyWith(fontWeight: FontWeight.w700),
                     ),
                     GestureDetector(
@@ -171,10 +182,10 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                           child: Container(
                             decoration: BoxDecoration(
                               border: Border.all(color: selectedSize == taglia ? Colors.black38 : Colors.grey, width: selectedSize == taglia ? 2 : 0.5),
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                            width: selectedSize == taglia ? 36 : 32,
-                            height: selectedSize == taglia ? 36 : 32,
+                            width: selectedSize == taglia ? 42 : 38,
+                            height: selectedSize == taglia ? 42 : 38,
                             child: Center(
                               child: AutoSizeText(
                                 taglia,
@@ -208,12 +219,19 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                   widget.onSizeColorSelected(null, null);
                 });
               },
-              child: Text(
-                "Clear Selection".tr(),
-                style: context.textTheme().bodyMedium!.copyWith(
-                      fontSize: 14,
-                      color: Colors.red,
-                    ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  Text(
+                    "Clear Selection".tr(),
+                    style: context.textTheme().bodyMedium!.copyWith(
+                          fontSize: 14,
+                          color: Colors.red,
+                        ),
+                  ),
+                ],
               ),
             ),
           )

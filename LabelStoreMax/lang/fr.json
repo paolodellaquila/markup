@@ -17,7 +17,7 @@
   "App Blocked": "Impossible de lancer l'application",
   "App Blocked Desc": "Nous vous invitons à mettre à jour l'application pour continuer à l'utiliser.",
   "Clear Cart": "Vider le panier",
-  "Select Size": "Sélectionner la taille",
+  "Select Size": "Taille",
   "Discount": "Remise",
   "View Order": "Voir la commande",
   "Read": "Lire",
@@ -277,5 +277,6 @@
   "Free (Coupon)": "Gratuit (Coupon)",
   "Update Needed": "Mise à jour nécessaire",
   "Swipe left to share or delete an item": "Balayez vers la gauche pour partager ou supprimer un élément",
-  "View More": "Voir plus"
+  "View More": "Voir plus",
+  "Color": "Couleur"
 }

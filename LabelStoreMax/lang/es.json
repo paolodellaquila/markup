@@ -16,7 +16,7 @@
   "Update": "Actualizar",
   "Share": "Compartir",
   "App Blocked": "No se puede iniciar la aplicación",
-  "Select Size": "Seleccionar tamaño",
+  "Select Size": "Tamaño",
   "Discount": "Descuento",
   "View Order": "Ver pedido",
   "Read": "Leer",
@@ -277,5 +277,6 @@
   "Free (Coupon)": "Gratis (Cupón)",
   "Update Needed": "Actualización necesaria",
   "Swipe left to share or delete an item": "Desliza hacia la izquierda para compartir o eliminar un artículo",
-  "View More": "Ver más"
+  "View More": "Ver más",
+  "Color": "Color"
 }

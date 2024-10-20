@@ -98,6 +98,16 @@ class ProductDetailHeaderWidget extends StatelessWidget {
           const SizedBox(
             height: 8,
           ),
+          AutoSizeText(
+            product!.sku!.isNotEmpty ? " (${product!.sku})" : "",
+            style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontSize: 14),
+            textAlign: TextAlign.left,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
+          const SizedBox(
+            height: 16,
+          ),
           Container(
             child: HtmlWidget(product!.shortDescription!.isNotEmpty ? product!.shortDescription! : product!.description!, renderMode: RenderMode.column,
                 onTapUrl: (String url) async {
