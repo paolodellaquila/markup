@@ -55,7 +55,6 @@ dependencies:
   flutter_carousel_widget: ^2.2.0
   share_plus: ^9.0.0
 
-
   #firebase
   firebase_messaging: ^14.9.3
   firebase_database: ^10.4.5

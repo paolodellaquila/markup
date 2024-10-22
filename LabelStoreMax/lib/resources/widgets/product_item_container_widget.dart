@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/utils/price_extractor.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
 
@@ -15,6 +16,17 @@ class ProductItemContainer extends StatelessWidget {
 
   final Product? product;
   final Function()? onTap;
+
+  _calculateDiscountPrice({String? regularPrice, String? salePrice}) {
+    double? discountPercentage;
+    if (regularPrice != null && salePrice != null) {
+      double regular = double.parse(regularPrice.replaceAll(",", "."));
+      double sale = double.parse(salePrice);
+      discountPercentage = ((regular - sale) / regular) * 100;
+    }
+
+    return discountPercentage?.round();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +74,7 @@ class ProductItemContainer extends StatelessWidget {
                         child: Container(
                           padding: EdgeInsets.all(4),
                           child: Text(
-                            "%",
+                            "${_calculateDiscountPrice(regularPrice: PriceExtractor.extractRegularPrice(product?.priceHtml), salePrice: product?.price)}%",
                             style: TextStyle(color: Colors.white),
                           ),
                           decoration: BoxDecoration(color: Colors.red),
@@ -115,12 +127,23 @@ class ProductItemContainer extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  if (product?.onSale ?? false) ...[
+                    AutoSizeText(
+                      formatStringCurrency(total: PriceExtractor.extractRegularPrice(product?.priceHtml)),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyLarge!
+                          .copyWith(fontWeight: FontWeight.w600, decoration: TextDecoration.lineThrough, color: Colors.grey),
+                      textAlign: TextAlign.left,
+                    ),
+                    SizedBox(width: 4),
+                  ],
                   AutoSizeText(
                     formatStringCurrency(total: product?.price),
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w800),
                     textAlign: TextAlign.left,
                   ),
-                ].toList(),
+                ],
               ),
             ),
           ],
