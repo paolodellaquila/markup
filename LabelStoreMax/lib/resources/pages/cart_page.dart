@@ -10,10 +10,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/resources/pages/product_detail_page.dart';
+import 'package:flutter_app/resources/widgets/app_loader_widget.dart';
 import 'package:flutter_app/resources/widgets/cart_item_container_widget.dart';
 import 'package:flutter_swipe_action_cell/core/cell.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:woosignal/models/response/product.dart';
 import 'package:wp_json_api/wp_json_api.dart';
 
 import '/app/models/cart.dart';
@@ -41,10 +44,28 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
 
   List<CartLineItem> _cartLines = [];
 
+  bool pageIsLoading = false;
+
   @override
   boot() async {
     await _cartCheck();
     CheckoutSession.getInstance.coupon = null;
+  }
+
+  _showProduct(CartLineItem item) async {
+    setState(() {
+      pageIsLoading = true;
+    });
+
+    List<Product> products = await (appWooSignal(
+      (api) => api.getProducts(include: [item.productId!]),
+    ));
+
+    setState(() {
+      pageIsLoading = false;
+    });
+
+    routeTo(ProductDetailPage.path, data: products.first);
   }
 
   _cartCheck() async {
@@ -218,96 +239,107 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
         centerTitle: true,
       ),
       body: SafeAreaWidget(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
-              child: afterLoad(
-                  child: () => _cartLines.isEmpty
-                      ? FractionallySizedBox(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Icon(
-                                Icons.shopping_cart,
-                                size: 100,
-                                color: Colors.black45,
+        child: Stack(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  child: afterLoad(
+                      child: () => _cartLines.isEmpty
+                          ? FractionallySizedBox(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.shopping_cart,
+                                    size: 100,
+                                    color: Colors.black45,
+                                  ),
+                                  Padding(
+                                    child: Text(
+                                      trans("Empty Basket"),
+                                      style: Theme.of(context).textTheme.bodyMedium,
+                                    ),
+                                    padding: EdgeInsets.only(top: 10),
+                                  )
+                                ],
                               ),
-                              Padding(
-                                child: Text(
-                                  trans("Empty Basket"),
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                                padding: EdgeInsets.only(top: 10),
-                              )
-                            ],
-                          ),
-                          heightFactor: 0.5,
-                          widthFactor: 1,
-                        )
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.all(8),
-                          itemCount: _cartLines.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            CartLineItem cartLineItem = _cartLines[index];
-                            return SwipeActionCell(
-                              key: ObjectKey(cartLineItem),
-                              trailingActions: [
-                                if (cartLineItem.permalink != null) ...[
-                                  SwipeAction(
-                                    onTap: (CompletionHandler handler) async {
-                                      handler(false);
-                                      HapticFeedback.mediumImpact();
-                                      Share.share(cartLineItem.permalink!);
-                                    },
-                                    color: Colors.green,
-                                    icon: Icon(
-                                      Icons.share,
-                                      color: Colors.white,
+                              heightFactor: 0.5,
+                              widthFactor: 1,
+                            )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              padding: const EdgeInsets.all(8),
+                              itemCount: _cartLines.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                CartLineItem cartLineItem = _cartLines[index];
+                                return SwipeActionCell(
+                                  key: ObjectKey(cartLineItem),
+                                  trailingActions: [
+                                    if (cartLineItem.permalink != null) ...[
+                                      SwipeAction(
+                                        onTap: (CompletionHandler handler) async {
+                                          handler(false);
+                                          HapticFeedback.mediumImpact();
+                                          Share.share(cartLineItem.permalink!);
+                                        },
+                                        color: Colors.green,
+                                        icon: Icon(
+                                          Icons.share,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                    SwipeAction(
+                                      onTap: (CompletionHandler handler) async {
+                                        handler(false);
+                                        actionRemoveItem(index: index);
+                                      },
+                                      color: Colors.red,
+                                      icon: Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                  child: GestureDetector(
+                                    onTap: () => _showProduct(cartLineItem),
+                                    child: CartItemContainer(
+                                      cartLineItem: cartLineItem,
+                                      actionIncrementQuantity: () => actionIncrementQuantity(cartLineItem: cartLineItem),
+                                      actionDecrementQuantity: () => actionDecrementQuantity(cartLineItem: cartLineItem),
+                                      actionRemoveItem: () => actionRemoveItem(index: index),
+                                      actionShareItem: cartLineItem.permalink != null ? () => Share.share(cartLineItem.permalink!) : null,
                                     ),
                                   ),
-                                ],
-                                SwipeAction(
-                                  onTap: (CompletionHandler handler) async {
-                                    handler(false);
-                                    actionRemoveItem(index: index);
-                                  },
-                                  color: Colors.red,
-                                  icon: Icon(
-                                    Icons.delete_outline,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                              child: CartItemContainer(
-                                cartLineItem: cartLineItem,
-                                actionIncrementQuantity: () => actionIncrementQuantity(cartLineItem: cartLineItem),
-                                actionDecrementQuantity: () => actionDecrementQuantity(cartLineItem: cartLineItem),
-                                actionRemoveItem: () => actionRemoveItem(index: index),
-                                actionShareItem: cartLineItem.permalink != null ? () => Share.share(cartLineItem.permalink!) : null,
-                              ),
-                            );
-                          })),
-            ),
-            Divider(
-              color: Colors.black45,
-            ),
-            NyFutureBuilder<String>(
-              future: Cart.getInstance.getTotal(withFormat: true),
-              child: (BuildContext context, data) => Padding(
-                child: TextRowWidget(
-                  title: trans("Total"),
-                  text: isLoading() ? '' : data,
+                                );
+                              })),
                 ),
-                padding: EdgeInsets.only(bottom: 15, top: 15),
-              ),
-              loading: SizedBox.shrink(),
+                Divider(
+                  color: Colors.black45,
+                ),
+                NyFutureBuilder<String>(
+                  future: Cart.getInstance.getTotal(withFormat: true),
+                  child: (BuildContext context, data) => Padding(
+                    child: TextRowWidget(
+                      title: trans("Total"),
+                      text: isLoading() ? '' : data,
+                    ),
+                    padding: EdgeInsets.only(bottom: 15, top: 15),
+                  ),
+                  loading: SizedBox.shrink(),
+                ),
+                Card(child: PrimaryButton(title: trans("PROCEED TO CHECKOUT"), action: _actionProceedToCheckout)),
+                const SizedBox(height: 24)
+              ],
             ),
-            Card(child: PrimaryButton(title: trans("PROCEED TO CHECKOUT"), action: _actionProceedToCheckout)),
-            const SizedBox(height: 24)
+            if (pageIsLoading)
+              Center(
+                child: AppLoaderWidget(),
+              ),
           ],
         ),
       ),

@@ -56,10 +56,18 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
 
       ///Maybe the above code is not needed, so we can remove it and use the below code
       ///Check if color is 1, stop
-      if (widget.product?.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore")) != null &&
-          widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!.length == 1) {
+      // if (widget.product?.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore")) != null &&
+      //     widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!.length == 1) {
+      //   setState(() {
+      //     selectedColor = widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!.first;
+      //     checkSizeColorSelected();
+      //   });
+      // }
+      ///Default select the first color. It avoid the bug and make the user select the color
+      setState(() {
         selectedColor = widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!.first;
-      }
+        checkSizeColorSelected();
+      });
     });
   }
 
@@ -145,7 +153,7 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                                             textAlign: TextAlign.center,
                                             style: context.textTheme().bodySmall?.copyWith(
                                                   fontSize: 24,
-                                                  color: Colors.grey,
+                                                  color: color.name.toLowerCase().contains("nero") ? Colors.white : Colors.black,
                                                 )),
                                       ),
                                     ]
