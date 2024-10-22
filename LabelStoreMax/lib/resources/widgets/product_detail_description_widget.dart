@@ -64,10 +64,15 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
       //   });
       // }
       ///Default select the first color. It avoid the bug and make the user select the color
-      setState(() {
-        selectedColor = widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!.first;
-        checkSizeColorSelected();
-      });
+      for (var color in widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!) {
+        if (widget.productVariations.where((variations) => variations.sku!.toLowerCase().contains("-${color.toLowerCase()}")).isNotEmpty) {
+          setState(() {
+            selectedColor = color;
+            checkSizeColorSelected();
+          });
+          break;
+        }
+      }
     });
   }
 
