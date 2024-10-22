@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.3'
+        classpath 'com.android.tools.build:gradle:8.6.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.google.gms:google-services:4.3.12'
     }
@@ -16,6 +16,24 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+    }
+
+
+        subprojects {
+            afterEvaluate { project ->
+                if (project.hasProperty('android')) {
+                    project.android {
+                        if (namespace == null) {
+                            if (project.group == "com.example.FlutterToast") {
+                                namespace "io.github.ponnamkarthik.toast.fluttertoast"
+                            } else {
+                                namespace project.group
+                            }
+                        }
+                    }
+                }
+
+            }
     }
 }
 
