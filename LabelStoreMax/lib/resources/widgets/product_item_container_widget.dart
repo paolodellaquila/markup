@@ -34,7 +34,7 @@ class ProductItemContainer extends StatelessWidget {
       return SizedBox.shrink();
     }
 
-    double height = 310;
+    double height = 330;
     return InkWell(
       child: Container(
         margin: EdgeInsets.all(4),
@@ -43,7 +43,7 @@ class ProductItemContainer extends StatelessWidget {
           physics: NeverScrollableScrollPhysics(),
           children: <Widget>[
             Container(
-              height: 210,
+              height: 230,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(3.0),
                 child: Stack(

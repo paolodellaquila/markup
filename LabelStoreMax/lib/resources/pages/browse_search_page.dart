@@ -10,18 +10,18 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '/resources/widgets/product_item_container_widget.dart';
-import '/bootstrap/helpers.dart';
-import '/resources/pages/product_detail_page.dart';
-import '/resources/widgets/safearea_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart' as ws_product;
+
+import '/bootstrap/helpers.dart';
+import '/resources/pages/product_detail_page.dart';
+import '/resources/widgets/product_item_container_widget.dart';
+import '/resources/widgets/safearea_widget.dart';
 
 class BrowseSearchPage extends NyStatefulWidget {
   static String path = "/product-search";
 
-  BrowseSearchPage({Key? key})
-      : super(path, key: key, child: _BrowseSearchState());
+  BrowseSearchPage({Key? key}) : super(path, key: key, child: _BrowseSearchState());
 }
 
 class _BrowseSearchState extends NyState<BrowseSearchPage> {
@@ -40,11 +40,8 @@ class _BrowseSearchState extends NyState<BrowseSearchPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(trans("Search results for"),
-                style: Theme.of(context).textTheme.titleMedium),
-            afterNotNull(_search,
-                child: () => Text("\"${_search!}\""),
-                loading: CupertinoActivityIndicator())
+            Text(trans("Search results for"), style: Theme.of(context).textTheme.titleMedium),
+            afterNotNull(_search, child: () => Text("\"${_search!}\""), loading: CupertinoActivityIndicator())
           ],
         ),
         centerTitle: true,
@@ -53,7 +50,7 @@ class _BrowseSearchState extends NyState<BrowseSearchPage> {
           child: NyPullToRefresh.grid(child: (context, product) {
         product as ws_product.Product;
         return Container(
-          height: 300,
+          height: 320,
           child: ProductItemContainer(
             product: product,
             onTap: () {

@@ -60,7 +60,7 @@ class _ProductDetailRelatedProductsWidgetState extends State<ProductDetailRelate
           ),
         ),
         Container(
-          height: 310,
+          height: 320,
           padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
           child: NyFutureBuilder<List<Product>>(
             future: fetchRelated(),

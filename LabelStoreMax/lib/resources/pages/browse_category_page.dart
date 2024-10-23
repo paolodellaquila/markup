@@ -73,7 +73,7 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
         },
         child: (context, product) {
           return Container(
-            height: 300,
+            height: 320,
             child: ProductItemContainer(
               product: product,
               onTap: () => _showProduct(product),

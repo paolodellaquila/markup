@@ -149,7 +149,7 @@ class _MelloThemeWidgetState extends NyState<MelloThemeWidget> {
           child: (context, product) {
             product as ws_product.Product;
             return Container(
-              height: 300,
+              height: 320,
               child: ProductItemContainer(
                 product: product,
                 onTap: () => _showProduct(product),

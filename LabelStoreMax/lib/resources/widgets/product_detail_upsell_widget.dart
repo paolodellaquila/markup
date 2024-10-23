@@ -9,15 +9,15 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import '/resources/pages/product_detail_page.dart';
-import '/resources/widgets/product_item_container_widget.dart';
-import '/bootstrap/helpers.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
 
+import '/bootstrap/helpers.dart';
+import '/resources/pages/product_detail_page.dart';
+import '/resources/widgets/product_item_container_widget.dart';
+
 class ProductDetailUpsellWidget extends StatefulWidget {
-  ProductDetailUpsellWidget(
-      {required this.productIds, required this.wooSignalApp});
+  ProductDetailUpsellWidget({required this.productIds, required this.wooSignalApp});
   final List<int>? productIds;
   final WooSignalApp? wooSignalApp;
 
@@ -25,15 +25,13 @@ class ProductDetailUpsellWidget extends StatefulWidget {
   createState() => _ProductDetailUpsellWidgetState();
 }
 
-class _ProductDetailUpsellWidgetState
-    extends NyState<ProductDetailUpsellWidget> {
+class _ProductDetailUpsellWidgetState extends NyState<ProductDetailUpsellWidget> {
   @override
   boot() async {}
 
   @override
   Widget build(BuildContext context) {
-    if (widget.productIds!.isEmpty ||
-        widget.wooSignalApp!.showUpsellProducts == false) {
+    if (widget.productIds!.isEmpty || widget.wooSignalApp!.showUpsellProducts == false) {
       return SizedBox.shrink();
     }
 
@@ -50,31 +48,30 @@ class _ProductDetailUpsellWidgetState
             children: <Widget>[
               Text(
                 trans("${trans('You may also like')}…"),
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall!
-                    .copyWith(fontSize: 18),
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(fontSize: 18),
                 textAlign: TextAlign.left,
               ),
             ],
           ),
         ),
         Container(
-            height: 300,
+            height: 320,
             child: NyListView(
                 shrinkWrap: true,
                 scrollDirection: Axis.horizontal,
                 child: (context, product) {
                   return Container(
                     width: MediaQuery.of(context).size.width / 2.2,
-                    child: ProductItemContainer(product: product, onTap: () {
-                      routeTo(ProductDetailPage.path, data: product);
-                    },),
+                    child: ProductItemContainer(
+                      product: product,
+                      onTap: () {
+                        routeTo(ProductDetailPage.path, data: product);
+                      },
+                    ),
                   );
                 },
                 data: () {
-                  return appWooSignal(
-                      (api) => api.getProducts(include: widget.productIds));
+                  return appWooSignal((api) => api.getProducts(include: widget.productIds));
                 })),
       ],
     );
