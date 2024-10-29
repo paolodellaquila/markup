@@ -27,12 +27,11 @@ class FirebaseProvider implements NyProvider {
 
     if (firebaseFcmIsEnabled != true) return;
 
-    if(Firebase.apps.isEmpty){
+    if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
     }
-
 
     FirebaseMessaging.onBackgroundMessage(_messageHandler);
 
@@ -66,9 +65,13 @@ class FirebaseProvider implements NyProvider {
       WooSignal.instance.setWpUserId(wpUser.id.toString());
     }
 
-    String? token = await messaging.getToken();
-    if (token != null) {
-      WooSignal.instance.setFcmToken(token);
+    try {
+      String? token = await messaging.getToken();
+      if (token != null) {
+        WooSignal.instance.setFcmToken(token);
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }

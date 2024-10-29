@@ -8,8 +8,11 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'dart:async';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/resources/pages/product_detail_page.dart';
 import 'package:flutter_app/resources/widgets/cached_image_widget.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_banner.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_flash_promo.dart';
@@ -19,6 +22,7 @@ import 'package:flutter_app/resources/widgets/home_data/home_new_in_donna.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_new_in_uomo.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
 import 'package:flutter_app/utils/shake_service.dart';
+import 'package:flutter_app/utils/universal_manager_cubit.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:marquee/marquee.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -62,6 +66,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     // Start listening for shake events
     ShakeService().startListening(context);
     await _loadHome();
+    unawaited(_checkStartingDeeplinkProduct());
   }
 
   @override
@@ -70,6 +75,17 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     ShakeService().dispose();
     _controller?.dispose();
     super.dispose();
+  }
+
+  _checkStartingDeeplinkProduct() async {
+    final deeplinkProduct = UniversalLinkManagerCubit().deeplinkProduct;
+    if (deeplinkProduct != null && deeplinkProduct.isNotEmpty) {
+      List<Product> products = await appWooSignal((api) => api.getProducts(slug: deeplinkProduct));
+      if (products.isNotEmpty) {
+        UniversalLinkManagerCubit().deeplinkProduct = null;
+        routeTo(ProductDetailPage.path, data: products.first);
+      }
+    }
   }
 
   _loadFirebaseData() async {
