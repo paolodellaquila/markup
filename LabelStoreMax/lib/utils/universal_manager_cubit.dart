@@ -1,6 +1,7 @@
 import 'package:app_links/app_links.dart';
 import 'package:flutter_app/bootstrap/helpers.dart';
 import 'package:flutter_app/resources/pages/product_detail_page.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
 
@@ -50,7 +51,9 @@ class UniversalLinkManagerCubit {
     //extract product permalink from deep link
     deeplinkProduct = extractProductPermalink(deepLink.toString()) ?? '';
     if (deeplinkProduct != null && deeplinkProduct!.isNotEmpty) {
+      NyNavigator.instance.router.navigatorKey?.currentContext?.loaderOverlay.show();
       List<Product> products = await appWooSignal((api) => api.getProducts(slug: deeplinkProduct));
+      NyNavigator.instance.router.navigatorKey?.currentContext?.loaderOverlay.hide();
       if (products.isNotEmpty) {
         deeplinkProduct = null;
         routeTo(ProductDetailPage.path, data: products.first);

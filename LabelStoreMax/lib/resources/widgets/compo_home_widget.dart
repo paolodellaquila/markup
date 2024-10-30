@@ -24,6 +24,7 @@ import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
 import 'package:flutter_app/utils/shake_service.dart';
 import 'package:flutter_app/utils/universal_manager_cubit.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:marquee/marquee.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:video_player/video_player.dart';
@@ -80,7 +81,9 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
   _checkStartingDeeplinkProduct() async {
     final deeplinkProduct = UniversalLinkManagerCubit().deeplinkProduct;
     if (deeplinkProduct != null && deeplinkProduct.isNotEmpty) {
+      NyNavigator.instance.router.navigatorKey?.currentContext?.loaderOverlay.show();
       List<Product> products = await appWooSignal((api) => api.getProducts(slug: deeplinkProduct));
+      NyNavigator.instance.router.navigatorKey?.currentContext?.loaderOverlay.show();
       if (products.isNotEmpty) {
         UniversalLinkManagerCubit().deeplinkProduct = null;
         routeTo(ProductDetailPage.path, data: products.first);

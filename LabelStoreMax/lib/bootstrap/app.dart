@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 // ignore: must_be_immutable
@@ -67,34 +68,36 @@ class AppBuild extends StatelessWidget {
           child: Builder(
             builder: (themeContext) => ValueListenableBuilder(
               valueListenable: ValueNotifier(locale ?? NyLocalization.instance.locale),
-              builder: (context, Locale locale, _) => MaterialApp(
-                navigatorKey: navigatorKey,
-                themeMode: themeMode,
-                onGenerateTitle: onGenerateTitle,
-                onGenerateInitialRoutes: onGenerateInitialRoutes,
-                onUnknownRoute: onUnknownRoute,
-                builder: builder,
-                navigatorObservers: navigatorObservers,
-                color: color,
-                debugShowMaterialGrid: debugShowMaterialGrid,
-                showPerformanceOverlay: showPerformanceOverlay,
-                checkerboardRasterCacheImages: checkerboardRasterCacheImages,
-                checkerboardOffscreenLayers: checkerboardOffscreenLayers,
-                showSemanticsDebugger: showSemanticsDebugger,
-                debugShowCheckedModeBanner: debugShowCheckedModeBanner,
-                shortcuts: shortcuts,
-                actions: actions,
-                title: title ?? "",
-                initialRoute: initialRoute,
-                onGenerateRoute: onGenerateRoute,
-                darkTheme: lightTheme ?? appThemes.firstWhere((theme) => theme.id == getEnv('LIGHT_THEME_ID'), orElse: () => appThemes.first).data,
-                theme: themeData ?? ThemeProvider.themeOf(context).data,
-                localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
-                  return locale;
-                },
-                localizationsDelegates: NyLocalization.instance.delegates,
-                locale: NyLocalization.instance.locale,
-                supportedLocales: supportedLocales,
+              builder: (context, Locale locale, _) => LoaderOverlay(
+                child: MaterialApp(
+                  navigatorKey: navigatorKey,
+                  themeMode: themeMode,
+                  onGenerateTitle: onGenerateTitle,
+                  onGenerateInitialRoutes: onGenerateInitialRoutes,
+                  onUnknownRoute: onUnknownRoute,
+                  builder: builder,
+                  navigatorObservers: navigatorObservers,
+                  color: color,
+                  debugShowMaterialGrid: debugShowMaterialGrid,
+                  showPerformanceOverlay: showPerformanceOverlay,
+                  checkerboardRasterCacheImages: checkerboardRasterCacheImages,
+                  checkerboardOffscreenLayers: checkerboardOffscreenLayers,
+                  showSemanticsDebugger: showSemanticsDebugger,
+                  debugShowCheckedModeBanner: debugShowCheckedModeBanner,
+                  shortcuts: shortcuts,
+                  actions: actions,
+                  title: title ?? "",
+                  initialRoute: initialRoute,
+                  onGenerateRoute: onGenerateRoute,
+                  darkTheme: lightTheme ?? appThemes.firstWhere((theme) => theme.id == getEnv('LIGHT_THEME_ID'), orElse: () => appThemes.first).data,
+                  theme: themeData ?? ThemeProvider.themeOf(context).data,
+                  localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
+                    return locale;
+                  },
+                  localizationsDelegates: NyLocalization.instance.delegates,
+                  locale: NyLocalization.instance.locale,
+                  supportedLocales: supportedLocales,
+                ),
               ),
             ),
           ),
