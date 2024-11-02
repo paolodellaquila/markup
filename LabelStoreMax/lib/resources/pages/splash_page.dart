@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
     _checkIsAppLocked = await AppVersionCheck.checkAppVersion();
 
     if (_checkIsAppLocked) {
-      return showModalBottomSheet(
+      showModalBottomSheet(
           context: context,
           builder: (BuildContext context) => Padding(
                 padding: EdgeInsets.all(24),
@@ -53,6 +53,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   ],
                 ),
               ));
+      return;
     }
 
     routeTo(HomePage.path, navigationType: NavigationType.pushReplace, pageTransition: PageTransitionType.fade);

@@ -95,8 +95,15 @@ class _ProductDetailRelatedProductsWidgetState extends State<ProductDetailRelate
   }
 
   Future<List<Product>> fetchRelated() async {
+    if (widget.product?.categories.first == null) {
+      setState(() {
+        hasRelatedProducts = false;
+      });
+      return [];
+    }
+
     List<Product> products = await appWooSignal(
-      (api) => api.getProducts(perPage: 25, include: widget.product?.relatedIds, stockStatus: "instock", status: "publish"),
+      (api) => api.getProducts(perPage: 25, category: widget.product!.categories.first.id.toString(), stockStatus: "instock", status: "publish"),
     );
 
     if (products.isEmpty) {
