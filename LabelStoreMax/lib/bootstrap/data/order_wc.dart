@@ -35,7 +35,7 @@ Future<OrderWC> buildOrderWC({TaxRate? taxRate, bool markPaid = true}) async {
   orderWC.paymentMethodTitle = paymentMethodName.toLowerCase();
 
   orderWC.setPaid = markPaid;
-  orderWC.status = "completed";
+  orderWC.status = "processing";
   orderWC.currency = wooSignalApp.currencyMeta!.code!.toUpperCase();
   WpUser? wpUser = await WPJsonAPI.wpUser();
   if (wpUser != null && wooSignalApp.wpLoginEnabled == 1) {
