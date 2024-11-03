@@ -8,6 +8,7 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/resources/pages/product_detail_page.dart';
@@ -157,6 +158,20 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
           });
       return;
     }
+
+    ///firebase
+    FirebaseAnalytics.instance.logPurchase(
+      items: cartLineItems.map((cartItem) {
+        return AnalyticsEventItem(
+          itemCategory: cartItem.categories!.map((e) => e.name).join(","),
+          itemId: cartItem.productId.toString(),
+          itemName: cartItem.name,
+          price: parseWcPrice(cartItem.regularPrice),
+          quantity: cartItem.quantity,
+        );
+      }).toList(),
+    );
+
     routeTo(CheckoutConfirmationPage.path);
   }
 

@@ -8,6 +8,7 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bootstrap/app_helper.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
@@ -181,6 +182,9 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
       }
 
       event<LoginEvent>();
+
+      ///firebase
+      FirebaseAnalytics.instance.logLogin(loginMethod: "email");
 
       showToastNotification(context,
           title: trans("Hello"), description: trans("Welcome back"), style: ToastNotificationStyleType.SUCCESS, icon: Icons.account_circle);

@@ -11,6 +11,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/shipping_method.dart';
 import 'package:woosignal/models/response/tax_rate.dart';
@@ -55,6 +56,19 @@ class Cart {
     cartLineItems.add(cartLineItem);
 
     await saveCartToPref(cartLineItems: cartLineItems);
+
+    ///firebase
+    FirebaseAnalytics.instance.logAddToCart(
+      items: cartLineItems.map((cartItem) {
+        return AnalyticsEventItem(
+          itemCategory: cartItem.categories!.map((e) => e.name).join(","),
+          itemId: cartItem.productId.toString(),
+          itemName: cartItem.name,
+          price: parseWcPrice(cartItem.regularPrice),
+          quantity: cartItem.quantity,
+        );
+      }).toList(),
+    );
   }
 
   Future<String> getTotal({bool withFormat = false}) async {
@@ -112,6 +126,19 @@ class Cart {
     List<CartLineItem> cartLineItems = await getCart();
     cartLineItems.removeAt(index);
     await saveCartToPref(cartLineItems: cartLineItems);
+
+    ///firebase
+    FirebaseAnalytics.instance.logRemoveFromCart(
+      items: cartLineItems.map((cartItem) {
+        return AnalyticsEventItem(
+          itemCategory: cartItem.categories!.map((e) => e.name).join(","),
+          itemId: cartItem.productId.toString(),
+          itemName: cartItem.name,
+          price: parseWcPrice(cartItem.regularPrice),
+          quantity: cartItem.quantity,
+        );
+      }).toList(),
+    );
   }
 
   clear() async => await NyStorage.delete(SharedKey.cart);

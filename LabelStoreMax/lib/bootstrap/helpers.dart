@@ -11,6 +11,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -122,7 +123,7 @@ String moneyFormatter(double amount) {
 }
 
 String formatDoubleCurrency({required double total}) {
-  return "$total €";
+  return "${total.toStringAsFixed(2)} €";
   return moneyFormatter(total);
 }
 
@@ -440,6 +441,17 @@ saveWishlistProduct({required Product? product}) async {
   }
   String json = jsonEncode(products.map((i) => {"id": i['id']}).toList());
   await NyStorage.store(SharedKey.wishlistProducts, json);
+
+  ///firebase
+  FirebaseAnalytics.instance.logAddToWishlist(items: [
+    AnalyticsEventItem(
+      itemCategory: product?.categories.map((e) => e.name).join(","),
+      itemId: product?.id.toString(),
+      itemName: product?.name,
+      price: parseWcPrice(product?.regularPrice),
+      quantity: 1,
+    ),
+  ]);
 }
 
 removeWishlistProduct({required Product? product}) async {
