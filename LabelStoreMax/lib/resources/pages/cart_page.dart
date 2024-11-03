@@ -347,7 +347,9 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
                   ),
                   loading: SizedBox.shrink(),
                 ),
-                Card(child: PrimaryButton(title: trans("PROCEED TO CHECKOUT"), action: _actionProceedToCheckout)),
+                if (_cartLines.isNotEmpty) ...[
+                  Card(child: PrimaryButton(title: trans("PROCEED TO CHECKOUT"), action: _actionProceedToCheckout)),
+                ],
                 const SizedBox(height: 24)
               ],
             ),

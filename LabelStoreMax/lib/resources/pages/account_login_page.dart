@@ -185,6 +185,7 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
 
       ///firebase
       FirebaseAnalytics.instance.logLogin(loginMethod: "email");
+      FirebaseAnalytics.instance.setUserProperty(name: "email", value: email);
 
       showToastNotification(context,
           title: trans("Hello"), description: trans("Welcome back"), style: ToastNotificationStyleType.SUCCESS, icon: Icons.account_circle);

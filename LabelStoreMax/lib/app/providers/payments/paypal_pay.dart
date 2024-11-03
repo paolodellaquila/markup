@@ -94,10 +94,16 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
             }
           ],
           onSuccess: (Map params) async {
-            OrderWC orderWC = await buildOrderWC(taxRate: taxRate);
+            OrderWC orderWC = await buildOrderWC(taxRate: taxRate, markPaid: true);
             Order? order = await (appWooSignal((api) => api.createOrder(orderWC)));
 
-            if (order == null) {
+            ///Temporary fix
+            if (order == null && params["error"] == false && params["message"].contains("Success")) {
+              routeTo(CheckoutStatusPage.path, data: orderWC);
+              return;
+            }
+
+            if (params["error"] == true && !params["message"].contains("Success")) {
               showToastNotification(
                 context,
                 title: trans("Something went wrong"),
@@ -107,7 +113,7 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
               return;
             }
 
-            routeTo(CheckoutStatusPage.path, data: order);
+            routeTo(CheckoutStatusPage.path, data: orderWC);
           },
           onError: (error) {
             NyLogger.error(error.toString());

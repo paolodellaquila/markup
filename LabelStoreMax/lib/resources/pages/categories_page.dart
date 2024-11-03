@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bootstrap/helpers.dart';
 import 'package:flutter_app/resources/pages/browse_category_page.dart';
@@ -31,6 +32,9 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
   _actionSearch() {
     if (_txtSearchController.text.isEmpty) return;
     if (_txtSearchController.text.length < 3) return;
+
+    ///firebase
+    FirebaseAnalytics.instance.logSearch(searchTerm: _txtSearchController.text);
 
     routeTo(BrowseSearchPage.path, data: _txtSearchController.text, onPop: (value) {
       if (["notic", "compo"].contains(widget.wooSignalApp!.theme) == false) {

@@ -394,7 +394,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
       return;
     }
 
-    if (_wooSignalApp!.disableShipping == 0 && checkoutSession.shippingType?.minimumValue != null) {
+    if (_wooSignalApp!.disableShipping == 0 && checkoutSession.shippingType?.minimumValue != null && checkoutSession.coupon?.freeShipping != true) {
       String total = await Cart.getInstance.getTotal();
 
       double doubleTotal = double.parse(total);
@@ -405,7 +405,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
         showToastNotification(context,
             title: trans("Sorry"),
             description:
-                "${trans("Spend a minimum of")} ${formatDoubleCurrency(total: doubleMinimumValue)} ${trans("for")} ${checkoutSession.shippingType!.getTitle()}",
+                "${trans("Spend a minimum of")} ${formatDoubleCurrency(total: doubleMinimumValue)} ${trans("for")} ${trans("obtain shipping")} ${checkoutSession.shippingType!.getTitle()}",
             style: ToastNotificationStyleType.INFO,
             duration: Duration(seconds: 3));
         return;

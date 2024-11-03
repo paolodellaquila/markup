@@ -10,23 +10,23 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/payload/order_wc.dart';
+
 import '/app/models/cart.dart';
 import '/app/models/checkout_session.dart';
 import '/bootstrap/helpers.dart';
 import '/resources/widgets/buttons.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/response/order.dart' as ws_order;
 import '../widgets/woosignal_ui.dart';
 
 class CheckoutStatusPage extends NyStatefulWidget {
   static String path = "/checkout-status";
 
-  CheckoutStatusPage({Key? key})
-      : super(path, key: key, child: _CheckoutStatusState());
+  CheckoutStatusPage({Key? key}) : super(path, key: key, child: _CheckoutStatusState());
 }
 
 class _CheckoutStatusState extends NyState<CheckoutStatusPage> {
-  ws_order.Order? _order;
+  OrderWC? _order;
 
   @override
   init() async {
@@ -59,24 +59,26 @@ class _CheckoutStatusState extends NyState<CheckoutStatusPage> {
                       children: <Widget>[
                         Padding(
                           child: Text(
-                            trans("Order Status"),
-                            style: Theme.of(context).textTheme.titleMedium,
+                            trans("Ordine completato con successo"),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontSize: 22,
+                                ),
                           ),
                           padding: EdgeInsets.only(bottom: 15),
                         ),
                         Text(
                           trans("Thank You!"),
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontSize: 22,
+                              ),
                           textAlign: TextAlign.left,
                         ),
+                        SizedBox(
+                          height: 12,
+                        ),
                         Text(
-                          trans("Your transaction details"),
+                          trans("Riceverai i dettagli del tuo ordine via email"),
                           style: Theme.of(context).textTheme.bodyMedium,
-                          textAlign: TextAlign.left,
-                        ),
-                        Text(
-                          "${trans("Order Ref")}. #${_order?.id.toString()}",
-                          style: Theme.of(context).textTheme.bodyLarge,
                           textAlign: TextAlign.left,
                         ),
                       ],
@@ -86,10 +88,7 @@ class _CheckoutStatusState extends NyState<CheckoutStatusPage> {
                         border: Border(
                           bottom: BorderSide(color: Colors.black12, width: 1.0),
                         ),
-                        color:
-                            (Theme.of(context).brightness == Brightness.light)
-                                ? Colors.white
-                                : null),
+                        color: (Theme.of(context).brightness == Brightness.light) ? Colors.white : null),
                     padding: EdgeInsets.only(bottom: 20),
                   ),
                   Container(
@@ -117,19 +116,14 @@ class _CheckoutStatusState extends NyState<CheckoutStatusPage> {
               ),
               Expanded(
                 child: ListView.builder(
-                    itemCount: _order?.lineItems == null
-                        ? 0
-                        : _order?.lineItems?.length ?? 0,
+                    itemCount: _order?.lineItems == null ? 0 : _order?.lineItems?.length ?? 0,
                     itemBuilder: (BuildContext context, int index) {
-                      ws_order.LineItems lineItem = _order!.lineItems![index];
+                      LineItems lineItem = _order!.lineItems![index];
                       return Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: wsBoxShadow(),
-                          color:
-                              (Theme.of(context).brightness == Brightness.light)
-                                  ? Colors.white
-                                  : null,
+                          color: (Theme.of(context).brightness == Brightness.light) ? Colors.white : null,
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -138,21 +132,18 @@ class _CheckoutStatusState extends NyState<CheckoutStatusPage> {
                             Flexible(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: <Widget>[
                                   Text(
                                     lineItem.name!,
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
+                                    style: Theme.of(context).textTheme.bodyLarge,
                                     softWrap: false,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   Text(
                                     "x${lineItem.quantity.toString()}",
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
+                                    style: Theme.of(context).textTheme.bodyMedium,
                                   ),
                                 ],
                               ),
@@ -171,11 +162,14 @@ class _CheckoutStatusState extends NyState<CheckoutStatusPage> {
                     }),
               ),
               Align(
-                child: LinkButton(
-                  title: trans("Back to Home"),
-                  action: () {
-                    routeToInitial();
-                  },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: PrimaryButton(
+                    title: trans("Back to Home"),
+                    action: () {
+                      routeToInitial();
+                    },
+                  ),
                 ),
                 alignment: Alignment.bottomCenter,
               ),
