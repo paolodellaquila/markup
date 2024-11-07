@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 
 /// Compare 2 strings that contains a MAJOR.MINOR.PATCH system, and then it
-/// return [storeVersion] if [localVersion] is lower then [storeVersion]. It
-/// return an empty string otherwise
-/// If we are in release mode, we check the build number too
+/// returns [storeVersion] if [localVersion] is lower than [storeVersion]. It
+/// returns an empty string otherwise.
+/// If we are in release mode, it also compares the build number.
 String compareVersions({
   required String localVersion,
   required String storeVersion,
@@ -12,26 +12,26 @@ String compareVersions({
 }) {
   bool checkBuildNumber = kReleaseMode;
 
-  var localVersionSplit = localVersion.split(".");
-  var storeVersionSplit = storeVersion.split(".");
-  var majorVersionUpdated = int.parse(localVersionSplit[0]) == int.parse(storeVersionSplit[0]);
-  var minorVersionUpdated = int.parse(localVersionSplit[1]) == int.parse(storeVersionSplit[1]);
-  var patchVersionUpdated = int.parse(localVersionSplit[2]) == int.parse(storeVersionSplit[2]);
-  var buildNumberUpdated = checkBuildNumber ? localBuildNumber == storeBuildNumber : true;
+  var localVersionSplit = localVersion.split(".").map(int.parse).toList();
+  var storeVersionSplit = storeVersion.split(".").map(int.parse).toList();
 
-  if (majorVersionUpdated && minorVersionUpdated && patchVersionUpdated && buildNumberUpdated) {
-    return "";
-  }
+  // Ensure both version arrays have exactly 3 elements for major, minor, and patch
+  while (localVersionSplit.length < 3) localVersionSplit.add(0);
+  while (storeVersionSplit.length < 3) storeVersionSplit.add(0);
 
-  for (int i = 0; i < localVersionSplit.length; i++) {
-    if (int.parse(localVersionSplit[i]) > int.parse(storeVersionSplit[i])) {
+  // Compare major, minor, and patch versions
+  for (int i = 0; i < 3; i++) {
+    if (localVersionSplit[i] < storeVersionSplit[i]) {
+      return "$storeVersion${checkBuildNumber ? " ($storeBuildNumber)" : ""}";
+    } else if (localVersionSplit[i] > storeVersionSplit[i]) {
       return "";
     }
   }
-  if (checkBuildNumber) {
-    if (localBuildNumber > storeBuildNumber) {
-      return "";
-    }
+
+  // Compare build numbers if in release mode
+  if (checkBuildNumber && localBuildNumber < storeBuildNumber) {
+    return "$storeVersion ($storeBuildNumber)";
   }
-  return "$storeVersion${checkBuildNumber ? " ($storeBuildNumber)" : ""}";
+
+  return "";
 }
