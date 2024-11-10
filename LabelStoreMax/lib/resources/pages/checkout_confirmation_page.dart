@@ -97,17 +97,21 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
   }
 
   _getUserTax() {
+    reloadState(showLoader: true);
     if (_taxRates.isEmpty) {
+      reloadState(showLoader: false);
       return;
     }
 
     if (CheckoutSession.getInstance.billingDetails == null || CheckoutSession.getInstance.billingDetails!.shippingAddress == null) {
+      reloadState(showLoader: false);
       return;
     }
     CustomerCountry? shippingCountry = CheckoutSession.getInstance.billingDetails!.shippingAddress!.customerCountry;
     String? postalCode = CheckoutSession.getInstance.billingDetails!.shippingAddress!.postalCode;
 
     if (shippingCountry == null) {
+      reloadState(showLoader: false);
       return;
     }
 
@@ -115,6 +119,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
     if (shippingCountry.hasState()) {
       taxRate = _taxRates.firstWhereOrNull((t) {
         if ((shippingCountry.state?.code ?? "") == "") {
+          reloadState(showLoader: false);
           return false;
         }
 
@@ -122,12 +127,15 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
         String state = stateElements.last;
 
         if (t.country == shippingCountry.countryCode && t.state == state && t.postcode == postalCode) {
+          reloadState(showLoader: false);
           return true;
         }
 
         if (t.country == shippingCountry.countryCode && t.state == state) {
+          reloadState(showLoader: false);
           return true;
         }
+        reloadState(showLoader: false);
         return false;
       });
     }
@@ -147,6 +155,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
         _taxRate = taxRate;
       });
     }
+    reloadState(showLoader: false);
   }
 
   @override
@@ -330,6 +339,9 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
                               description: '${trans('Accept')} ${trans('Terms and conditions')}',
                               style: ToastNotificationStyleType.WARNING);
                         } else {
+                          if (_taxRate == null) {
+                            await _getTaxes();
+                          }
                           lockRelease('payment', perform: () async {
                             await _handleCheckout();
                           });
