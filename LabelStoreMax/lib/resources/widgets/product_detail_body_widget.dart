@@ -9,13 +9,15 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/resources/widgets/product_detail_description_widget.dart';
+import 'package:flutter_app/resources/widgets/shared/alert_box.dart';
+import 'package:flutter_app/utils/product_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
 import 'package:woosignal/models/response/product_variation.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
 
 import '/resources/pages/product_image_viewer_page.dart';
-import '/resources/widgets/product_detail_description_widget.dart';
 import '/resources/widgets/product_detail_header_widget.dart';
 import '/resources/widgets/product_detail_image_swiper_widget.dart';
 import '/resources/widgets/product_detail_related_products_widget.dart';
@@ -70,8 +72,28 @@ class _ProductDetailBodyWidgetState extends State<ProductDetailBodyWidget> {
         ),
         // </Header title + price>
 
-        ProductDetailColorSizeWidget(product: widget.product, productVariations: widget.productVariations, onSizeColorSelected: widget.onSizeColorSelected),
+        ///BANNED SKU: Check if product is banned SYNC WITH FUNCTION.PHP
+        if (ProductManager().checkBannedProduct(widget.product!.sku)) ...[
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: AlertBox(
+              message: "Product not available".tr(),
+            ),
+          ),
+        ] else ...[
+          ProductDetailColorSizeWidget(product: widget.product, productVariations: widget.productVariations, onSizeColorSelected: widget.onSizeColorSelected),
+        ],
         // </Description body>
+
+        ///DELAY SPEDIZIONE
+        if (ProductManager().shippingDelay.isNotEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: AlertBox(
+              message: ProductManager().shippingDelay,
+            ),
+          ),
+        ],
 
         ProductDetailReviewsWidget(product: widget.product, wooSignalApp: widget.wooSignalApp),
         // </Product reviews>

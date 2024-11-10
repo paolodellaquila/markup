@@ -5,16 +5,24 @@ import 'package:collection/collection.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_app/app/models/product_color.dart';
 
-class ColorsManager {
-  static final ColorsManager _singleton = ColorsManager._internal();
+class ProductManager {
+  static final ProductManager _singleton = ProductManager._internal();
 
-  factory ColorsManager() {
+  factory ProductManager() {
     return _singleton;
   }
 
-  ColorsManager._internal();
+  ProductManager._internal();
 
   final List<ProductColor> colors = [];
+  final List<String> skuBanned = [];
+  String shippingDelay = "";
+
+  Future<void> initialize() async {
+    await syncColors();
+    await syncBannedSku();
+    await syncShippingDelayMessage();
+  }
 
   Future<void> syncColors() async {
     final ref = FirebaseDatabase.instance.ref('product');
@@ -29,16 +37,36 @@ class ColorsManager {
     }
   }
 
+  Future<void> syncBannedSku() async {
+    final ref = FirebaseDatabase.instance.ref('product');
+    final snapshot = await ref.get();
+    final sku = snapshot.child("sku_banned").value as List<dynamic>;
+    for (var data in sku.toList()) {
+      skuBanned.add(data);
+    }
+  }
+
   List<ProductColor> getColorsFromProductTaxomonies(List<String> colors) {
     List<ProductColor> colorList = [];
     for (var color in colors) {
       final colorData = this.colors.firstWhereOrNull((element) => element.name.toLowerCase() == color.toLowerCase());
-      if (colorData != null)
+      if (colorData != null) {
         colorList.add(colorData);
-      else
+      } else {
         colorList.add(ProductColor(name: color, hex: "#D3D3D3"));
+      }
     }
     return colorList;
+  }
+
+  checkBannedProduct(String? sku) {
+    return skuBanned.contains(sku?.substring(0, 4));
+  }
+
+  syncShippingDelayMessage() async {
+    final ref = FirebaseDatabase.instance.ref('product');
+    final snapshot = await ref.get();
+    shippingDelay = snapshot.child("shipping_delay").value as String;
   }
 }
 

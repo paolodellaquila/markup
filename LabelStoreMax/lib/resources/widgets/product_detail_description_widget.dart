@@ -13,7 +13,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/bootstrap/helpers.dart';
-import 'package:flutter_app/utils/colors_manager.dart';
+import 'package:flutter_app/utils/product_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
 import 'package:woosignal/models/response/product_variation.dart';
@@ -82,14 +82,6 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[],
-          ),
-        ),
         if (widget.product?.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore")) != null &&
             widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!.length != 1) ...[
           Padding(
@@ -111,7 +103,7 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                 const SizedBox(height: 8),
                 Wrap(
                   children: [
-                    ...ColorsManager()
+                    ...ProductManager()
                         .getColorsFromProductTaxomonies(widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!)
                         .map((color) => Padding(
                               padding: EdgeInsets.only(right: 8, top: 8),
