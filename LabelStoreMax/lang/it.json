@@ -119,7 +119,7 @@
   "Gestisci account": "Gestisci account",
   "Altre Impostazioni": "Altre Impostazioni",
   "Policy": "Politica",
-  "Contacts": "Contatti",
+  "Contacts": "Contatti & Assistenza",
   "Confirm": "Conferma",
   "Forgot Password": "Ha dimenticato la password",
   "Create an account": "Crea un account",
@@ -149,8 +149,8 @@
   "Logout": "Disconnettersi",
   "No orders found": "Nessun ordine trovato",
   "items": "elementi",
-  "Update Details": "Dettagli aggiornamento",
-  "Invalid details": "Dettagli non validi",
+  "Update Details": "Aggiorna informazioni",
+  "Invalid details": "Email o Password errata",
   "Please check your email and password": "Controlla la tua e-mail e password",
   "Something went wrong, please try again.": "Qualcosa è andato storto. Per favore riprova. ",
   "Done": "Donare",
@@ -283,7 +283,7 @@
   "Attention": "Attenzione",
   "incl. tax": "Incluso IVA",
   "escl. tax": "Escluso IVA",
-  "please contact us": "Si prega di contattarci",
+  "please contact us": "Si prega di contattare l'assistenza",
   "Free (Coupon)": "Gratis (Coupon)",
   "Update Needed": "Aggiornamento necessario",
   "Swipe left to share or delete an item": "Scorri verso sinistra per condividere o eliminare un articolo",
@@ -292,5 +292,6 @@
   "obtain shipping": "ottenere la spedizione",
   "Ordine completato con successo": "Ordine completato con successo",
   "Riceverai i dettagli del tuo ordine via email": "Riceverai i dettagli del tuo ordine via email",
-  "Product not available": "Il prodotto non è momentamente acquistabile"
+  "Product not available": "Il prodotto non è momentamente acquistabile",
+  "With a minium of": "Con un minimo importo di"
 }

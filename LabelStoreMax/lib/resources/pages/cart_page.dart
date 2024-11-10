@@ -333,24 +333,26 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
                                 );
                               })),
                 ),
-                Divider(
-                  color: Colors.black45,
-                ),
-                NyFutureBuilder<String>(
-                  future: Cart.getInstance.getTotal(withFormat: true),
-                  child: (BuildContext context, data) => Padding(
-                    child: TextRowWidget(
-                      title: trans("Total"),
-                      text: isLoading() ? '' : data,
-                    ),
-                    padding: EdgeInsets.only(bottom: 15, top: 15),
+                if (!isLoading()) ...[
+                  Divider(
+                    color: Colors.black45,
                   ),
-                  loading: SizedBox.shrink(),
-                ),
-                if (_cartLines.isNotEmpty) ...[
-                  Card(child: PrimaryButton(title: trans("PROCEED TO CHECKOUT"), action: _actionProceedToCheckout)),
+                  NyFutureBuilder<String>(
+                    future: Cart.getInstance.getTotal(withFormat: true),
+                    child: (BuildContext context, data) => Padding(
+                      child: TextRowWidget(
+                        title: trans("Total"),
+                        text: isLoading() ? '' : data,
+                      ),
+                      padding: EdgeInsets.only(bottom: 15, top: 15),
+                    ),
+                    loading: SizedBox.shrink(),
+                  ),
+                  if (_cartLines.isNotEmpty) ...[
+                    Card(child: PrimaryButton(title: trans("PROCEED TO CHECKOUT"), action: _actionProceedToCheckout)),
+                  ],
+                  const SizedBox(height: 24)
                 ],
-                const SizedBox(height: 24)
               ],
             ),
             if (pageIsLoading)

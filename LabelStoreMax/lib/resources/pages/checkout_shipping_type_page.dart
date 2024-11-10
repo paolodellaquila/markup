@@ -267,7 +267,7 @@ class _CheckoutShippingTypePageState extends State<CheckoutShippingTypePage> {
                                                           )),
                                                     if (shippingOption["min_amount"] != null)
                                                       TextSpan(
-                                                          text: "\n${trans("Spend a minimum of")} ${formatStringCurrency(total: shippingOption["min_amount"])}",
+                                                          text: "\n${trans("With a minium of")} ${formatStringCurrency(total: shippingOption["min_amount"])}",
                                                           style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 14))
                                                   ],
                                                 ),

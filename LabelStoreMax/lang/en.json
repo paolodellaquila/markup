@@ -184,7 +184,7 @@
   "Username taken, try another.": "That username is taken, try another.",
   "Altre Impostazioni": "More Settings",
   "Policy": "Policy",
-  "Contacts": "Contacts",
+  "Contacts": "Contacts & Assistance",
   "A user already exists": "A user already exists",
   "That email is taken, try another": "That email is taken, try another",
   "The email field is empty": "The email field is empty",
@@ -284,5 +284,6 @@
   "obtain shipping": "obtain shipping",
   "Ordine completato con successo": "Order completed successfully",
   "Riceverai i dettagli del tuo ordine via email": "You will receive the details of your order via email",
-  "Product not available": "Product not available"
+  "Product not available": "Product not available",
+  "With a minium of": "With a minium of"
 }

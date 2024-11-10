@@ -44,6 +44,7 @@ class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
       _tfLastNameController = TextEditingController();
 
   final WooSignalApp? _wooSignalApp = AppHelper.instance.appConfig;
+  bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -84,11 +85,24 @@ class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
               shouldAutoFocus: false,
               keyboardType: TextInputType.emailAddress,
             ),
-            TextEditingRow(
-              heading: trans("Password"),
-              controller: _tfPasswordController,
-              shouldAutoFocus: true,
-              obscureText: true,
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: TextEditingRow(
+                    heading: trans("Password"),
+                    controller: _tfPasswordController,
+                    keyboardType: TextInputType.visiblePassword,
+                    shouldAutoFocus: true,
+                    obscureText: _obscureText,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () => setState(() => _obscureText = !_obscureText),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             Container(

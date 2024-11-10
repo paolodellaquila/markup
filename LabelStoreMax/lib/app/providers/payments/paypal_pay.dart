@@ -10,6 +10,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/app/models/cart.dart';
+import 'package:flutter_app/resources/pages/home_page.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/payload/order_wc.dart';
@@ -123,6 +124,7 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
               description: trans("please contact us"),
             );
             updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+            routeTo(HomePage.path, navigationType: NavigationType.pushReplace);
           },
           onCancel: () {
             showToastNotification(
@@ -131,6 +133,7 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
               description: trans("The payment has been cancelled"),
             );
             updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+            routeTo(HomePage.path, navigationType: NavigationType.pushReplace);
           },
         ),
       ),

@@ -37,6 +37,7 @@ class AccountLoginPage extends StatefulWidget {
 
 class _AccountLoginPageState extends NyState<AccountLoginPage> {
   final TextEditingController _tfEmailController = TextEditingController(), _tfPasswordController = TextEditingController();
+  bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +76,23 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
                         children: <Widget>[
                           TextEditingRow(heading: trans("Email"), controller: _tfEmailController, keyboardType: TextInputType.emailAddress),
                           const SizedBox(height: 16),
-                          TextEditingRow(
-                              heading: trans("Password"), controller: _tfPasswordController, keyboardType: TextInputType.visiblePassword, obscureText: true),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Flexible(
+                                child: TextEditingRow(
+                                    heading: trans("Password"),
+                                    controller: _tfPasswordController,
+                                    keyboardType: TextInputType.visiblePassword,
+                                    obscureText: _obscureText),
+                              ),
+                              IconButton(
+                                icon: Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
+                                onPressed: () => setState(() => _obscureText = !_obscureText),
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 16),
                           LinkButton(
                             title: trans("Forgot Password"),
