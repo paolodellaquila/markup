@@ -190,6 +190,11 @@ class _CheckoutShippingTypePageState extends State<CheckoutShippingTypePage> {
         }
       }
     }
+
+    ///CHECK IF USER UNLOCKED FREE SHIPPING (in case show only it)
+    if (_wsShippingOptions.firstWhereOrNull((element) => element["method_id"] == "free_shipping") != null) {
+      _wsShippingOptions.removeWhere((element) => element["method_id"] != "free_shipping");
+    }
   }
 
   @override

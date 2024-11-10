@@ -10,7 +10,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/app/models/cart.dart';
-import 'package:flutter_app/resources/pages/home_page.dart';
 import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/payload/order_wc.dart';
@@ -50,12 +49,13 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
 
     String shippingTotal = CheckoutSession.getInstance.shippingType?.getTotal() ?? "0";
     String description = "(${cartLineItems.length}) items from ${getEnv('APP_NAME')}".tr(arguments: {"appName": getEnv('APP_NAME')});
+    description += ": ${cartLineItems.map((item) => "${item.name} (${item.variationOptions})").join(", ")}";
 
     if (taxTotal == "") {
       taxTotal = "0";
     }
 
-    if (shippingTotal == "" || CheckoutSession.getInstance.coupon?.freeShipping == true) {
+    if (shippingTotal == "" || shippingTotal == "min_amount" || CheckoutSession.getInstance.coupon?.freeShipping == true) {
       shippingTotal = "0";
     } else {
       ///FIX shipping total
@@ -111,6 +111,7 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
                 description: trans("please contact us"),
               );
               updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+              context.pop();
               return;
             }
 
@@ -124,7 +125,7 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
               description: trans("please contact us"),
             );
             updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
-            routeTo(HomePage.path, navigationType: NavigationType.pushReplace);
+            context.pop();
           },
           onCancel: () {
             showToastNotification(
@@ -133,7 +134,7 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
               description: trans("The payment has been cancelled"),
             );
             updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
-            routeTo(HomePage.path, navigationType: NavigationType.pushReplace);
+            context.pop();
           },
         ),
       ),
