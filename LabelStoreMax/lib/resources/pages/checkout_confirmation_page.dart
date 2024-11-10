@@ -412,13 +412,14 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
       }
     }
 
-    bool appStatus = await (appWooSignal((api) => api.checkAppStatus()));
-
-    if (!appStatus) {
-      showToastNotification(context,
-          title: trans("Sorry"), description: trans("Retry later"), style: ToastNotificationStyleType.INFO, duration: Duration(seconds: 3));
-      return;
-    }
+    ///TODO: IS USEFUL?? CHECK APP STATUS
+    // bool appStatus = await (appWooSignal((api) => api.checkAppStatus()));
+    //
+    // if (!appStatus) {
+    //   showToastNotification(context,
+    //       title: trans("Sorry"), description: trans("Retry later"), style: ToastNotificationStyleType.INFO, duration: Duration(seconds: 3));
+    //   return;
+    // }
 
     try {
       await checkoutSession.paymentType!.pay(context, taxRate: _taxRate);

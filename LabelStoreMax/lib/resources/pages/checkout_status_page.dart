@@ -81,6 +81,22 @@ class _CheckoutStatusState extends NyState<CheckoutStatusPage> {
                           style: Theme.of(context).textTheme.bodyMedium,
                           textAlign: TextAlign.left,
                         ),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        Text(
+                          "${trans("Order Ref")}. #${_order?.parentId.toString()}",
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          textAlign: TextAlign.left,
+                        ),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Text(
+                          "Note: ${_order?.customerNote}",
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          textAlign: TextAlign.left,
+                        ),
                       ],
                     ),
                     width: double.infinity,

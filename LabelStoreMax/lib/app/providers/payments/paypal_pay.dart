@@ -62,6 +62,9 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
       shippingTotal = shippingTotal.replaceAll(",", ".");
     }
 
+    OrderWC orderWC = await buildOrderWC(taxRate: taxRate, markPaid: true);
+    Order? order = await (appWooSignal((api) => api.createOrder(orderWC)));
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) => PaypalCheckoutView(
@@ -97,6 +100,9 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
           onSuccess: (Map params) async {
             OrderWC orderWC = await buildOrderWC(taxRate: taxRate, markPaid: true);
             Order? order = await (appWooSignal((api) => api.createOrder(orderWC)));
+
+            ///Temporary fix: set id of order into orderWC
+            orderWC.parentId = order?.id;
 
             ///Temporary fix
             if (order == null && params["error"] == false && params["message"].contains("Success")) {

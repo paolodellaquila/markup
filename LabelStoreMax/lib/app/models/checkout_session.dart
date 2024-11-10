@@ -115,7 +115,7 @@ class CheckoutSession {
     double total = 0;
     total += double.parse((totalCart + totalShipping).toStringAsFixed(2));
 
-    ///TAX RATE
+    ///TAX RATE (productPricesIncludeTax included in MARKUP)
     if (taxRate != null && !(AppHelper.instance.appConfig!.productPricesIncludeTax == 1)) {
       String taxAmount = await Cart.getInstance.taxAmount(taxRate);
       total += parseWcPrice(taxAmount);

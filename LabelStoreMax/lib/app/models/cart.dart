@@ -197,7 +197,7 @@ class Cart {
 
     double total = 0;
     if (subtotal != 0) {
-      total += ((parseWcPrice(taxRate!.rate) * subtotal) / 100);
+      total += subtotal - (subtotal / (1 + (parseWcPrice(taxRate!.rate) / 100)));
     }
     if (shippingTotal != 0) {
       total += ((parseWcPrice(taxRate!.rate) * shippingTotal) / 100);

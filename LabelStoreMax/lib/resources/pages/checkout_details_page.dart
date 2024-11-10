@@ -246,7 +246,7 @@ class _CheckoutDetailsPageState extends NyState<CheckoutDetailsPage> {
                       ),
                     ),
                     Container(
-                      height: 160,
+                      height: 200,
                       child: Column(
                         children: <Widget>[
                           Row(

@@ -144,7 +144,7 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
                   TextButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      UserAuth.instance.redirect = CheckoutConfirmationPage.path;
+                      UserAuth.instance.redirect = CartPage.path;
                       routeTo(AccountLoginPage.path);
                     },
                     child: Text("Login / Create an account".tr()),

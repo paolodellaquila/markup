@@ -104,7 +104,8 @@ Future<OrderWC> buildOrderWC({TaxRate? taxRate, bool markPaid = true}) async {
     }
   }
 
-  if (taxRate != null) {
+  ///add tax only if product not contain tax. Markup product include tax, so bypass it
+  if (taxRate != null && !(AppHelper.instance.appConfig?.productPricesIncludeTax == 1)) {
     orderWC.feeLines = [];
     FeeLines feeLines = FeeLines();
     feeLines.name = taxRate.name;

@@ -206,7 +206,7 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
       showToastNotification(context,
           title: trans("Hello"), description: trans("Welcome back"), style: ToastNotificationStyleType.SUCCESS, icon: Icons.account_circle);
 
-      navigatorPush(context, routeName: UserAuth.instance.redirect, forgetAll: true);
+      navigatorPush(context, routeName: UserAuth.instance.redirect, forgetLast: 2);
     });
   }
 }

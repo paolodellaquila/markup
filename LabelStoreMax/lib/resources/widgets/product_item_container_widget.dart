@@ -49,15 +49,21 @@ class ProductItemContainer extends StatelessWidget {
                 child: Stack(
                   children: [
                     Container(
-                      color: Colors.grey[100],
                       height: double.infinity,
                       width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
-                    CachedImageWidget(
-                      image: (product!.images.isNotEmpty ? product!.images.first.src : getEnv("PRODUCT_PLACEHOLDER_IMAGE")),
-                      fit: BoxFit.cover,
-                      height: height,
-                      width: double.maxFinite,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: CachedImageWidget(
+                        image: (product!.images.isNotEmpty ? product!.images.first.src : getEnv("PRODUCT_PLACEHOLDER_IMAGE")),
+                        fit: BoxFit.cover,
+                        height: height,
+                        width: double.maxFinite,
+                      ),
                     ),
                     if (isProductNew(product))
                       Container(
