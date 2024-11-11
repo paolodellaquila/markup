@@ -62,8 +62,9 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
       shippingTotal = shippingTotal.replaceAll(",", ".");
     }
 
-    OrderWC orderWC = await buildOrderWC(taxRate: taxRate, markPaid: true);
-    Order? order = await (appWooSignal((api) => api.createOrder(orderWC)));
+    //TODO testing
+    //OrderWC orderWC = await buildOrderWC(taxRate: taxRate, markPaid: true);
+    //Order? order = await (appWooSignal((api) => api.createOrder(orderWC)));
 
     Navigator.of(context).push(
       MaterialPageRoute(

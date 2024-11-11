@@ -104,22 +104,48 @@ Future<OrderWC> buildOrderWC({TaxRate? taxRate, bool markPaid = true}) async {
     }
   }
 
-  ///add tax only if product not contain tax. Markup product include tax, so bypass it
-  if (taxRate != null && !(AppHelper.instance.appConfig?.productPricesIncludeTax == 1)) {
-    orderWC.feeLines = [];
-    FeeLines feeLines = FeeLines();
-    feeLines.name = taxRate.name;
-    feeLines.total = await Cart.getInstance.taxAmount(taxRate);
-    feeLines.taxClass = "";
-    feeLines.taxStatus = "taxable";
-    orderWC.feeLines!.add(feeLines);
-  }
+  //TODO: FEES?
+  // if (taxRate != null) {
+  //   orderWC.feeLines = [];
+  //   FeeLines feeLines = FeeLines();
+  //   feeLines.name = taxRate.name;
+  //   feeLines.total = await Cart.getInstance.taxAmount(taxRate);
+  //   feeLines.taxClass = "";
+  //   feeLines.taxStatus = "taxable";
+  //   orderWC.feeLines!.add(feeLines);
+  // }
 
-  if (checkoutSession.coupon != null) {
-    orderWC.couponLines = [];
-    CouponLines couponLine = CouponLines(code: checkoutSession.coupon!.code);
-    orderWC.couponLines!.add(couponLine);
-  }
+  //TODO: taxRate?
+  // if (taxRate != null) {
+  //   orderWC.feeLines = [];
+  //   FeeLines feeLines = FeeLines();
+  //   feeLines.name = taxRate.name;
+  //   feeLines.total = await Cart.getInstance.taxAmount(taxRate);
+  //   feeLines.taxClass = "";
+  //   feeLines.taxStatus = "taxable";
+  //   orderWC.feeLines!.add(feeLines);
+  // }
+
+  //TODO: BROKEN -> fix into sdk
+  // if (checkoutSession.coupon != null) {
+  //   orderWC.couponLines = [];
+  //   CouponLines couponLine = CouponLines(
+  //       code: checkoutSession.coupon!.code,
+  //       metaData: checkoutSession.coupon!.metaData
+  //           ?.map((item) => CouponMetaData(
+  //                 key: item.key,
+  //                 value: [
+  //                   CouponData(
+  //                     id: checkoutSession.coupon!.id.toString(),
+  //                     code: checkoutSession.coupon!.code,
+  //                     amount: checkoutSession.coupon!.amount.toString(),
+  //                   )
+  //                 ],
+  //               ))
+  //           .toList(),
+  //       discount: checkoutSession.coupon!.amount.toString());
+  //   orderWC.couponLines!.add(couponLine);
+  // }
 
   if (checkoutSession.customerNote != null && checkoutSession.customerNote!.isNotEmpty) {
     orderWC.customerNote = checkoutSession.customerNote;

@@ -1597,10 +1597,9 @@ packages:
   woosignal:
     dependency: "direct main"
     description:
-      name: woosignal
-      sha256: "6e859ba6876ea5665cc558baeba3d0099472654a5e081652592ad60fe5f04ad7"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../flutter-woocommerce-api"
+      relative: true
+    source: path
     version: "3.14.10"
   wp_json_api:
     dependency: "direct main"

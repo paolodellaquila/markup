@@ -38,11 +38,14 @@ class CartItemContainer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Flexible(
-                    child: CachedImageWidget(
-                      image: (cartLineItem.imageSrc == "" ? getEnv("PRODUCT_PLACEHOLDER_IMAGE") : cartLineItem.imageSrc),
-                      width: 130,
-                      height: 130,
-                      fit: BoxFit.contain,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: CachedImageWidget(
+                        image: (cartLineItem.imageSrc == "" ? getEnv("PRODUCT_PLACEHOLDER_IMAGE") : cartLineItem.imageSrc),
+                        width: 130,
+                        height: 130,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                     flex: 2,
                   ),

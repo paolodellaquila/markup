@@ -81,6 +81,7 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
     _taxRates = [];
     int pageIndex = 1;
     bool fetchMore = true;
+    reloadState(showLoader: true);
     while (fetchMore == true) {
       List<TaxRate> tmpTaxRates = await (appWooSignal((api) => api.getTaxRates(page: pageIndex, perPage: 100)));
 
@@ -93,25 +94,22 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
         fetchMore = false;
       }
     }
+    reloadState(showLoader: false);
     _getUserTax();
   }
 
   _getUserTax() {
-    reloadState(showLoader: true);
     if (_taxRates.isEmpty) {
-      reloadState(showLoader: false);
       return;
     }
 
     if (CheckoutSession.getInstance.billingDetails == null || CheckoutSession.getInstance.billingDetails!.shippingAddress == null) {
-      reloadState(showLoader: false);
       return;
     }
     CustomerCountry? shippingCountry = CheckoutSession.getInstance.billingDetails!.shippingAddress!.customerCountry;
     String? postalCode = CheckoutSession.getInstance.billingDetails!.shippingAddress!.postalCode;
 
     if (shippingCountry == null) {
-      reloadState(showLoader: false);
       return;
     }
 
@@ -119,7 +117,6 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
     if (shippingCountry.hasState()) {
       taxRate = _taxRates.firstWhereOrNull((t) {
         if ((shippingCountry.state?.code ?? "") == "") {
-          reloadState(showLoader: false);
           return false;
         }
 
@@ -127,15 +124,12 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
         String state = stateElements.last;
 
         if (t.country == shippingCountry.countryCode && t.state == state && t.postcode == postalCode) {
-          reloadState(showLoader: false);
           return true;
         }
 
         if (t.country == shippingCountry.countryCode && t.state == state) {
-          reloadState(showLoader: false);
           return true;
         }
-        reloadState(showLoader: false);
         return false;
       });
     }
@@ -155,7 +149,6 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
         _taxRate = taxRate;
       });
     }
-    reloadState(showLoader: false);
   }
 
   @override
