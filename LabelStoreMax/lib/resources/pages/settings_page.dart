@@ -32,7 +32,7 @@ class SettingsPage extends StatelessWidget {
               // --------- LOGO
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.fromLTRB(32, 72, 32, 36),
+                margin: const EdgeInsets.all(32),
                 child: Image.asset(
                   "public/assets/app_icon/logo_completed.png",
                   height: height * 0.15,
@@ -128,6 +128,7 @@ class SettingsPage extends StatelessWidget {
                       contentPadding: const EdgeInsets.all(0.0),
                       title: AppVersionWidget(),
                     ),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),

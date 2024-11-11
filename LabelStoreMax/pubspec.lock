@@ -285,10 +285,18 @@ packages:
     dependency: "direct main"
     description:
       name: dio
-      sha256: "11e40df547d418cc0c4900a9318b26304e665da6fa4755399a9ff9efd09034b5"
+      sha256: "5598aa796bbf4699afd5c67c0f5f6e2ed542afc956884b9cd58c306966efc260"
       url: "https://pub.dev"
     source: hosted
-    version: "5.4.3+1"
+    version: "5.7.0"
+  dio_web_adapter:
+    dependency: transitive
+    description:
+      name: dio_web_adapter
+      sha256: "33259a9276d6cea88774a0000cfae0d861003497755969c92faa223108620dc8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   encrypt:
     dependency: transitive
     description:
@@ -550,6 +558,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+  flutter_displaymode:
+    dependency: "direct main"
+    description:
+      name: flutter_displaymode
+      sha256: "42c5e9abd13d28ed74f701b60529d7f8416947e58256e6659c5550db719c57ef"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
   flutter_dotenv:
     dependency: transitive
     description:
@@ -969,18 +985,18 @@ packages:
     dependency: "direct main"
     description:
       name: nylo_framework
-      sha256: "328e4aabdaf5629edf18016cab9960e2f5199aaef8fc0d0290e0d769c964cf42"
+      sha256: "69e62054e002f886a7364c4f2fb26e3b5a6a84c787b3a75c272d5b761b77c3c9"
       url: "https://pub.dev"
     source: hosted
-    version: "5.32.6"
+    version: "5.32.8"
   nylo_support:
     dependency: transitive
     description:
       name: nylo_support
-      sha256: "2869f49bfe59ecec4b24c9de89f1cb51c55a5cb4fbeaec41c0d29dabcac7b8de"
+      sha256: "72e9210484dd8b5e17216a27c8d1970485de7787c8ca34ce062d2d260fa24be1"
       url: "https://pub.dev"
     source: hosted
-    version: "5.82.0"
+    version: "5.82.2"
   octo_image:
     dependency: transitive
     description:
@@ -1121,10 +1137,10 @@ packages:
     dependency: transitive
     description:
       name: pretty_dio_logger
-      sha256: "00b80053063935cf9a6190da344c5373b9d0e92da4c944c878ff2fbef0ef6dc2"
+      sha256: "36f2101299786d567869493e2f5731de61ce130faa14679473b26905a92b6407"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.1"
+    version: "1.4.0"
   process:
     dependency: transitive
     description:
