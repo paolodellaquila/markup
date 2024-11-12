@@ -21,7 +21,6 @@ import '/app/models/cart.dart';
 import '/app/models/cart_line_item.dart';
 import '/app/models/checkout_session.dart';
 import '/bootstrap/app_helper.dart';
-import '/bootstrap/helpers.dart';
 
 Future<OrderWC> buildOrderWC({TaxRate? taxRate, bool markPaid = true}) async {
   CheckoutSession checkoutSession = CheckoutSession.getInstance;
@@ -53,7 +52,7 @@ Future<OrderWC> buildOrderWC({TaxRate? taxRate, bool markPaid = true}) async {
       tmpLineItem.variationId = cartItem.variationId;
     }
 
-    tmpLineItem.subtotal = (parseWcPrice(cartItem.subtotal) * parseWcPrice(cartItem.quantity.toString())).toString();
+    //tmpLineItem.subtotal = (parseWcPrice(cartItem.subtotal) * parseWcPrice(cartItem.quantity.toString())).toString();
     lineItems.add(tmpLineItem);
   }
 
@@ -115,37 +114,23 @@ Future<OrderWC> buildOrderWC({TaxRate? taxRate, bool markPaid = true}) async {
   //   orderWC.feeLines!.add(feeLines);
   // }
 
-  //TODO: taxRate?
   // if (taxRate != null) {
-  //   orderWC.feeLines = [];
-  //   FeeLines feeLines = FeeLines();
-  //   feeLines.name = taxRate.name;
-  //   feeLines.total = await Cart.getInstance.taxAmount(taxRate);
-  //   feeLines.taxClass = "";
-  //   feeLines.taxStatus = "taxable";
-  //   orderWC.feeLines!.add(feeLines);
+  //   orderWC.taxRates = [];
+  //   orderWC.taxRates!.add(taxRate);
+  //   orderWC.totalTax = taxRate.rate.toString();
   // }
 
-  //TODO: BROKEN -> fix into sdk
-  // if (checkoutSession.coupon != null) {
-  //   orderWC.couponLines = [];
-  //   CouponLines couponLine = CouponLines(
-  //       code: checkoutSession.coupon!.code,
-  //       metaData: checkoutSession.coupon!.metaData
-  //           ?.map((item) => CouponMetaData(
-  //                 key: item.key,
-  //                 value: [
-  //                   CouponData(
-  //                     id: checkoutSession.coupon!.id.toString(),
-  //                     code: checkoutSession.coupon!.code,
-  //                     amount: checkoutSession.coupon!.amount.toString(),
-  //                   )
-  //                 ],
-  //               ))
-  //           .toList(),
-  //       discount: checkoutSession.coupon!.amount.toString());
-  //   orderWC.couponLines!.add(couponLine);
-  // }
+  if (checkoutSession.coupon != null) {
+    orderWC.couponLines = [];
+    CouponLines couponLine = CouponLines(
+      code: checkoutSession.coupon!.code,
+      amount: checkoutSession.coupon!.amount,
+    );
+
+    orderWC.couponLines!.add(couponLine);
+
+    //orderWC.discountTotal = checkoutSession.coupon!.amount.toString();
+  }
 
   if (checkoutSession.customerNote != null && checkoutSession.customerNote!.isNotEmpty) {
     orderWC.customerNote = checkoutSession.customerNote;

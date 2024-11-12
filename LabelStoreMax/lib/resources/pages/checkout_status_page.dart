@@ -11,7 +11,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/payload/order_wc.dart';
+import 'package:woosignal/models/response/order.dart';
 
 import '/app/models/cart.dart';
 import '/app/models/checkout_session.dart';
@@ -26,7 +26,7 @@ class CheckoutStatusPage extends NyStatefulWidget {
 }
 
 class _CheckoutStatusState extends NyState<CheckoutStatusPage> {
-  OrderWC? _order;
+  Order? _order;
 
   @override
   init() async {
@@ -85,7 +85,7 @@ class _CheckoutStatusState extends NyState<CheckoutStatusPage> {
                           height: 12,
                         ),
                         Text(
-                          "${trans("Order Ref")}. #${_order?.parentId.toString()}",
+                          "${trans("Order Ref")}. #${_order?.id.toString()}",
                           style: Theme.of(context).textTheme.bodyLarge,
                           textAlign: TextAlign.left,
                         ),

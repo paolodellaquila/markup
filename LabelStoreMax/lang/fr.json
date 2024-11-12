@@ -284,5 +284,7 @@
   "Ordine completato con successo": "Commande complétée avec succès",
   "Riceverai i dettagli del tuo ordine via email": "Vous recevrez les détails de votre commande par e-mail",
   "Product not available": "Produit non disponible",
-  "With a minium of": "Avec un minimum de"
+  "With a minium of": "Avec un minimum de",
+  "Something went wrong during order creation process": "Un problème est survenu lors de la création de la commande",
+  "Assistance": "Assistance"
 }

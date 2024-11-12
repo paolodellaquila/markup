@@ -284,5 +284,7 @@
   "Ordine completato con successo": "订单已成功完成",
   "Riceverai i dettagli del tuo ordine via email": "您将通过电子邮件收到订单详细信息",
   "Product not available": "产品不可用",
-  "With a minium of": "最少"
+  "With a minium of": "最少",
+  "Something went wrong during order creation process": "在订单创建过程中出现问题",
+  "Assistance": "援助"
 }

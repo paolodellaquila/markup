@@ -62,10 +62,6 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
       shippingTotal = shippingTotal.replaceAll(",", ".");
     }
 
-    //TODO testing
-    //OrderWC orderWC = await buildOrderWC(taxRate: taxRate, markPaid: true);
-    //Order? order = await (appWooSignal((api) => api.createOrder(orderWC)));
-
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (BuildContext context) => PaypalCheckoutView(
@@ -102,15 +98,35 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
             OrderWC orderWC = await buildOrderWC(taxRate: taxRate, markPaid: true);
             Order? order = await (appWooSignal((api) => api.createOrder(orderWC)));
 
-            ///Temporary fix: set id of order into orderWC
-            orderWC.parentId = order?.id;
-
-            ///Temporary fix
-            if (order == null && params["error"] == false && params["message"].contains("Success")) {
-              routeTo(CheckoutStatusPage.path, data: orderWC);
+            if (order == null) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: Text("Error".tr()),
+                  content: Text("Something went wrong during order creation process".tr()),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+                        context.pop();
+                      },
+                      child: Text("Retry".tr()),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+                        context.pop();
+                        openBrowserTab(url: "https://markupitalia.com/contatti/");
+                      },
+                      child: Text("Assistance".tr()),
+                    ),
+                  ],
+                ),
+              );
               return;
             }
 
+            ///Paypal error
             if (params["error"] == true && !params["message"].contains("Success")) {
               showToastNotification(
                 context,
@@ -122,7 +138,7 @@ payPalPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
               return;
             }
 
-            routeTo(CheckoutStatusPage.path, data: orderWC);
+            routeTo(CheckoutStatusPage.path, data: order);
           },
           onError: (error) {
             NyLogger.error(error.toString());
