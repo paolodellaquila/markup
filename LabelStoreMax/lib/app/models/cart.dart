@@ -275,12 +275,12 @@ class Cart {
       totalDiscount = (eligibleCartLineItems.length * double.parse(amount!));
     }
 
-    totalDiscount += await couponPLUSDiscountAmount();
+    totalDiscount += await couponPLUSDiscountAmount(totalDiscount);
 
     return totalDiscount.toStringAsFixed(2);
   }
 
-  Future<double> couponPLUSDiscountAmount() async {
+  Future<double> couponPLUSDiscountAmount(double partialDiscount) async {
     CheckoutSession checkoutSession = CheckoutSession.getInstance;
 
     if (checkoutSession.plusCoupon == null) {
@@ -326,12 +326,12 @@ class Cart {
       if (checkoutSession.plusCoupon!.productIds!.isNotEmpty && !checkoutSession.plusCoupon!.productIds!.contains(cartItem.productId)) {
         continue;
       }
-      subtotal += (parseWcPrice(cartItem.subtotal) * cartItem.quantity);
+      subtotal += (parseWcPrice(cartItem.subtotal) * cartItem.quantity) - partialDiscount;
       eligibleCartLineItems.add(cartItem);
     }
 
     String? discountType = checkoutSession.coupon!.discountType;
-    String? amount = checkoutSession.coupon!.amount;
+    String? amount = checkoutSession.plusCoupon!.amount;
 
     // Percentage
     if (discountType == 'percent') {

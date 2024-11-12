@@ -129,6 +129,16 @@ Future<OrderWC> buildOrderWC({TaxRate? taxRate, bool markPaid = true}) async {
 
     orderWC.couponLines!.add(couponLine);
 
+    ///plus coupon discount to total
+    if (checkoutSession.plusCoupon != null) {
+      CouponLines couponLine = CouponLines(
+        code: checkoutSession.plusCoupon!.code,
+        amount: checkoutSession.plusCoupon!.amount,
+      );
+
+      orderWC.couponLines!.add(couponLine);
+    }
+
     //orderWC.discountTotal = checkoutSession.coupon!.amount.toString();
   }
 
