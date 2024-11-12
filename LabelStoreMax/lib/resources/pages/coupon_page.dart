@@ -9,14 +9,15 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/response/coupon.dart';
+
 import '/app/models/cart.dart';
 import '/app/models/cart_line_item.dart';
 import '/app/models/checkout_session.dart';
 import '/bootstrap/helpers.dart';
 import '/resources/widgets/buttons.dart';
 import '/resources/widgets/safearea_widget.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/response/coupon.dart';
 
 class CouponPage extends StatefulWidget {
   static String path = "/checkout-coupons";
@@ -41,7 +42,12 @@ class _CouponPageState extends NyState<CouponPage> {
 
   _successAddCoupon(Coupon coupon) {
     _showAlert(message: trans("Added to checkout"));
-    CheckoutSession.getInstance.coupon = coupon;
+
+    if (CheckoutSession.getInstance.coupon != null) {
+      CheckoutSession.getInstance.plusCoupon = coupon;
+    } else {
+      CheckoutSession.getInstance.coupon = coupon;
+    }
 
     pop(result: coupon);
   }
@@ -94,8 +100,7 @@ class _CouponPageState extends NyState<CouponPage> {
                       borderRadius: const BorderRadius.all(
                         Radius.circular(8.0),
                       ),
-                      borderSide: BorderSide(
-                          color: ThemeColor.get(context).primaryAccent)),
+                      borderSide: BorderSide(color: ThemeColor.get(context).primaryAccent)),
                   filled: true,
                   hintStyle: TextStyle(color: Colors.grey[800]),
                   hintText: trans('Add coupon code'),
@@ -130,9 +135,7 @@ class _CouponPageState extends NyState<CouponPage> {
     if (_formKey.currentState!.validate()) {
       // No coupons found
       if (_coupons.isEmpty) {
-        _showAlert(
-            message: "${trans('Coupon not found')}.",
-            style: ToastNotificationStyleType.WARNING);
+        _showAlert(message: "${trans('Coupon not found')}.", style: ToastNotificationStyleType.WARNING);
         return;
       }
 
@@ -145,21 +148,15 @@ class _CouponPageState extends NyState<CouponPage> {
       // Check excludedProductIds
       for (var productId in productIds) {
         if (coupon.excludedProductIds!.contains(productId)) {
-          _showAlert(
-              message:
-                  "${trans('Sorry, this coupon can not be used with your cart')}.",
-              style: ToastNotificationStyleType.INFO);
+          _showAlert(message: "${trans('Sorry, this coupon can not be used with your cart')}.", style: ToastNotificationStyleType.INFO);
           return;
         }
       }
 
       // Check email restrictions
-      String? emailAddress =
-          checkoutSession.billingDetails!.billingAddress?.emailAddress;
+      String? emailAddress = checkoutSession.billingDetails!.billingAddress?.emailAddress;
       if (coupon.emailRestrictions!.contains(emailAddress)) {
-        _showAlert(
-            message: trans('You cannot redeem this coupon'),
-            style: ToastNotificationStyleType.DANGER);
+        _showAlert(message: trans('You cannot redeem this coupon'), style: ToastNotificationStyleType.DANGER);
         return;
       }
 
@@ -169,11 +166,7 @@ class _CouponPageState extends NyState<CouponPage> {
       double doubleSubtotal = double.parse(strSubtotal);
       if (minimumAmount != 0 && doubleSubtotal < minimumAmount) {
         _showAlert(
-            message: trans("Spend a minimum of minimumAmount to redeem",
-                arguments: {
-                  "minimumAmount":
-                      formatStringCurrency(total: minimumAmount.toString())
-                }),
+            message: trans("Spend a minimum of minimumAmount to redeem", arguments: {"minimumAmount": formatStringCurrency(total: minimumAmount.toString())}),
             style: ToastNotificationStyleType.DANGER);
         return;
       }
@@ -182,11 +175,7 @@ class _CouponPageState extends NyState<CouponPage> {
       double maximumAmount = double.parse(coupon.maximumAmount!);
       if (maximumAmount != 0 && doubleSubtotal > maximumAmount) {
         _showAlert(
-            message: trans("Spend less than maximumAmount to redeem",
-                arguments: {
-                  "maximumAmount":
-                      formatStringCurrency(total: maximumAmount.toString())
-                }),
+            message: trans("Spend less than maximumAmount to redeem", arguments: {"maximumAmount": formatStringCurrency(total: maximumAmount.toString())}),
             style: ToastNotificationStyleType.DANGER);
         return;
       }
@@ -196,32 +185,20 @@ class _CouponPageState extends NyState<CouponPage> {
           dateNow.isAfter(
             DateTime.parse(coupon.dateExpires!),
           )) {
-        _showAlert(
-            message: trans("This coupon has expired"),
-            style: ToastNotificationStyleType.WARNING);
+        _showAlert(message: trans("This coupon has expired"), style: ToastNotificationStyleType.WARNING);
         return;
       }
 
       // Check usage limit
-      if (coupon.usageLimit != null &&
-          coupon.usageCount! >= coupon.usageLimit!) {
-        _showAlert(
-            message: trans("Usage limit has been reached"),
-            style: ToastNotificationStyleType.WARNING);
+      if (coupon.usageLimit != null && coupon.usageCount! >= coupon.usageLimit!) {
+        _showAlert(message: trans("Usage limit has been reached"), style: ToastNotificationStyleType.WARNING);
         return;
       }
 
       // Check usage limit per user
       int? limitPerUser = coupon.usageLimitPerUser;
-      if (limitPerUser != null &&
-          coupon.usedBy!
-                  .map((e) => e.toLowerCase())
-                  .where((usedBy) => usedBy == emailAddress!.toLowerCase())
-                  .length >=
-              limitPerUser) {
-        _showAlert(
-            message: "${trans('You cannot redeem this coupon')}.",
-            style: ToastNotificationStyleType.WARNING);
+      if (limitPerUser != null && coupon.usedBy!.map((e) => e.toLowerCase()).where((usedBy) => usedBy == emailAddress!.toLowerCase()).length >= limitPerUser) {
+        _showAlert(message: "${trans('You cannot redeem this coupon')}.", style: ToastNotificationStyleType.WARNING);
         return;
       }
 

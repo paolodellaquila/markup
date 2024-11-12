@@ -40,42 +40,93 @@ class _CheckoutSelectCouponWidgetState extends NyState<CheckoutSelectCouponWidge
   @override
   Widget build(BuildContext context) {
     bool hasCoupon = widget.checkoutSession.coupon != null;
+    bool hasPlusCoupon = widget.checkoutSession.plusCoupon != null;
     return Container(
-      height: 70,
+      height: hasCoupon ? 160 : 70,
       padding: EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: Colors.black12, width: 1),
         ),
       ),
-      child: InkWell(
-        onTap: _actionCoupon,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              hasCoupon ? "${"Coupon Applied".tr()}: ${widget.checkoutSession.coupon!.code!}" : trans('Apply Coupon'),
-              style: Theme.of(context).textTheme.titleSmall,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(height: hasPlusCoupon ? 8 : 16),
+          InkWell(
+            onTap: _actionCoupon,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  hasCoupon ? "${"Coupon Applied".tr()}: ${widget.checkoutSession.coupon!.code!}" : trans('Apply Coupon'),
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                if (hasCoupon == true)
+                  IconButton(
+                      padding: EdgeInsets.symmetric(vertical: 3),
+                      onPressed: _clearCoupon,
+                      icon: Icon(
+                        Icons.close,
+                        size: 19,
+                      )),
+                if (hasCoupon == false) Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade600),
+              ],
+            ).paddingSymmetric(horizontal: 16),
+          ),
+          if (hasCoupon) ...[
+            SizedBox(height: 16),
+            Divider(
+              height: 0.5,
+              thickness: 0.5,
+            ).paddingSymmetric(horizontal: 16),
+            SizedBox(height: 16),
+            InkWell(
+              onTap: _actionPLUSCoupon,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    hasPlusCoupon ? "${"Coupon Applied".tr()}: ${widget.checkoutSession.plusCoupon!.code!}" : trans('Apply Another Coupon'),
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  if (hasPlusCoupon == true)
+                    IconButton(
+                        padding: EdgeInsets.symmetric(vertical: 3),
+                        onPressed: _clearPLUSCoupon,
+                        icon: Icon(
+                          Icons.close,
+                          size: 19,
+                        )),
+                  if (hasPlusCoupon == false) Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade600),
+                ],
+              ).paddingSymmetric(horizontal: 16),
             ),
-            if (hasCoupon == true)
-              IconButton(
-                  padding: EdgeInsets.symmetric(vertical: 3),
-                  onPressed: _clearCoupon,
-                  icon: Icon(
-                    Icons.close,
-                    size: 19,
-                  )),
-            if (hasCoupon == false) Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey.shade600),
-          ],
-        ).paddingSymmetric(horizontal: 16),
+            SizedBox(height: 8),
+          ]
+        ],
       ),
     );
+  }
+
+  _clearPLUSCoupon() {
+    CheckoutSession.getInstance.plusCoupon = null;
+    StateAction.refreshPage(CheckoutConfirmationPage.path, setState: () {});
   }
 
   _clearCoupon() {
     CheckoutSession.getInstance.coupon = null;
     StateAction.refreshPage(CheckoutConfirmationPage.path, setState: () {});
+  }
+
+  _actionPLUSCoupon() {
+    routeTo(CouponPage.path, onPop: (value) {
+      if (value is Coupon) {
+        StateAction.refreshPage(CheckoutConfirmationPage.path, setState: () {});
+      }
+    });
   }
 
   _actionCoupon() {

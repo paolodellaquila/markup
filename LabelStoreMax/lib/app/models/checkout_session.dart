@@ -33,6 +33,7 @@ class CheckoutSession {
   ShippingType? shippingType;
   PaymentType? paymentType;
   Coupon? coupon;
+  Coupon? plusCoupon;
   String? customerNote;
 
   void initSession() {
