@@ -258,20 +258,95 @@ class Cart {
     String? discountType = checkoutSession.coupon!.discountType;
     String? amount = checkoutSession.coupon!.amount;
 
+    double totalDiscount = 0;
+
     // Percentage
     if (discountType == 'percent') {
-      return ((subtotal * double.parse(amount!)) / 100).toStringAsFixed(2);
+      totalDiscount = ((subtotal * double.parse(amount!)) / 100);
     }
 
     // Fixed cart
     if (discountType == 'fixed_cart') {
-      return (double.parse(amount!)).toStringAsFixed(2);
+      totalDiscount = (double.parse(amount!));
     }
 
     // Fixed product
     if (discountType == 'fixed_product') {
-      return (eligibleCartLineItems.length * double.parse(amount!)).toStringAsFixed(2);
+      totalDiscount = (eligibleCartLineItems.length * double.parse(amount!));
     }
-    return "0";
+
+    totalDiscount += await couponPLUSDiscountAmount();
+
+    return totalDiscount.toStringAsFixed(2);
+  }
+
+  Future<double> couponPLUSDiscountAmount() async {
+    CheckoutSession checkoutSession = CheckoutSession.getInstance;
+
+    if (checkoutSession.plusCoupon == null) {
+      return 0;
+    }
+
+    List<CartLineItem> cartLineItems = await getCart();
+    List<CartLineItem> eligibleCartLineItems = [];
+    double subtotal = 0;
+    for (var cartItem in cartLineItems) {
+      bool canContinue = true;
+
+      if (checkoutSession.plusCoupon!.excludedProductCategories!.isNotEmpty) {
+        for (var excludedProductCategory in checkoutSession.plusCoupon!.excludedProductCategories!) {
+          if (cartItem.categories!.map((category) => category.id).contains(excludedProductCategory)) {
+            canContinue = false;
+            break;
+          }
+        }
+      }
+
+      if (checkoutSession.plusCoupon!.productCategories!.isNotEmpty) {
+        for (var productCategories in checkoutSession.plusCoupon!.productCategories!) {
+          if (cartItem.categories!.map((category) => category.id).contains(productCategories) == false) {
+            canContinue = false;
+            break;
+          }
+        }
+      }
+
+      if (canContinue == false) {
+        continue;
+      }
+
+      if (checkoutSession.plusCoupon!.excludeSaleItems == true && cartItem.onSale == true) {
+        continue;
+      }
+
+      if (checkoutSession.plusCoupon!.excludedProductIds!.isNotEmpty && checkoutSession.plusCoupon!.excludedProductIds!.contains(cartItem.productId)) {
+        continue;
+      }
+
+      if (checkoutSession.plusCoupon!.productIds!.isNotEmpty && !checkoutSession.plusCoupon!.productIds!.contains(cartItem.productId)) {
+        continue;
+      }
+      subtotal += (parseWcPrice(cartItem.subtotal) * cartItem.quantity);
+      eligibleCartLineItems.add(cartItem);
+    }
+
+    String? discountType = checkoutSession.coupon!.discountType;
+    String? amount = checkoutSession.coupon!.amount;
+
+    // Percentage
+    if (discountType == 'percent') {
+      return ((subtotal * double.parse(amount!)) / 100);
+    }
+
+    // Fixed cart
+    if (discountType == 'fixed_cart') {
+      return (double.parse(amount!));
+    }
+
+    // Fixed product
+    if (discountType == 'fixed_product') {
+      return (eligibleCartLineItems.length * double.parse(amount!));
+    }
+    return 0;
   }
 }

@@ -9,11 +9,12 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+
 import '/app/models/cart.dart';
 import '/app/models/checkout_session.dart';
 import '/bootstrap/helpers.dart';
 import '/resources/widgets/woosignal_ui.dart';
-import 'package:nylo_framework/nylo_framework.dart';
 
 class CheckoutCouponAmountWidget extends StatelessWidget {
   const CheckoutCouponAmountWidget({super.key, required this.checkoutSession});
@@ -29,7 +30,7 @@ class CheckoutCouponAmountWidget extends StatelessWidget {
       future: Cart.getInstance.couponDiscountAmount(),
       child: (BuildContext context, data) => Padding(
         child: CheckoutMetaLine(
-          title: "${trans('Coupon')}: ${checkoutSession.coupon?.code}",
+          title: "${trans('Coupon')}: ${checkoutSession.coupon?.code} ${checkoutSession.plusCoupon != null ? "+ ${checkoutSession.plusCoupon?.code}" : ""}",
           amount: "-${formatStringCurrency(total: data)}",
         ),
         padding: EdgeInsets.only(bottom: 0, top: 0),
