@@ -354,8 +354,11 @@ Widget _videoSectionWidget(BuildContext context, HomeBanner? homeBanner, VideoPl
               child: Center(
                 child: Stack(
                   children: [
-                    VideoPlayer(
-                      _controller,
+                    AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(
+                        _controller,
+                      ),
                     ),
                     Align(
                       alignment: Alignment.center,
