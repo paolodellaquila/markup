@@ -57,6 +57,7 @@ dependencies:
   share_plus: ^9.0.0
   flutter_displaymode: ^0.6.0
   photo_view: ^0.15.0
+  flutter_html: ^3.0.0-beta.2
 
   #firebase
   firebase_messaging: ^14.9.3

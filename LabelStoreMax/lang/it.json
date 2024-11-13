@@ -302,5 +302,6 @@
   "Name must be at least 3 characters": "Il Nome deve contenere almeno 3 caratteri",
   "Surname must be at least 3 characters": "Il Cognome deve contenere almeno 3 caratteri",
   "Please enter a valid email address": "Inserisci un indirizzo email valido",
-  "Password not valid: check rules": "Password non valida: controlla le regole"
+  "Password not valid: check rules": "Password non valida: controlla le regole",
+  "Dismiss": "Chiudi"
 }

@@ -293,5 +293,6 @@
   "Name must be at least 3 characters": "Le nom doit contenir au moins 3 caractères",
   "Surname must be at least 3 characters": "Le nom doit contenir au moins 3 caractères",
   "Please enter a valid email address": "Veuillez saisir une adresse e-mail valide",
-  "Password not valid: check rules": "Mot de passe non valide: vérifiez les règles"
+  "Password not valid: check rules": "Mot de passe non valide: vérifiez les règles",
+  "Dismiss": "Rejeter"
 }

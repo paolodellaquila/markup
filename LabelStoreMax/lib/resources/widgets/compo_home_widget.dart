@@ -23,7 +23,9 @@ import 'package:flutter_app/resources/widgets/home_data/home_hottest.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_influencer.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_new_in_donna.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_new_in_uomo.dart';
+import 'package:flutter_app/resources/widgets/home_data/home_popup_banner.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
+import 'package:flutter_app/utils/home_popup.dart';
 import 'package:flutter_app/utils/shake_service.dart';
 import 'package:flutter_app/utils/universal_manager_cubit.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
@@ -55,6 +57,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
 
   HomeBanner? homeBanner;
   HomeFlashPromo? homeFlashPromo;
+  HomePopupBanner? homePopupBanner;
   HomeHottest? homeHottest;
   HomeTrend? homeTrend;
   HomeNewInDonna? homeNewInDonna;
@@ -71,8 +74,8 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     // Start listening for shake events
     ShakeService().startListening(context);
     ui_update();
-    await _loadHome();
     unawaited(_checkStartingDeeplinkProduct());
+    await _loadHome();
   }
 
   @override
@@ -143,6 +146,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
       if (snapshot.exists) {
         final banner = snapshot.child("banner");
         final flashPromo = snapshot.child("flashPromo");
+        final popup = snapshot.child("homePopup");
         final hottest = snapshot.child("hottest");
         final trend = snapshot.child("trend");
         final new_donna = snapshot.child("new-donna");
@@ -159,6 +163,13 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
         ///flash promo
         homeFlashPromo = HomeFlashPromo(
           title: flashPromo.child("title").value.toString(),
+        );
+
+        ///banner popup
+        homePopupBanner = HomePopupBanner(
+          title: popup.child("title").value.toString(),
+          message: popup.child("message").value.toString(),
+          imageURL: popup.child("image").value.toString(),
         );
 
         ///categories
@@ -260,22 +271,31 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
       ),
       body: categoryAndProducts.isEmpty
           ? AppLoaderWidget()
-          : PageView(
-              controller: controller,
-              scrollDirection: Axis.vertical,
+          : Stack(
               children: [
-                ///1. Video Section
-                _videoSectionWidget(
-                  context,
-                  homeBanner,
-                  _controller,
-                  homeFlashPromo,
-                ),
+                PageView(
+                  controller: controller,
+                  scrollDirection: Axis.vertical,
+                  children: [
+                    ///1. Video Section
+                    _videoSectionWidget(
+                      context,
+                      homeBanner,
+                      _controller,
+                      homeFlashPromo,
+                    ),
 
-                ///2. Category Cover Sections
-                ...categoryAndProducts.entries.map((catProds) {
-                  return _categoryCoverSection(context, catProds, homeTrend, homeHottest, homeNewInDonna, homeNewInUomo);
-                }),
+                    ///2. Category Cover Sections
+                    ...categoryAndProducts.entries.map((catProds) {
+                      return _categoryCoverSection(context, catProds, homeTrend, homeHottest, homeNewInDonna, homeNewInUomo);
+                    }),
+                  ],
+                ),
+                PromoPopup(
+                  title: homePopupBanner?.title ?? "",
+                  message: homePopupBanner?.message ?? "",
+                  imageURL: homePopupBanner?.imageURL ?? "",
+                ),
               ],
             ),
     );
