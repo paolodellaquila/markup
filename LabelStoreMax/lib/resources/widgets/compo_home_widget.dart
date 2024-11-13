@@ -64,7 +64,6 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
   HomeNewInUomo? homeNewInUomo;
 
   List<ProductCategory> categories = [];
-  Map<ProductCategory, List<Product>> categoryAndProducts = {};
 
   PageController controller = PageController(initialPage: 0);
   bool loadHomeCompleted = false;
@@ -219,13 +218,13 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     await _loadFirebaseData();
 
     //HOME CATEGORIES
-    ///new in donna 196
-    ///new in uomo 195
     ///trend 393
     ///hottest 387
     List<int> productCategoryId = [393, 387];
-    categories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, include: productCategoryId)));
+    //categories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, include: productCategoryId)));
 
+    ///new in donna 196
+    ///new in uomo 195
     List<int> subNewproductCategoryId = [196, 195];
     categories.addAll(await (appWooSignal((api) => api.getProductCategories(parent: 193, perPage: 50, include: subNewproductCategoryId))));
 
@@ -236,20 +235,6 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     categories[indexDonna].name = "New in Donna";
 
     categories.sort((a, b) => a.id!.compareTo(b.id!));
-
-    for (var category in categories) {
-      List<Product> products = await (appWooSignal(
-        (api) => api.getProducts(
-          perPage: 10,
-          category: category.id.toString(),
-          status: "publish",
-          stockStatus: "instock",
-        ),
-      ));
-      if (products.isNotEmpty) {
-        categoryAndProducts.addAll({category: products});
-      }
-    }
   }
 
   @override
@@ -269,7 +254,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
         ],
         elevation: 8,
       ),
-      body: categoryAndProducts.isEmpty
+      body: !loadHomeCompleted
           ? AppLoaderWidget()
           : Stack(
               children: [
@@ -286,7 +271,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
                     ),
 
                     ///2. Category Cover Sections
-                    ...categoryAndProducts.entries.map((catProds) {
+                    ...categories.map((catProds) {
                       return _categoryCoverSection(context, catProds, homeTrend, homeHottest, homeNewInDonna, homeNewInUomo);
                     }),
                   ],
@@ -409,8 +394,8 @@ Widget _videoSectionWidget(BuildContext context, HomeBanner? homeBanner, VideoPl
 }
 
 ///2. Category Cover Sections
-Widget _categoryCoverSection(BuildContext context, MapEntry<ProductCategory, List<Product>> catProds, HomeTrend? homeTrend, HomeHottest? homeHottest,
-    HomeNewInDonna? homeNewInDonna, HomeNewInUomo? homeNewInUomo) {
+Widget _categoryCoverSection(BuildContext context, ProductCategory catProds, HomeTrend? homeTrend, HomeHottest? homeHottest, HomeNewInDonna? homeNewInDonna,
+    HomeNewInUomo? homeNewInUomo) {
   List<String> _getCategoryImages(int catId) {
     switch (catId) {
       case 393:
@@ -465,7 +450,7 @@ Widget _categoryCoverSection(BuildContext context, MapEntry<ProductCategory, Lis
       slideIndicator: CircularSlideIndicator(),
       indicatorMargin: 96,
     ),
-    items: _getCategoryImages(catProds.key.id!).map((image) {
+    items: _getCategoryImages(catProds.id!).map((image) {
       return InkWell(
         child: Stack(
           children: [
@@ -489,11 +474,11 @@ Widget _categoryCoverSection(BuildContext context, MapEntry<ProductCategory, Lis
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          _getCatTitle(catProds.key.id!),
+                          _getCatTitle(catProds.id!),
                           style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
                         ),
                         Text(
-                          _getCatSubtitle(catProds.key.id!),
+                          _getCatSubtitle(catProds.id!),
                           style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
                         ),
                         SizedBox(height: 16),
@@ -519,7 +504,7 @@ Widget _categoryCoverSection(BuildContext context, MapEntry<ProductCategory, Lis
             ),
           ],
         ),
-        onTap: () => _showCategory(catProds.key),
+        onTap: () => _showCategory(catProds),
       );
     }).toList(),
   );

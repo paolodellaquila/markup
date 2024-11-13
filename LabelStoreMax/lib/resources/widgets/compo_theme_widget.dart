@@ -15,7 +15,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/resources/pages/categories_page.dart';
 import 'package:flutter_app/resources/pages/settings_page.dart';
 import 'package:flutter_app/utils/product_manager.dart';
-import 'package:flutter_app/utils/video_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
 
@@ -75,7 +74,6 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
     _loadAnimations();
 
     ProductManager().initialize();
-    VideoManager().initialize();
   }
 
   bool onScrollNotification(ScrollNotification notification) {
