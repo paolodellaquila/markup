@@ -24,116 +24,118 @@ class SettingsPage extends StatelessWidget {
     double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 16),
-              // --------- LOGO
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.all(32),
-                child: Image.asset(
-                  "public/assets/app_icon/logo_completed.png",
-                  height: height * 0.15,
-                  alignment: Alignment.center,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(height: 8),
+                // --------- LOGO
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(32),
+                  child: Image.asset(
+                    "public/assets/app_icon/logo_completed.png",
+                    height: height * 0.15,
+                    alignment: Alignment.center,
+                  ),
                 ),
-              ),
 
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Gestisci account".tr(),
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    // --------- ACCOUNT
-                    ListTile(
-                      onTap: () async {
-                        (await WPJsonAPI.wpUserLoggedIn()) ? routeTo(AccountDetailPage.path) : routeTo(AccountLoginPage.path);
-                      },
-                      contentPadding: const EdgeInsets.all(0.0),
-                      leading: Icon(
-                        Icons.account_circle,
-                        color: Colors.black,
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Gestisci account".tr(),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      title: Text(
-                        trans("Account"),
-                        style: TextStyle(color: Colors.black),
+                      // --------- ACCOUNT
+                      ListTile(
+                        onTap: () async {
+                          (await WPJsonAPI.wpUserLoggedIn()) ? routeTo(AccountDetailPage.path) : routeTo(AccountLoginPage.path);
+                        },
+                        contentPadding: const EdgeInsets.all(0.0),
+                        leading: Icon(
+                          Icons.account_circle,
+                          color: Colors.black,
+                        ),
+                        title: Text(
+                          trans("Account"),
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        trailing: Icon(
+                          Icons.arrow_forward_ios,
+                        ),
                       ),
-                      trailing: Icon(
-                        Icons.arrow_forward_ios,
+                      const Divider(
+                        color: Colors.grey,
                       ),
-                    ),
-                    const Divider(
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      "Policy".tr(),
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    if (wooSignalApp!.appTermsLink != null && wooSignalApp!.appTermsLink!.isNotEmpty)
+                      const SizedBox(height: 24),
+                      Text(
+                        "Policy".tr(),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      if (wooSignalApp!.appTermsLink != null && wooSignalApp!.appTermsLink!.isNotEmpty)
+                        ListTile(
+                          contentPadding: const EdgeInsets.all(0.0),
+                          title: Text(
+                            trans("Terms and conditions"),
+                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+                          ),
+                          leading: Icon(Icons.menu_book_rounded),
+                          trailing: Icon(Icons.arrow_forward_ios),
+                          onTap: _actionTerms,
+                        ),
+                      if (wooSignalApp!.appPrivacyLink != null && wooSignalApp!.appPrivacyLink!.isNotEmpty)
+                        ListTile(
+                          contentPadding: const EdgeInsets.all(0.0),
+                          title: Text(
+                            trans("Privacy policy"),
+                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios),
+                          leading: Icon(Icons.account_balance),
+                          onTap: _actionPrivacy,
+                        ),
+
+                      const Divider(
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(height: 24),
+
+                      Text(
+                        "Altre Impostazioni".tr(),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
                       ListTile(
                         contentPadding: const EdgeInsets.all(0.0),
-                        title: Text(
-                          trans("Terms and conditions"),
-                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
-                        ),
-                        leading: Icon(Icons.menu_book_rounded),
+                        title: Text("Change language".tr()),
+                        leading: Icon(Icons.language),
                         trailing: Icon(Icons.arrow_forward_ios),
-                        onTap: _actionTerms,
+                        onTap: () {
+                          NyLanguageSwitcher.showBottomModal(context);
+                        },
                       ),
-                    if (wooSignalApp!.appPrivacyLink != null && wooSignalApp!.appPrivacyLink!.isNotEmpty)
                       ListTile(
                         contentPadding: const EdgeInsets.all(0.0),
-                        title: Text(
-                          trans("Privacy policy"),
-                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
-                        ),
+                        title: Text("Contacts".tr()),
+                        leading: Icon(Icons.contact_support_rounded),
                         trailing: Icon(Icons.arrow_forward_ios),
-                        leading: Icon(Icons.account_balance),
-                        onTap: _actionPrivacy,
+                        onTap: () => openBrowserTab(url: "https://markupitalia.com/contatti/"),
                       ),
-
-                    const Divider(
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(height: 24),
-
-                    Text(
-                      "Altre Impostazioni".tr(),
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    ListTile(
-                      contentPadding: const EdgeInsets.all(0.0),
-                      title: Text("Change language".tr()),
-                      leading: Icon(Icons.language),
-                      trailing: Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        NyLanguageSwitcher.showBottomModal(context);
-                      },
-                    ),
-                    ListTile(
-                      contentPadding: const EdgeInsets.all(0.0),
-                      title: Text("Contacts".tr()),
-                      leading: Icon(Icons.contact_support_rounded),
-                      trailing: Icon(Icons.arrow_forward_ios),
-                      onTap: () => openBrowserTab(url: "https://markupitalia.com/contatti/"),
-                    ),
-                    const SizedBox(height: 24),
-                    ListTile(
-                      contentPadding: const EdgeInsets.all(0.0),
-                      title: AppVersionWidget(),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
+                      const SizedBox(height: 24),
+                      ListTile(
+                        contentPadding: const EdgeInsets.all(0.0),
+                        title: AppVersionWidget(),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

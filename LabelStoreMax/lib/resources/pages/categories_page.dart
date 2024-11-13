@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bootstrap/helpers.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_app/resources/widgets/buttons.dart';
 import 'package:flutter_expanded_tile/flutter_expanded_tile.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product_category.dart';
-import 'package:woosignal/models/response/product_category_collection.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
 
 class CategoriesPage extends StatefulWidget {
@@ -27,6 +25,7 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
   List<ProductCategory> mainCategories = [];
   Map<String, List<ProductCategory>> subCategories = {};
 
+  final ScrollController _scrollController = ScrollController();
   final TextEditingController _txtSearchController = TextEditingController();
 
   _actionSearch() {
@@ -44,30 +43,33 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
   }
 
   _loadCategories() async {
+    // Define the static order
+    final List<String> categoryOrder = ["New-in", "Donna", "Uomo", "Outlet"];
+
     if ((widget.wooSignalApp?.productCategoryCollections ?? []).isNotEmpty) {
       List<int> productCategoryId = widget.wooSignalApp?.productCategoryCollections.map((e) => int.parse(e.collectionId!)).toList() ?? [];
       mainCategories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, hideEmpty: true, include: productCategoryId)));
+
+      // Sort categories by the static order defined above
       mainCategories.sort((category1, category2) {
-        ProductCategoryCollection? productCategoryCollection1 =
-            widget.wooSignalApp?.productCategoryCollections.firstWhereOrNull((element) => element.collectionId == category1.id.toString());
-        ProductCategoryCollection? productCategoryCollection2 =
-            widget.wooSignalApp?.productCategoryCollections.firstWhereOrNull((element) => element.collectionId == category2.id.toString());
-
-        if (productCategoryCollection1 == null) return 0;
-        if (productCategoryCollection2 == null) return 0;
-
-        if (productCategoryCollection1.position == null) return 0;
-        if (productCategoryCollection2.position == null) return 0;
-
-        return productCategoryCollection1.position!.compareTo(productCategoryCollection2.position!);
+        int index1 = categoryOrder.indexOf(category1.name ?? "");
+        int index2 = categoryOrder.indexOf(category2.name ?? "");
+        return index1.compareTo(index2);
       });
-      //Remove uncategorized category
+
+      // Remove uncategorized category
       mainCategories.removeWhere((element) => (element.name ?? "").contains("Uncategorized"));
     } else {
       mainCategories = await (appWooSignal((api) => api.getProductCategories(parent: 0, perPage: 50, hideEmpty: true)));
-      mainCategories.sort((category1, category2) => category1.name!.compareTo(category2.name!));
 
-      //Remove uncategorized category
+      // Sort categories by the static order
+      mainCategories.sort((category1, category2) {
+        int index1 = categoryOrder.indexOf(category1.name ?? "");
+        int index2 = categoryOrder.indexOf(category2.name ?? "");
+        return index1.compareTo(index2);
+      });
+
+      // Remove unwanted categories
       mainCategories.removeWhere((element) => (element.name ?? "").contains("Uncategorized"));
       mainCategories.removeWhere((element) => (element.name ?? "").contains("Special Price"));
     }
@@ -83,6 +85,24 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
     await _loadCategories();
   }
 
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -92,16 +112,17 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
         centerTitle: true,
         title: Text(trans("Categories")),
       ),
-      body: SafeArea(
-        child: mainCategories.isEmpty
-            ? Center(
-                child: AppLoaderWidget(),
-              )
-            : Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
+      body: mainCategories.isEmpty
+          ? Center(
+              child: AppLoaderWidget(),
+            )
+          : SingleChildScrollView(
+              controller: _scrollController,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    Column(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -128,50 +149,60 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
                         const SizedBox(height: 36),
                       ],
                     ),
-                  ),
-                  Expanded(
-                    child: ExpandedTileList.builder(
-                      shrinkWrap: true,
-                      itemCount: mainCategories.length,
-                      itemBuilder: (BuildContext context, int index, controller) {
-                        ProductCategory category = mainCategories[index];
-                        return ExpandedTile(
-                          onTap: () {
-                            if ((subCategories[category.id.toString()] ?? []).isEmpty) {
-                              controller.collapse();
-                              routeTo(BrowseCategoryPage.path, data: category);
-                            }
-                          },
-                          title: Text(
-                            category.name ?? "",
-                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
-                          ),
-                          trailing: Icon(Icons.keyboard_arrow_right_rounded),
-                          controller: controller,
-                          content: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: subCategories[category.id.toString()]?.length ?? 0,
-                            itemBuilder: (BuildContext context, int index) {
-                              ProductCategory subCategory = subCategories[category.id.toString()]![index];
-                              return ListTile(
-                                title: Text(
-                                  (subCategory.name ?? "").replaceAll("&amp;", "&"),
-                                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
-                                ),
-                                trailing: Icon(Icons.keyboard_arrow_right_rounded),
-                                onTap: () {
-                                  routeTo(BrowseCategoryPage.path, data: subCategory);
-                                },
-                              );
+                    // Wrapping ExpandedTileList in a ConstrainedBox to make it scrollable
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: 0,
+                        maxHeight: MediaQuery.of(context).size.height,
+                      ),
+                      child: ExpandedTileList.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(), // Disable internal scrolling
+                        itemCount: mainCategories.length,
+                        itemBuilder: (BuildContext context, int index, controller) {
+                          ProductCategory category = mainCategories[index];
+                          return ExpandedTile(
+                            onTap: () async {
+                              if ((subCategories[category.id.toString()] ?? []).isEmpty) {
+                                controller.collapse();
+                                routeTo(BrowseCategoryPage.path, data: category);
+                              } else {
+                                await Future.delayed(Duration(milliseconds: 200));
+                                _scrollToBottom();
+                              }
                             },
-                          ),
-                        );
-                      },
+                            title: Text(
+                              category.name ?? "",
+                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+                            ),
+                            trailing: Icon(Icons.keyboard_arrow_right_rounded),
+                            controller: controller,
+                            content: ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(), // Disable internal scrolling
+                              itemCount: subCategories[category.id.toString()]?.length ?? 0,
+                              itemBuilder: (BuildContext context, int index) {
+                                ProductCategory subCategory = subCategories[category.id.toString()]![index];
+                                return ListTile(
+                                  title: Text(
+                                    (subCategory.name ?? "").replaceAll("&amp;", "&"),
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 16),
+                                  ),
+                                  trailing: Icon(Icons.keyboard_arrow_right_rounded),
+                                  onTap: () {
+                                    routeTo(BrowseCategoryPage.path, data: subCategory);
+                                  },
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-      ),
+            ),
     );
   }
 

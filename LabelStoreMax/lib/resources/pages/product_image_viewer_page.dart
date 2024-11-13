@@ -8,17 +8,18 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '/resources/widgets/cached_image_widget.dart';
-import '/resources/widgets/safearea_widget.dart';
 import 'package:flutter_swiper_view/flutter_swiper_view.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:photo_view/photo_view.dart';
+
+import '/resources/widgets/safearea_widget.dart';
 
 class ProductImageViewerPage extends NyStatefulWidget {
   static String path = "/product-images";
 
-  ProductImageViewerPage({Key? key})
-      : super(path, key: key, child: _ProductImageViewerPageState());
+  ProductImageViewerPage({Key? key}) : super(path, key: key, child: _ProductImageViewerPageState());
 }
 
 class _ProductImageViewerPageState extends NyState<ProductImageViewerPage> {
@@ -42,15 +43,19 @@ class _ProductImageViewerPageState extends NyState<ProductImageViewerPage> {
             Expanded(
               child: Swiper(
                 index: _initialIndex!,
-                itemBuilder: (BuildContext context, int index) =>
-                    CachedImageWidget(
-                  image: (_arrImageSrc.isEmpty
-                      ? getEnv("PRODUCT_PLACEHOLDER_IMAGE")
-                      : _arrImageSrc[index]),
+                itemBuilder: (BuildContext context, int index) => PhotoViewGestureDetectorScope(
+                  axis: Axis.horizontal,
+                  child: PhotoView(
+                    backgroundDecoration: BoxDecoration(color: Colors.transparent),
+                    imageProvider: CachedNetworkImageProvider(
+                      (_arrImageSrc.isEmpty ? getEnv("PRODUCT_PLACEHOLDER_IMAGE") : _arrImageSrc[index]),
+                    ),
+                  ),
                 ),
                 itemCount: _arrImageSrc.isEmpty ? 1 : _arrImageSrc.length,
                 viewportFraction: 0.9,
                 scale: 0.95,
+                onTap: (index) => print("Tapped on $index"),
               ),
             ),
             Container(
