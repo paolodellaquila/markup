@@ -288,5 +288,10 @@
   "Something went wrong during order creation process": "在订单创建过程中出现问题",
   "Assistance": "援助",
   "Apply Another Coupon": "申请另一个优惠券",
-  "An error occurred. Please retry." : "发生错误。请重试。"
+  "An error occurred. Please retry." : "发生错误。请重试。",
+  "This field cannot be empty": "此字段不能为空",
+  "Name must be at least 3 characters": "名称必须至少为 3 个字符",
+  "Surname must be at least 3 characters": "姓氏必须至少为 3 个字符",
+  "Please enter a valid email address": "请输入一个有效的电子邮件地址",
+  "Password not valid: check rules": "密码无效：检查规则"
 }

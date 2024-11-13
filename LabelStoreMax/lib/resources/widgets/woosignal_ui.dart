@@ -89,7 +89,7 @@ class CheckoutRowLine extends StatelessWidget {
       );
 }
 
-class TextEditingRow extends StatelessWidget {
+class TextEditingRow extends StatefulWidget {
   const TextEditingRow({
     super.key,
     this.heading,
@@ -97,6 +97,9 @@ class TextEditingRow extends StatelessWidget {
     this.shouldAutoFocus,
     this.keyboardType,
     this.obscureText,
+    this.validator,
+    this.focusNode,
+    this.onSubmitted,
   });
 
   final String? heading;
@@ -104,38 +107,74 @@ class TextEditingRow extends StatelessWidget {
   final bool? shouldAutoFocus;
   final TextInputType? keyboardType;
   final bool? obscureText;
+  final String? Function(String)? validator;
+  final FocusNode? focusNode;
+  final void Function(String)? onSubmitted;
+
+  @override
+  _TextEditingRowState createState() => _TextEditingRowState();
+}
+
+class _TextEditingRowState extends State<TextEditingRow> {
+  String? errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller?.addListener(_validateInput); // Add listener to controller
+  }
+
+  @override
+  void dispose() {
+    widget.controller?.removeListener(_validateInput); // Remove listener on dispose
+    super.dispose();
+  }
+
+  void _validateInput() {
+    final text = widget.controller?.text ?? '';
+    final error = widget.validator?.call(text); // Call validator function
+    setState(() {
+      errorMessage = error; // Update error message if validation fails
+    });
+  }
 
   @override
   Widget build(BuildContext context) => Container(
+        padding: EdgeInsets.all(2),
+        height: widget.heading == null
+            ? 50
+            : errorMessage != null
+                ? 130
+                : 90,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            if (heading != null)
-              Flexible(
-                child: Padding(
-                  child: AutoSizeText(
-                    heading!,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.black),
-                  ),
-                  padding: EdgeInsets.only(bottom: 2),
+            if (widget.heading != null)
+              Padding(
+                padding: EdgeInsets.only(bottom: 2),
+                child: AutoSizeText(
+                  widget.heading!,
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: Colors.black),
                 ),
               ),
-            Flexible(
-              child: TextField(
-                controller: controller,
-                style: Theme.of(context).textTheme.titleMedium,
-                keyboardType: keyboardType ?? TextInputType.text,
-                autocorrect: false,
-                autofocus: shouldAutoFocus ?? false,
-                obscureText: obscureText ?? false,
-                textCapitalization: TextCapitalization.sentences,
+            TextField(
+              focusNode: widget.focusNode,
+              controller: widget.controller,
+              style: Theme.of(context).textTheme.titleMedium,
+              keyboardType: widget.keyboardType ?? TextInputType.text,
+              autocorrect: false,
+              autofocus: widget.shouldAutoFocus ?? false,
+              obscureText: widget.obscureText ?? false,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                errorText: errorMessage, // Display error message
+                errorStyle: TextStyle(color: Colors.red), // Customize error style
               ),
-            )
+              onSubmitted: widget.onSubmitted,
+            ),
           ],
         ),
-        padding: EdgeInsets.all(2),
-        height: heading == null ? 50 : 78,
       );
 }
 

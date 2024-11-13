@@ -43,6 +43,11 @@ class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
       _tfFirstNameController = TextEditingController(),
       _tfLastNameController = TextEditingController();
 
+  final _nameFocusNode = FocusNode();
+  final _surnameFocusNode = FocusNode();
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
+
   final WooSignalApp? _wooSignalApp = AppHelper.instance.appConfig;
   bool _obscureText = true;
 
@@ -66,24 +71,67 @@ class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
                 child: Column(
                   children: <Widget>[
                     TextEditingRow(
+                      focusNode: _nameFocusNode,
                       heading: trans("First Name"),
                       controller: _tfFirstNameController,
                       shouldAutoFocus: true,
                       keyboardType: TextInputType.text,
+                      onSubmitted: (value) {
+                        _nameFocusNode.unfocus();
+                        FocusScope.of(context).requestFocus(_surnameFocusNode);
+                      },
+                      validator: (text) {
+                        if (text.isEmpty) {
+                          return "This field cannot be empty".tr();
+                        } else if (text.length < 3) {
+                          return "Name must be at least 3 characters".tr();
+                        }
+                        return null; // Return null if the text is valid
+                      },
                     ),
+                    const SizedBox(height: 8),
                     TextEditingRow(
+                      focusNode: _surnameFocusNode,
                       heading: trans("Last Name"),
                       controller: _tfLastNameController,
                       shouldAutoFocus: false,
                       keyboardType: TextInputType.text,
+                      onSubmitted: (value) {
+                        _surnameFocusNode.unfocus();
+                        FocusScope.of(context).requestFocus(_emailFocusNode);
+                      },
+                      validator: (text) {
+                        if (text.isEmpty) {
+                          return "This field cannot be empty".tr();
+                        } else if (text.length < 3) {
+                          return "Username must be at least 3 characters".tr();
+                        }
+                        return null; // Return null if the text is valid
+                      },
                     ),
                   ],
                 )),
             TextEditingRow(
+              focusNode: _emailFocusNode,
               heading: trans("Email address"),
               controller: _tfEmailAddressController,
               shouldAutoFocus: false,
               keyboardType: TextInputType.emailAddress,
+              onSubmitted: (value) {
+                _emailFocusNode.unfocus();
+                FocusScope.of(context).requestFocus(_passwordFocusNode);
+              },
+              validator: (text) {
+                // Regular expression for validating an email
+                final emailRegex = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+
+                if (text.isEmpty) {
+                  return "This field cannot be empty".tr();
+                } else if (!emailRegex.hasMatch(text)) {
+                  return "Please enter a valid email address".tr();
+                }
+                return null; // Valid email
+              },
             ),
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -91,11 +139,26 @@ class _AccountRegistrationPageState extends NyState<AccountRegistrationPage> {
               children: [
                 Flexible(
                   child: TextEditingRow(
+                    focusNode: _passwordFocusNode,
                     heading: trans("Password"),
                     controller: _tfPasswordController,
                     keyboardType: TextInputType.visiblePassword,
                     shouldAutoFocus: true,
                     obscureText: _obscureText,
+                    onSubmitted: (value) {
+                      _passwordFocusNode.unfocus();
+                    },
+                    validator: (text) {
+                      // Regular expression for validating the password
+                      final passwordRegex = RegExp(r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\W).{10,}$");
+
+                      if (text.isEmpty) {
+                        return "This field cannot be empty".tr();
+                      } else if (!passwordRegex.hasMatch(text)) {
+                        return "Password not valid: check rules".tr();
+                      }
+                      return null; // Valid password
+                    },
                   ),
                 ),
                 IconButton(

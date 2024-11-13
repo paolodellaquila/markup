@@ -297,5 +297,10 @@
   "Something went wrong during order creation process": "Qualcosa è andato storto durante il processo di creazione dell'ordine",
   "Assistance": "Assistenza",
   "Apply Another Coupon": "Applica un altro coupon",
-  "An error occurred. Please retry.": "Si è verificato un errore. Riprova."
+  "An error occurred. Please retry.": "Si è verificato un errore. Riprova.",
+  "This field cannot be empty": "Questo campo non può essere vuoto",
+  "Name must be at least 3 characters": "Il Nome deve contenere almeno 3 caratteri",
+  "Surname must be at least 3 characters": "Il Cognome deve contenere almeno 3 caratteri",
+  "Please enter a valid email address": "Inserisci un indirizzo email valido",
+  "Password not valid: check rules": "Password non valida: controlla le regole"
 }

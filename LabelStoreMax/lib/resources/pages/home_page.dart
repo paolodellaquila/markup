@@ -8,7 +8,6 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/config/firebase-messaging/firebase_notification_handler.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -42,8 +41,6 @@ class _HomePageState extends NyState<HomePage> {
     firebaseFcmIsEnabled ??= getEnv('FCM_ENABLED', defaultValue: false);
 
     if (firebaseFcmIsEnabled != true) return;
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {});
 
     ///INNESTING FCM Custom Class
     FirebaseNotifications().setUpFirebase(context);

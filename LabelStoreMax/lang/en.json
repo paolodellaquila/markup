@@ -289,5 +289,10 @@
   "Something went wrong during order creation process": "Something went wrong during order creation process",
   "Assistance": "Assistance",
   "Apply Another Coupon": "Apply Another Coupon",
-  "An error occurred. Please retry." : "An error occurred. Please retry."
+  "An error occurred. Please retry." : "An error occurred. Please retry.",
+  "This field cannot be empty": "This field cannot be empty",
+  "Name must be at least 3 characters": "Name must be at least 3 characters",
+  "Surname must be at least 3 characters": "Surname must be at least 3 characters",
+  "Please enter a valid email address": "Please enter a valid email address",
+  "Password not valid: check rules": "Password not valid: check rules"
 }

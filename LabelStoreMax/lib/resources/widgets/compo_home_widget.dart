@@ -12,6 +12,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/resources/pages/product_detail_page.dart';
@@ -90,6 +91,34 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
 
     ///ANDROID STATUS BAR FIX
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.white));
+
+    ///CHECK LAST FIREBASE MESSAGE
+    final remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (remoteMessage != null) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          backgroundColor: Colors.white,
+          title: Text("Nuova Notifica: " + (remoteMessage.notification?.title ?? ""), style: TextStyle(color: Colors.black)),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(remoteMessage.notification?.body ?? "", style: const TextStyle(color: Colors.black)),
+                const SizedBox(height: 30.0),
+                //dialogImage((Platform.isIOS) ? event.notification?.apple!.imageUrl ?? "" : event.notification?.android!.imageUrl ?? "", context)
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            MaterialButton(
+              color: Colors.black,
+              child: Text('Ok', style: TextStyle(color: Colors.white)),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   _checkStartingDeeplinkProduct() async {
