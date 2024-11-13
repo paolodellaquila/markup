@@ -288,5 +288,6 @@
   "With a minium of": "With a minium of",
   "Something went wrong during order creation process": "Something went wrong during order creation process",
   "Assistance": "Assistance",
-  "Apply Another Coupon": "Apply Another Coupon"
+  "Apply Another Coupon": "Apply Another Coupon",
+  "An error occurred. Please retry." : "An error occurred. Please retry."
 }

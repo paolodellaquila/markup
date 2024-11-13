@@ -29,6 +29,7 @@ class SettingsPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(height: 16),
               // --------- LOGO
               Container(
                 width: double.infinity,

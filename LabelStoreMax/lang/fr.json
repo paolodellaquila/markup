@@ -287,5 +287,6 @@
   "With a minium of": "Avec un minimum de",
   "Something went wrong during order creation process": "Un problème est survenu lors de la création de la commande",
   "Assistance": "Assistance",
-  "Apply Another Coupon": "Appliquer un autre coupon"
+  "Apply Another Coupon": "Appliquer un autre coupon",
+  "An error occurred. Please retry." : "Une erreur s'est produite. Veuillez réessayer."
 }

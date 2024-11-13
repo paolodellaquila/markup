@@ -186,7 +186,10 @@ class _AccountLoginPageState extends NyState<AccountLoginPage> {
             title: trans("Invalid details"), description: trans("That password does not match our records"), style: ToastNotificationStyleType.DANGER);
       } on Exception catch (_) {
         showToastNotification(context,
-            title: trans("Oops!"), description: trans("Invalid login credentials"), style: ToastNotificationStyleType.DANGER, icon: Icons.account_circle);
+            title: trans("Oops!"),
+            description: trans("An error occurred. Please retry."),
+            style: ToastNotificationStyleType.DANGER,
+            icon: Icons.account_circle);
       }
 
       if (wpUserLoginResponse == null) {
