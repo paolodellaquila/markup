@@ -103,6 +103,18 @@ class _PromoPopupState extends State<PromoPopup> with SingleTickerProviderStateM
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.close,
+                              size: 18,
+                            ),
+                            onPressed: _dismissPopup,
+                          ),
+                        ],
+                      ),
                       if (widget.imageURL != null) ...[
                         CachedImageWidget(
                           image: widget.imageURL,
@@ -121,14 +133,16 @@ class _PromoPopupState extends State<PromoPopup> with SingleTickerProviderStateM
                         ),
                       ),
                       SizedBox(height: 8),
-                      Html(
-                        data: widget.message,
-                        style: {
-                          'body': Style(
-                            fontSize: FontSize(16),
-                            textAlign: TextAlign.center,
-                          ),
-                        },
+                      SingleChildScrollView(
+                        child: Html(
+                          data: widget.message,
+                          style: {
+                            'body': Style(
+                              fontSize: FontSize(16),
+                              textAlign: TextAlign.center,
+                            ),
+                          },
+                        ),
                       ),
                       SizedBox(height: 16),
                       ElevatedButton(
