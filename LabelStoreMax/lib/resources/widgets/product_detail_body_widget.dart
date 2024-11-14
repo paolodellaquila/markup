@@ -110,6 +110,11 @@ class _ProductDetailBodyWidgetState extends State<ProductDetailBodyWidget> {
   }
 
   _viewProductImages(BuildContext context, int i) {
-    routeTo(ProductImageViewerPage.path, data: {"index": i, "images": widget.product!.images.map((f) => f.src).toList()});
+    routeTo(ProductImageViewerPage.path, data: {
+      "index": i,
+      "images": widget.selectedProductVariation != null && widget.selectedProductVariation!.image != null
+          ? [widget.selectedProductVariation!.image!.src]
+          : widget.product!.images.map((f) => f.src).toList()
+    });
   }
 }

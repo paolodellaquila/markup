@@ -63,17 +63,21 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
       //     checkSizeColorSelected();
       //   });
       // }
-      ///Default select the first color. It avoid the bug and make the user select the color
-      for (var color in widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!) {
-        if (widget.productVariations.where((variations) => variations.sku!.toLowerCase().contains("-${color.toLowerCase()}")).isNotEmpty) {
-          setState(() {
-            selectedColor = color;
-            checkSizeColorSelected();
-          });
-          break;
-        }
-      }
+      _init();
     });
+  }
+
+  _init() {
+    ///Default select the first color. It avoid the bug and make the user select the color
+    for (var color in widget.product!.attributes.firstWhereOrNull((att) => (att.name ?? "").contains("Colore"))!.options!) {
+      if (widget.productVariations.where((variations) => variations.sku!.toLowerCase().contains("-${color.toLowerCase()}")).isNotEmpty) {
+        setState(() {
+          selectedColor = color;
+          checkSizeColorSelected();
+        });
+        break;
+      }
+    }
   }
 
   @override
@@ -276,6 +280,7 @@ class _ProductDetailColorSizeWidgetState extends State<ProductDetailColorSizeWid
                   selectedColor = null;
                   selectedSize = null;
                   widget.onSizeColorSelected(null, null);
+                  _init();
                 });
               },
               child: Column(
