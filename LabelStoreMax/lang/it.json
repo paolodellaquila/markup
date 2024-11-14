@@ -108,8 +108,8 @@
   "Select a country": "Seleziona un Paese",
   "Menu": "Menù",
   "About Us": "Su di noi",
-  "Sort: Date New to Old": "Ordina: Dal da più recente",
-  "Sort: Date Old to New": "Ordina: Data dal più datato",
+  "Sort: Date New to Old": "Ordina dal più recente",
+  "Sort: Date Old to New": "Ordina dal meno recente",
   "Something went wrong": "Qualcosa è andato storto",
   "Product variation does not exist": "La variante del prodotto non esiste",
   "This variation is unavailable": "Questa variante non è disponibile",
@@ -166,10 +166,10 @@
   "pull up load": "caricare il carico",
   "Sort: Low to high": "Ordina: da basso ad alto",
   "Sort: High to low": "Ordina: da alto a basso",
-  "Sort: Name A-Z": "Ordina: Nome dalla A alla Z.",
+  "Sort: Name A-Z": "Ordina per Nome",
   "Sort: Name Z-A": "Ordina: Nome Z-A",
   "Cancel": "Annulla",
-  "Sort results": "Ordina i risultati",
+  "Sort results": "Filtra Capi",
   "you're now logged in": "Ora sei loggato",
   "Hello": "Benvenuto su Markup",
   "Welcome back": "Siamo entusiasti di riaverti con noi!",
@@ -303,5 +303,8 @@
   "Surname must be at least 3 characters": "Il Cognome deve contenere almeno 3 caratteri",
   "Please enter a valid email address": "Inserisci un indirizzo email valido",
   "Password not valid: check rules": "Password non valida: controlla le regole",
-  "Dismiss": "Chiudi"
+  "Dismiss": "Chiudi",
+  "Price Range": "Intervallo di prezzo",
+  "Close": "Chiudi",
+  "Clear filters": "Cancella filtri"
 }

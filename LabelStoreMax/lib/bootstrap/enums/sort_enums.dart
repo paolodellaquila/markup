@@ -15,4 +15,6 @@ enum SortByType {
   nameZA,
   dateAsc,
   dateDesc,
+  price,
+  clear,
 }

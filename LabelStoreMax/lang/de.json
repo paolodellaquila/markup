@@ -294,5 +294,8 @@
   "Surname must be at least 3 characters": "Der Nachname muss mindestens 3 Zeichen lang sein",
   "Please enter a valid email address": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
   "Password not valid: check rules": "Passwort ungültig: Regeln überprüfen",
-  "Dismiss": "Verwerfen"
+  "Dismiss": "Verwerfen",
+  "Price Range": "Preisspanne",
+  "Close": "Schließen",
+  "Clear filters": "Filter löschen"
 }

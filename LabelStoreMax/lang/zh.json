@@ -294,5 +294,8 @@
   "Surname must be at least 3 characters": "姓氏必须至少为 3 个字符",
   "Please enter a valid email address": "请输入一个有效的电子邮件地址",
   "Password not valid: check rules": "密码无效：检查规则",
-  "Dismiss": "解雇"
+  "Dismiss": "解雇",
+  "Price Range": "价格范围",
+  "Close": "关",
+  "Clear filters": "清除过滤器"
 }
