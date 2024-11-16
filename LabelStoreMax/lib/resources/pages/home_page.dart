@@ -8,6 +8,8 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'dart:io';
+
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
@@ -37,8 +39,10 @@ class _HomePageState extends NyState<HomePage> {
   init() async {
     await _enableFcmNotifications();
 
-    ///TRACKING ADV
-    await _trackingAdv();
+    ///TRACKING ADV iOS
+    if (Platform.isIOS) {
+      await _trackingAdv();
+    }
   }
 
   Future<void> _trackingAdv() async {
@@ -70,11 +74,7 @@ class _HomePageState extends NyState<HomePage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Rifiuto'.tr()),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Accept'.tr()),
+              child: Text('Continue'.tr()),
             ),
           ],
         ),
