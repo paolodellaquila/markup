@@ -70,7 +70,11 @@ class _HomePageState extends NyState<HomePage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Continue'.tr()),
+              child: Text('Rifiuto'.tr()),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Accept'.tr()),
             ),
           ],
         ),
