@@ -11,6 +11,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -452,6 +453,12 @@ saveWishlistProduct({required Product? product}) async {
       quantity: 1,
     ),
   ]);
+  FacebookAppEvents().logAddToWishlist(
+    id: product?.id.toString() ?? '',
+    type: product?.name ?? '',
+    currency: "EUR",
+    price: parseWcPrice(product?.regularPrice),
+  );
 }
 
 removeWishlistProduct({required Product? product}) async {

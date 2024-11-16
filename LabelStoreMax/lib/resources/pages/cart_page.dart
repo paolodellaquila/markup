@@ -8,6 +8,7 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -171,6 +172,10 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
         );
       }).toList(),
     );
+
+    ///META
+    final total = await Cart.getInstance.getTotal(withFormat: true);
+    FacebookAppEvents().logPurchase(amount: double.parse(total), currency: "EUR");
 
     routeTo(CheckoutConfirmationPage.path);
   }

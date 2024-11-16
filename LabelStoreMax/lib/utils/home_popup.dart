@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/cached_image_widget.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:nylo_framework/nylo_framework.dart';
 
 class PromoPopup extends StatefulWidget {
   final String title;
@@ -103,27 +102,41 @@ class _PromoPopupState extends State<PromoPopup> with SingleTickerProviderStateM
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      Stack(
                         children: [
-                          IconButton(
-                            icon: Icon(
-                              Icons.close,
-                              size: 18,
+                          if (widget.imageURL != null) ...[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: CachedImageWidget(
+                                image: widget.imageURL,
+                                width: 300,
+                                height: 250,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                            onPressed: _dismissPopup,
+                          ],
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: GestureDetector(
+                              onTap: _dismissPopup,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6.0),
+                                  child: Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                      if (widget.imageURL != null) ...[
-                        CachedImageWidget(
-                          image: widget.imageURL,
-                          width: 300,
-                          height: 200,
-                          fit: BoxFit.cover,
-                        ),
-                      ],
-                      SizedBox(height: 16),
+                      SizedBox(height: 8),
                       Text(
                         widget.title,
                         textAlign: TextAlign.center,
@@ -132,22 +145,15 @@ class _PromoPopupState extends State<PromoPopup> with SingleTickerProviderStateM
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 8),
                       SingleChildScrollView(
                         child: Html(
                           data: widget.message,
                           style: {
                             'body': Style(
-                              fontSize: FontSize(16),
                               textAlign: TextAlign.center,
                             ),
                           },
                         ),
-                      ),
-                      SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _dismissPopup,
-                        child: Text('Dismiss'.tr()),
                       ),
                     ],
                   ),

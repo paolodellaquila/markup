@@ -1,3 +1,4 @@
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bootstrap/helpers.dart';
@@ -34,6 +35,7 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
 
     ///firebase
     FirebaseAnalytics.instance.logSearch(searchTerm: _txtSearchController.text);
+    FacebookAppEvents().logViewContent(type: "search", id: _txtSearchController.text);
 
     routeTo(BrowseSearchPage.path, data: _txtSearchController.text, onPop: (value) {
       if (["notic", "compo"].contains(widget.wooSignalApp!.theme) == false) {

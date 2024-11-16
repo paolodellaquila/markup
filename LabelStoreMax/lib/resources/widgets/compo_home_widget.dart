@@ -11,6 +11,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -97,6 +98,8 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     ///CHECK LAST FIREBASE MESSAGE
     final remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (remoteMessage != null) {
+      FacebookAppEvents().logEvent(name: 'push_notification_open', parameters: {'message': remoteMessage.notification.toString()});
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(

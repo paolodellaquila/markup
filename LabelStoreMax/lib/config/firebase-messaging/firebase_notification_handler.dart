@@ -1,3 +1,4 @@
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,8 @@ class FirebaseNotifications {
   Future onSelectNotification(String? payload) async {}
 
   Future onDidReceiveLocalNotification(int? id, String? title, String? body, String? payload) async {
+    FacebookAppEvents().logEvent(name: 'push_notification_open', parameters: {'message': payload});
+
     // display a dialog with the notification details, tap ok to go to another page
     showDialog(
       context: context!,
@@ -95,6 +98,8 @@ class FirebaseNotifications {
             ));
       }
 
+      FacebookAppEvents().logEvent(name: 'push_notification_open', parameters: {'message': message});
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -137,6 +142,8 @@ class FirebaseNotifications {
       if (message.data.containsKey('order_id')) {
         _maybeShowSnackBar(context, message);
       }
+
+      FacebookAppEvents().logEvent(name: 'push_notification_open', parameters: {'message': message});
 
       showDialog(
         context: context,

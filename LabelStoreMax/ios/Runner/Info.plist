@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>NSCameraUsageDescription</key>
-	<string>App need camera access to simplify process of adding credit card during checkout</string>
+	<string>L&apos;app necessita dell&apos;accesso alla fotocamera per semplificare il processo di aggiunta della carta di credito durante il checkout.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -49,5 +49,33 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb544740301751998</string>
+			</array>
+		</dict>
+	</array>
+	<key>FacebookAppID</key>
+	<string>544740301751998</string>
+	<key>FacebookDisplayName</key>
+	<string>Markup</string>
+	<key>FacebookClientToken</key>
+	<string>8bf9a7847b670c3f6a20a96cfd547cd6</string>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<string>TRUE</string>
+	<key>FacebookAdvertiserIDCollectionEnabled</key>
+	<string>TRUE</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Vorremmo mostrarti annunci personalizzati più rilevanti per te.</string>
 </dict>
 </plist>

@@ -8,6 +8,8 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/config/firebase-messaging/firebase_notification_handler.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -34,7 +36,45 @@ class _HomePageState extends NyState<HomePage> {
   @override
   init() async {
     await _enableFcmNotifications();
+
+    ///TRACKING ADV
+    await _trackingAdv();
   }
+
+  Future<void> _trackingAdv() async {
+    // If the system can show an authorization request dialog
+    if (await AppTrackingTransparency.trackingAuthorizationStatus == TrackingStatus.notDetermined) {
+      // Show a custom explainer dialog before the system dialog
+      await _showCustomTrackingDialog(context);
+      // Wait for dialog popping animation
+      await Future.delayed(const Duration(milliseconds: 200));
+      // Request system's tracking authorization dialog
+      await AppTrackingTransparency.requestTrackingAuthorization();
+    }
+
+    await _checkADVAndEnabledIt();
+  }
+
+  _checkADVAndEnabledIt() async {
+    if (await AppTrackingTransparency.trackingAuthorizationStatus == TrackingStatus.authorized) {
+      FacebookAppEvents().setAdvertiserTracking(enabled: true);
+      FacebookAppEvents().setAutoLogAppEventsEnabled(true);
+    }
+  }
+
+  Future<void> _showCustomTrackingDialog(BuildContext context) async => await showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Caro utente'.tr()),
+          content: Text('cookie'.tr()),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Continue'.tr()),
+            ),
+          ],
+        ),
+      );
 
   _enableFcmNotifications() async {
     bool? firebaseFcmIsEnabled = AppHelper.instance.appConfig?.firebaseFcmIsEnabled;

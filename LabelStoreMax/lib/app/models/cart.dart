@@ -11,6 +11,7 @@
 import 'dart:convert';
 
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/shipping_method.dart';
@@ -68,6 +69,13 @@ class Cart {
           quantity: cartItem.quantity,
         );
       }).toList(),
+    );
+
+    FacebookAppEvents().logAddToCart(
+      id: cartLineItem.productId.toString(),
+      type: cartLineItem.name ?? '',
+      currency: "EUR",
+      price: parseWcPrice(cartLineItem.regularPrice),
     );
   }
 
