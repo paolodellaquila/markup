@@ -19,7 +19,7 @@ description: Markup
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.15+22
+version: 1.0.16+23
 
 environment:
   sdk: '>=3.1.3 <4.0.0'
@@ -77,6 +77,7 @@ dependencies:
   flutter_expanded_tile: ^0.4.0
   flutter_swipe_action_cell: ^3.1.3
   shake: ^2.2.0
+  shared_preferences: ^2.3.3
 
   #META
   facebook_app_events:

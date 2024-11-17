@@ -15,6 +15,7 @@ import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/config/firebase-messaging/firebase_notification_handler.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
 
 import '/bootstrap/app_helper.dart';
@@ -39,13 +40,16 @@ class _HomePageState extends NyState<HomePage> {
   init() async {
     await _enableFcmNotifications();
 
-    ///TRACKING ADV iOS
     if (Platform.isIOS) {
-      await _trackingAdv();
+      ///TRACKING ADV iOS
+      await _trackingAdv_iOS();
+    } else {
+      ///TRACKING ADV ANDROID
+      await _trackingAdv_Android();
     }
   }
 
-  Future<void> _trackingAdv() async {
+  Future<void> _trackingAdv_iOS() async {
     // If the system can show an authorization request dialog
     if (await AppTrackingTransparency.trackingAuthorizationStatus == TrackingStatus.notDetermined) {
       // Show a custom explainer dialog before the system dialog
@@ -56,27 +60,48 @@ class _HomePageState extends NyState<HomePage> {
       await AppTrackingTransparency.requestTrackingAuthorization();
     }
 
-    await _checkADVAndEnabledIt();
+    final result = await AppTrackingTransparency.trackingAuthorizationStatus == TrackingStatus.authorized;
+    await _checkADVAndEnabledIt(advTracking: result, logApp: result);
   }
 
-  _checkADVAndEnabledIt() async {
-    if (await AppTrackingTransparency.trackingAuthorizationStatus == TrackingStatus.authorized) {
-      FacebookAppEvents().setAdvertiserTracking(enabled: true);
-      FacebookAppEvents().setAutoLogAppEventsEnabled(true);
+  Future<void> _trackingAdv_Android() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final bool? logAutoEnable = prefs.getBool('META_logAutoEnable');
+    if (logAutoEnable == null) {
+      final result = await _showCustomTrackingDialog(context);
+      await _checkADVAndEnabledIt(advTracking: result ?? false, logApp: result ?? false);
+      await prefs.setBool('META_logAutoEnable', result ?? false);
     }
   }
 
-  Future<void> _showCustomTrackingDialog(BuildContext context) async => await showDialog<void>(
+  _checkADVAndEnabledIt({required bool advTracking, required bool logApp}) async {
+    FacebookAppEvents().setAdvertiserTracking(enabled: advTracking);
+    FacebookAppEvents().setAutoLogAppEventsEnabled(logApp);
+  }
+
+  Future<bool?> _showCustomTrackingDialog(BuildContext context) async => await showDialog<bool>(
         context: context,
+        barrierDismissible: false,
         builder: (context) => AlertDialog(
           title: Text('Caro utente'.tr()),
           content: Text('cookie'.tr()),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Continue'.tr()),
-            ),
-          ],
+          actions: Platform.isAndroid
+              ? [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: Text('Accept'.tr()),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: Text('Rifiuto'.tr()),
+                  ),
+                ]
+              : [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: Text('Continue'.tr()),
+                  ),
+                ],
         ),
       );
 
