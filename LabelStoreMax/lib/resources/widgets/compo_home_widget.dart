@@ -27,6 +27,7 @@ import 'package:flutter_app/resources/widgets/home_data/home_new_in_uomo.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_popup_banner.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
 import 'package:flutter_app/utils/home_popup.dart';
+import 'package:flutter_app/utils/scroll_animation.dart';
 import 'package:flutter_app/utils/shake_service.dart';
 import 'package:flutter_app/utils/universal_manager_cubit.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
@@ -328,69 +329,48 @@ Widget _videoSectionWidget(BuildContext context, HomeBanner? homeBanner, VideoPl
   }
 
   if (homeBanner?.homeVideoBanner != null && _controller != null && _controller.value.isInitialized) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      child: AnimatedOpacity(
-        duration: Duration(milliseconds: 500),
-        opacity: homeBanner?.homeVideoBanner != null ? 1 : 0,
-        child: GestureDetector(
-          onTap: () => openBrowserTab(url: homeBanner?.videoLink ?? ""),
-          child: AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: Container(
-              child: Center(
-                child: Stack(
-                  children: [
-                    AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(
-                        _controller,
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 2.5),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              homeBanner?.homeTitle ?? "",
-                              style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
-                            ),
-                            Text(
-                              homeBanner?.homeSubtitle ?? "",
-                              style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
-                            ),
-                            SizedBox(height: 32),
-                            AnimatedOpacity(
-                              opacity: 1.0,
-                              duration: Duration(seconds: 1),
-                              child: Icon(
-                                Icons.keyboard_double_arrow_down,
-                                color: Colors.white,
-                                size: 32,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 16.0),
-                        child: _flashPromoSectionWidget(context, homeFlashPromo),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+    return Stack(
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: GestureDetector(
+            onTap: () => openBrowserTab(url: homeBanner?.videoLink ?? ""),
+            child: AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              child: VideoPlayer(_controller),
             ),
           ),
         ),
-      ),
+        Align(
+          alignment: Alignment.center,
+          child: Padding(
+            padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 2.5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  homeBanner?.homeTitle ?? "",
+                  style: Theme.of(context).textTheme.headlineLarge!.copyWith(color: Colors.white),
+                ),
+                Text(
+                  homeBanner?.homeSubtitle ?? "",
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+                ),
+                SizedBox(height: 32),
+                ScrollIndicatorAnimation(),
+              ],
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.topCenter,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: _flashPromoSectionWidget(context, homeFlashPromo),
+          ),
+        ),
+      ],
     );
   }
   return SizedBox.shrink();
