@@ -8,7 +8,6 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
-import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -126,6 +125,23 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
       CheckoutSession.getInstance.billingDetails!.shippingAddress = sfCustomerAddress;
     }
 
+    try {
+      ///firebase
+      FirebaseAnalytics.instance.logPurchase(
+        items: cartLineItems.map((cartItem) {
+          return AnalyticsEventItem(
+            itemCategory: cartItem.categories!.map((e) => e.name).join(","),
+            itemId: cartItem.productId.toString(),
+            itemName: cartItem.name,
+            price: parseWcPrice(cartItem.regularPrice),
+            quantity: cartItem.quantity,
+          );
+        }).toList(),
+      );
+    } catch (e) {
+      print(e);
+    }
+
     if (!(await WPJsonAPI.wpUserLoggedIn())) {
       // show modal to ask customer if they would like to checkout as guest or login
       showAdaptiveDialog(
@@ -159,23 +175,6 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
           });
       return;
     }
-
-    ///firebase
-    FirebaseAnalytics.instance.logPurchase(
-      items: cartLineItems.map((cartItem) {
-        return AnalyticsEventItem(
-          itemCategory: cartItem.categories!.map((e) => e.name).join(","),
-          itemId: cartItem.productId.toString(),
-          itemName: cartItem.name,
-          price: parseWcPrice(cartItem.regularPrice),
-          quantity: cartItem.quantity,
-        );
-      }).toList(),
-    );
-
-    ///META
-    final total = await Cart.getInstance.getTotal(withFormat: true);
-    FacebookAppEvents().logPurchase(amount: double.parse(total), currency: "EUR");
 
     routeTo(CheckoutConfirmationPage.path);
   }

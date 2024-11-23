@@ -9,6 +9,7 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -425,6 +426,15 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
     //       title: trans("Sorry"), description: trans("Retry later"), style: ToastNotificationStyleType.INFO, duration: Duration(seconds: 3));
     //   return;
     // }
+
+    try {
+      ///META
+      final total = await checkoutSession.total(withFormat: true);
+      FacebookAppEvents().logPurchase(amount: double.parse(total.replaceAll("€", "")), currency: "EUR");
+      FacebookAppEvents().logEvent(name: "PURCHASE", parameters: {"COUPON": checkoutSession.coupon?.code ?? ""});
+    } catch (e) {
+      print(e);
+    }
 
     try {
       await checkoutSession.paymentType!.pay(context, taxRate: _taxRate);

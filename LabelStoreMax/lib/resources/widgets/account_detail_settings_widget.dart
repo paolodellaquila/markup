@@ -8,6 +8,10 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/bootstrap/helpers.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -65,9 +69,61 @@ class _AccountDetailSettingsWidgetState extends NyState<AccountDetailSettingsWid
             leading: Icon(Icons.exit_to_app),
             title: Text(trans("Logout")),
             onTap: () {
-              confirmAction(() {
-                event<LogoutEvent>();
-              }, title: "Are you sure?".tr());
+              if (!kIsWeb && Platform.isIOS) {
+                showCupertinoModalPopup(
+                    context: context,
+                    builder: (context) {
+                      CupertinoActionSheet cupertinoActionSheet = CupertinoActionSheet(
+                        actions: [
+                          CupertinoActionSheetAction(
+                            isDefaultAction: true,
+                            onPressed: () {
+                              Navigator.pop(context);
+                              event<LogoutEvent>();
+                            },
+                            child: Text(
+                              "Are you sure you want to logout?".tr(),
+                            ),
+                          ),
+                        ],
+                        cancelButton: CupertinoActionSheetAction(
+                          child: Text(
+                            "Cancel".tr(),
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      );
+                      return cupertinoActionSheet;
+                    });
+                return;
+              }
+
+              showDialog(
+                context: context,
+                builder: (context) {
+                  AlertDialog alertDialog = AlertDialog(
+                    title: Text("Are you sure you want to logout?".tr()),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          event<LogoutEvent>();
+                        },
+                        child: Text(
+                          "Confirm".tr(),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          "Cancel".tr(),
+                        ),
+                      ),
+                    ],
+                  );
+                  return alertDialog;
+                },
+              );
             },
           ),
         ),

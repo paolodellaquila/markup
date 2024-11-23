@@ -66,11 +66,13 @@ class _HomePageState extends NyState<HomePage> {
 
   Future<void> _trackingAdv_Android() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final bool? logAutoEnable = prefs.getBool('META_logAutoEnable');
+    final bool? logAutoEnable = prefs.getBool('ADV_META_logAutoEnable');
     if (logAutoEnable == null) {
       final result = await _showCustomTrackingDialog(context);
-      await _checkADVAndEnabledIt(advTracking: result ?? false, logApp: result ?? false);
-      await prefs.setBool('META_logAutoEnable', result ?? false);
+      if (result != null) {
+        await _checkADVAndEnabledIt(advTracking: result, logApp: result);
+        await prefs.setBool('ADV_META_logAutoEnable', result);
+      }
     }
   }
 
@@ -79,29 +81,34 @@ class _HomePageState extends NyState<HomePage> {
     FacebookAppEvents().setAutoLogAppEventsEnabled(logApp);
   }
 
-  Future<bool?> _showCustomTrackingDialog(BuildContext context) async => await showDialog<bool>(
+  Future<bool?> _showCustomTrackingDialog(BuildContext context) async => showDialog<bool>(
         context: context,
         barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: Text('Caro utente'.tr()),
-          content: Text('cookie'.tr()),
-          actions: Platform.isAndroid
-              ? [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, true),
-                    child: Text('Accept'.tr()),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, false),
-                    child: Text('Rifiuto'.tr()),
-                  ),
-                ]
-              : [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, true),
-                    child: Text('Continue'.tr()),
-                  ),
-                ],
+        builder: (context) => PopScope(
+          onPopInvoked: (popResult) {
+            return;
+          },
+          child: AlertDialog(
+            title: Text('Caro utente'.tr()),
+            content: Text('cookie'.tr()),
+            actions: Platform.isAndroid
+                ? [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text('Rifiuto'.tr()),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: Text('Accept'.tr()),
+                    ),
+                  ]
+                : [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: Text('Continue'.tr()),
+                    ),
+                  ],
+          ),
         ),
       );
 
