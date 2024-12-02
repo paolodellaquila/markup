@@ -1,3 +1,4 @@
+import 'package:flutter_app/app/providers/payments/scalapay_pay.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 import '/app/models/payment_type.dart';
@@ -21,7 +22,7 @@ List<PaymentType> paymentTypeList = [
   addPayment(
     id: 1,
     name: "Stripe",
-    description: trans("Debit or Credit Card"),
+    description: "${trans("Debit or Credit Card")} (Apple Pay / Google Pay)",
     assetImage: "dark_powered_by_stripe.png",
     pay: stripePay,
   ),
@@ -37,7 +38,7 @@ List<PaymentType> paymentTypeList = [
   addPayment(
     id: 4,
     name: "PayPal",
-    description: trans("Debit or Credit Card"),
+    description: "${trans("Debit or Credit Card")} / PayPal ${trans("Account")}",
     assetImage: "paypal_logo.png",
     pay: payPalPay,
   ),
@@ -52,11 +53,11 @@ List<PaymentType> paymentTypeList = [
 
   // e.g. add more here
 
-  // addPayment(
-  //   id: 6,
-  //   name: "MyNewPaymentMethod",
-  //   description: "Debit or Credit Card",
-  //   assetImage: "add icon image to public/assets/images/myimage.png",
-  //   pay: "myCustomPaymentFunction",
-  // ),
+  addPayment(
+    id: 6,
+    name: "Scalapay",
+    description: trans("Paga in 3 rate senza interessi"),
+    assetImage: "scalapay_logo.png",
+    pay: scalapayPay,
+  ),
 ];
