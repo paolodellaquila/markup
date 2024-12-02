@@ -12,6 +12,7 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/app/networking/scalapay/scalapay_api.dart';
 import 'package:flutter_app/resources/pages/categories_page.dart';
 import 'package:flutter_app/resources/pages/settings_page.dart';
 import 'package:flutter_app/utils/product_manager.dart';
@@ -74,6 +75,10 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
     _loadAnimations();
 
     ProductManager().initialize();
+
+    ScalapayApi().getConfiguration().then((value) {
+      print(value);
+    });
   }
 
   bool onScrollNotification(ScrollNotification notification) {
