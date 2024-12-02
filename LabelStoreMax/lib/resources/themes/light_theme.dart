@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+
 import '/bootstrap/app_helper.dart';
 import '/config/font.dart';
 import '/resources/themes/styles/color_styles.dart';
 import '/resources/themes/text_theme/default_text_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:nylo_framework/nylo_framework.dart';
 
 /* Light Theme
 |--------------------------------------------------------------------------
@@ -14,16 +15,14 @@ import 'package:nylo_framework/nylo_framework.dart';
 
 ThemeData lightTheme(ColorStyles lightColors) {
   try {
-    appFont = GoogleFonts.getFont(
-        AppHelper.instance.appConfig!.themeFont ?? "Poppins");
+    appFont = GoogleFonts.getFont(AppHelper.instance.appConfig!.themeFont ?? "Poppins");
   } on Exception catch (e) {
     if (getEnv('APP_DEBUG') == true) {
       NyLogger.error(e.toString());
     }
   }
 
-  TextTheme lightTheme =
-      getAppTextTheme(appFont, defaultTextTheme.merge(_textTheme(lightColors)));
+  TextTheme lightTheme = getAppTextTheme(appFont, defaultTextTheme.merge(_textTheme(lightColors)));
 
   return ThemeData(
     useMaterial3: true,
@@ -35,11 +34,14 @@ ThemeData lightTheme(ColorStyles lightColors) {
     appBarTheme: AppBarTheme(
       surfaceTintColor: Colors.transparent,
       backgroundColor: lightColors.appBarBackground,
-      titleTextStyle: lightTheme.titleLarge!
-          .copyWith(color: lightColors.appBarPrimaryContent),
+      titleTextStyle: lightTheme.titleLarge!.copyWith(color: lightColors.appBarPrimaryContent),
       iconTheme: IconThemeData(color: lightColors.appBarPrimaryContent),
       elevation: 1.0,
       systemOverlayStyle: SystemUiOverlayStyle.dark,
+    ),
+    tabBarTheme: TabBarTheme(
+      labelStyle: lightTheme.titleMedium?.copyWith(color: Colors.black, fontWeight: FontWeight.bold),
+      unselectedLabelStyle: lightTheme.titleSmall?.copyWith(color: Colors.grey),
     ),
     buttonTheme: ButtonThemeData(
       buttonColor: lightColors.buttonPrimaryContent,
@@ -49,26 +51,18 @@ ThemeData lightTheme(ColorStyles lightColors) {
       style: TextButton.styleFrom(foregroundColor: lightColors.primaryContent),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
-      style: TextButton.styleFrom(
-          foregroundColor: lightColors.buttonPrimaryContent,
-          backgroundColor: lightColors.buttonBackground),
+      style: TextButton.styleFrom(foregroundColor: lightColors.buttonPrimaryContent, backgroundColor: lightColors.buttonBackground),
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: lightColors.bottomTabBarBackground,
-      unselectedIconTheme:
-          IconThemeData(color: lightColors.bottomTabBarIconUnselected),
-      selectedIconTheme:
-          IconThemeData(color: lightColors.bottomTabBarIconSelected),
-      unselectedLabelStyle:
-          TextStyle(color: lightColors.bottomTabBarLabelUnselected),
-      selectedLabelStyle:
-          TextStyle(color: lightColors.bottomTabBarLabelSelected),
+      unselectedIconTheme: IconThemeData(color: lightColors.bottomTabBarIconUnselected),
+      selectedIconTheme: IconThemeData(color: lightColors.bottomTabBarIconSelected),
+      unselectedLabelStyle: TextStyle(color: lightColors.bottomTabBarLabelUnselected),
+      selectedLabelStyle: TextStyle(color: lightColors.bottomTabBarLabelSelected),
       selectedItemColor: lightColors.bottomTabBarLabelSelected,
     ),
     textTheme: lightTheme,
-    colorScheme: ColorScheme.light(
-        background: lightColors.background,
-        primary: lightColors.primaryContent),
+    colorScheme: ColorScheme.light(background: lightColors.background, primary: lightColors.primaryContent),
   );
 }
 

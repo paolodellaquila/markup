@@ -1,5 +1,3 @@
-import 'package:accordion/accordion.dart';
-import 'package:accordion/controllers.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +5,7 @@ import 'package:flutter_app/bootstrap/helpers.dart';
 import 'package:flutter_app/resources/pages/browse_category_page.dart';
 import 'package:flutter_app/resources/pages/browse_search_page.dart';
 import 'package:flutter_app/resources/widgets/app_loader_widget.dart';
-import 'package:flutter_app/resources/widgets/buttons.dart';
+import 'package:flutter_app/resources/widgets/cached_image_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product_category.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
@@ -23,28 +21,14 @@ class CategoriesPage extends StatefulWidget {
   State<CategoriesPage> createState() => _CategoriesPageState();
 }
 
-class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAliveClientMixin {
+class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+  late TabController _tabController;
+
   List<ProductCategory> mainCategories = [];
   Map<String, List<ProductCategory>> subCategories = {};
-  Map<String, List<ProductCategory>> outletSubCategories = {};
 
-  final ScrollController _scrollController = ScrollController();
   final TextEditingController _txtSearchController = TextEditingController();
-
-  _actionSearch() {
-    if (_txtSearchController.text.isEmpty) return;
-    if (_txtSearchController.text.length < 3) return;
-
-    ///firebase
-    FirebaseAnalytics.instance.logSearch(searchTerm: _txtSearchController.text);
-    FacebookAppEvents().logViewContent(type: "search", id: _txtSearchController.text);
-
-    routeTo(BrowseSearchPage.path, data: _txtSearchController.text, onPop: (value) {
-      if (["notic", "compo"].contains(widget.wooSignalApp!.theme) == false) {
-        Navigator.pop(context);
-      }
-    });
-  }
+  bool isSearching = false;
 
   _loadCategories() async {
     // Define the static order
@@ -80,18 +64,26 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
 
     for (ProductCategory category in mainCategories) {
       List<ProductCategory> subCats = await (appWooSignal((api) => api.getProductCategories(parent: category.id, perPage: 50, hideEmpty: true)));
-
-      ///Only for outlet
-      if (category.name == "Outlet") {
-        for (ProductCategory subCat in subCats) {
-          List<ProductCategory> subSubCats = await (appWooSignal((api) => api.getProductCategories(parent: subCat.id, perPage: 50, hideEmpty: true)));
-          outletSubCategories[subCat.id.toString()] = subSubCats;
-          subCategories[category.id.toString()] = subCats;
-        }
-      } else {
-        subCategories[category.id.toString()] = subCats;
-      }
+      subCategories[category.id.toString()] = subCats;
     }
+
+    _tabController = TabController(length: mainCategories.length, vsync: this);
+    setState(() {});
+  }
+
+  _actionSearch() {
+    if (_txtSearchController.text.isEmpty) return;
+    if (_txtSearchController.text.length < 3) return;
+
+    ///firebase
+    FirebaseAnalytics.instance.logSearch(searchTerm: _txtSearchController.text);
+    FacebookAppEvents().logViewContent(type: "search", id: _txtSearchController.text);
+
+    routeTo(BrowseSearchPage.path, data: _txtSearchController.text, onPop: (value) {
+      if (["notic", "compo"].contains(widget.wooSignalApp!.theme) == false) {
+        Navigator.pop(context);
+      }
+    });
   }
 
   @override
@@ -99,21 +91,10 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
     await _loadCategories();
   }
 
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-  }
-
   @override
   void dispose() {
-    _scrollController.dispose();
+    _tabController.dispose();
+    _txtSearchController.dispose();
     super.dispose();
   }
 
@@ -125,177 +106,128 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
       appBar: AppBar(
         centerTitle: true,
         title: Text(trans("Categories")),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              setState(() {
+                isSearching = !isSearching;
+              });
+            },
+          ),
+        ],
       ),
       body: mainCategories.isEmpty
           ? Center(
               child: AppLoaderWidget(),
             )
-          : SingleChildScrollView(
-              controller: _scrollController,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        NyTextField.compact(
-                          decoration: InputDecoration(
-                            prefixIcon: Icon(Icons.search),
-                            hintText: trans("Search hint"),
-                            hintStyle: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
-                          ),
-                          backgroundColor: Colors.grey.shade200,
-                          controller: _txtSearchController,
-                          style: Theme.of(context).textTheme.bodySmall,
-                          keyboardType: TextInputType.text,
-                          autocorrect: false,
-                          autoFocus: false,
-                          textCapitalization: TextCapitalization.sentences,
-                          onSubmitted: (_) => _actionSearch,
-                        ),
-                        const SizedBox(height: 16),
-                        PrimaryButton(
-                          title: trans("Search"),
-                          action: _actionSearch,
-                        ),
-                        const SizedBox(height: 36),
-                      ],
-                    ),
-                    // Wrapping ExpandedTileList in a ConstrainedBox to make it scrollable
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: 0,
-                        maxHeight: MediaQuery.of(context).size.height,
+          : Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  if (isSearching) ...[
+                    NyTextField.compact(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.search),
+                        hintText: trans("Search hint"),
+                        hintStyle: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
                       ),
-                      child: Accordion(
-                          scrollIntoViewOfItems: ScrollIntoViewOfItems.none,
-                          disableScrolling: true,
-                          scaleWhenAnimating: true,
-                          openAndCloseAnimation: true,
-                          headerBackgroundColor: Colors.grey.shade200,
-                          headerPadding: EdgeInsets.symmetric(horizontal: 16),
-                          rightIcon: Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Colors.black,
-                            size: 20,
-                          ),
-                          contentBorderWidth: 0,
-                          contentHorizontalPadding: 0,
-                          sectionOpeningHapticFeedback: SectionHapticFeedback.heavy,
-                          sectionClosingHapticFeedback: SectionHapticFeedback.light,
-                          children: mainCategories.map((item) {
-                            return AccordionSection(
-                              contentBorderColor: Colors.transparent,
-                              header: Container(
-                                padding: EdgeInsets.symmetric(vertical: 16),
-                                child: Text(
-                                  item.name ?? "",
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: Colors.black,
-                                      ),
+                      backgroundColor: Colors.grey.shade200,
+                      controller: _txtSearchController,
+                      style: Theme.of(context).textTheme.bodySmall,
+                      keyboardType: TextInputType.text,
+                      autocorrect: false,
+                      autoFocus: false,
+                      textCapitalization: TextCapitalization.sentences,
+                      onSubmitted: (_) => _actionSearch,
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  TabBar(
+                    enableFeedback: true,
+                    dividerHeight: 0,
+                    tabAlignment: TabAlignment.fill,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    controller: _tabController,
+                    tabs: mainCategories.map((category) => Tab(text: category.name)).toList(),
+                  ),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: mainCategories.map((category) {
+                        final subCats = subCategories[category.id.toString()] ?? [];
+                        return subCats.isEmpty
+                            ? const Center(child: Text("No subcategories available"))
+                            : GridView.builder(
+                                padding: const EdgeInsets.all(8),
+                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 0.8,
+                                  crossAxisSpacing: 8,
+                                  mainAxisSpacing: 8,
                                 ),
-                              ),
-                              content: Accordion(
-                                scrollIntoViewOfItems: ScrollIntoViewOfItems.none,
-                                disableScrolling: true,
-                                scaleWhenAnimating: true,
-                                openAndCloseAnimation: true,
-                                headerBackgroundColor: Colors.grey.shade200,
-                                headerPadding: EdgeInsets.symmetric(horizontal: 16),
-                                rightIcon: Icon(
-                                  Icons.keyboard_arrow_down,
-                                  color: Colors.black,
-                                  size: 20,
-                                ),
-                                contentBorderWidth: 0,
-                                contentHorizontalPadding: 0,
-                                sectionOpeningHapticFeedback: SectionHapticFeedback.heavy,
-                                sectionClosingHapticFeedback: SectionHapticFeedback.light,
-                                children: subCategories[item.id.toString()]?.map((subItem) {
-                                      return AccordionSection(
-                                        onOpenSection: () {
-                                          if ((item.name ?? "").toLowerCase().contains("outlet")) {
-                                            return;
-                                          }
-                                          if ((subCategories[subItem.id.toString()] ?? []).isEmpty) {
-                                            routeTo(BrowseCategoryPage.path, data: subItem);
-                                          }
-                                        },
-                                        contentBackgroundColor: Colors.white,
-                                        contentBorderColor: Colors.grey.shade300,
-                                        header: Container(
-                                          padding: EdgeInsets.symmetric(vertical: 16),
-                                          child: Text(
-                                            subItem.name ?? "",
-                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                  color: Colors.black,
-                                                ),
-                                          ),
-                                        ),
-                                        content: ((item.name ?? "").toLowerCase().contains("outlet"))
-                                            ? Accordion(
-                                                scrollIntoViewOfItems: ScrollIntoViewOfItems.none,
-                                                disableScrolling: true,
-                                                scaleWhenAnimating: true,
-                                                openAndCloseAnimation: true,
-                                                headerBackgroundColor: Colors.grey.shade200,
-                                                headerPadding: EdgeInsets.symmetric(horizontal: 16),
-                                                rightIcon: Icon(
-                                                  Icons.keyboard_arrow_down,
-                                                  color: Colors.black,
-                                                  size: 20,
-                                                ),
-                                                contentBorderWidth: 0,
-                                                contentHorizontalPadding: 0,
-                                                sectionOpeningHapticFeedback: SectionHapticFeedback.heavy,
-                                                sectionClosingHapticFeedback: SectionHapticFeedback.light,
-                                                children: outletSubCategories[subItem.id.toString()]?.map((subItem) {
-                                                      return AccordionSection(
-                                                        onOpenSection: () {
-                                                          if ((outletSubCategories[subItem.id.toString()] ?? []).isEmpty) {
-                                                            routeTo(BrowseCategoryPage.path, data: subItem);
-                                                          }
-                                                        },
-                                                        contentBackgroundColor: Colors.white,
-                                                        contentBorderColor: Colors.grey.shade300,
-                                                        header: Container(
-                                                          padding: EdgeInsets.symmetric(vertical: 16),
-                                                          child: Text(
-                                                            subItem.name ?? "",
-                                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                                  color: Colors.black,
-                                                                ),
-                                                          ),
-                                                        ),
-                                                        content: Container(
-                                                          padding: EdgeInsets.symmetric(vertical: 16),
-                                                          child: Text(
-                                                            subItem.description ?? "",
-                                                            style: Theme.of(context).textTheme.bodySmall,
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }).toList() ??
-                                                    [],
-                                              )
-                                            : Container(
-                                                padding: EdgeInsets.symmetric(vertical: 16),
-                                                child: Text(
-                                                  subItem.description ?? "",
-                                                  style: Theme.of(context).textTheme.bodySmall,
+                                itemCount: subCats.length,
+                                itemBuilder: (context, index) {
+                                  final subCategory = subCats[index];
+                                  return Card(
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(8),
+                                      onTap: () {
+                                        routeTo(BrowseCategoryPage.path, data: subCategory);
+                                      },
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Stack(
+                                          children: [
+                                            if (subCategory.image?.src != null) ...[
+                                              Positioned.fill(
+                                                child: ClipRRect(
+                                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                                                  child: CachedImageWidget(
+                                                    image: subCategory.image?.src ?? "",
+                                                    fit: BoxFit.cover,
+                                                  ),
                                                 ),
                                               ),
-                                      );
-                                    }).toList() ??
-                                    [],
-                              ),
-                            );
-                          }).toList()),
+                                              Positioned.fill(
+                                                child: ClipRRect(
+                                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                                                  child: Container(
+                                                    color: Colors.black.withOpacity(0.1),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                            // Stacked text
+                                            Align(
+                                              alignment: subCategory.image?.src == null ? Alignment.center : Alignment.bottomCenter,
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Text(
+                                                      subCategory.name ?? "",
+                                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                            color: subCategory.image?.src == null ? Colors.black : Colors.white,
+                                                          ),
+                                                      textAlign: TextAlign.center,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                      }).toList(),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
     );

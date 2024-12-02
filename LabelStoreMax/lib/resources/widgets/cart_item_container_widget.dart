@@ -24,11 +24,7 @@ class CartItemContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: 8),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          color: Colors.white,
-        ),
+      child: Card(
         child: Padding(
           padding: EdgeInsets.all(8),
           child: Column(
