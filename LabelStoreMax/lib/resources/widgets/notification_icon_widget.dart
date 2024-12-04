@@ -9,9 +9,10 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+
 import '/bootstrap/helpers.dart';
 import '/resources/pages/notifications_page.dart';
-import 'package:nylo_framework/nylo_framework.dart';
 
 class NotificationIcon extends StatefulWidget {
   NotificationIcon({super.key});
@@ -31,14 +32,12 @@ class _NotificationIconState extends NyState<NotificationIcon> {
 
   @override
   boot() async {
-    totalNotifications =
-        (await NyNotification.allNotificationsNotRead()).length;
+    totalNotifications = (await NyNotification.allNotificationsNotRead()).length;
   }
 
   @override
   stateUpdated(dynamic data) async {
-    totalNotifications =
-        (await NyNotification.allNotificationsNotRead()).length;
+    totalNotifications = (await NyNotification.allNotificationsNotRead()).length;
   }
 
   @override

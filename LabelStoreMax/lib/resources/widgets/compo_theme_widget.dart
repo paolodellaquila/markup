@@ -85,22 +85,6 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
     ProductManager().initialize();
   }
 
-  bool onScrollNotification(ScrollNotification notification) {
-    if (notification is UserScrollNotification && notification.metrics.axis == Axis.vertical) {
-      switch (notification.direction) {
-        case ScrollDirection.forward:
-          _hideBottomBarAnimationController.reverse();
-          break;
-        case ScrollDirection.reverse:
-          _hideBottomBarAnimationController.forward();
-          break;
-        case ScrollDirection.idle:
-          break;
-      }
-    }
-    return false;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,6 +153,22 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
               //other params
             ),
     );
+  }
+
+  bool onScrollNotification(ScrollNotification notification) {
+    if (notification is UserScrollNotification && notification.metrics.axis == Axis.vertical) {
+      switch (notification.direction) {
+        case ScrollDirection.forward:
+          _hideBottomBarAnimationController.reverse();
+          break;
+        case ScrollDirection.reverse:
+          _hideBottomBarAnimationController.forward();
+          break;
+        case ScrollDirection.idle:
+          break;
+      }
+    }
+    return false;
   }
 
   List<BottomNavItem> bottomNavWidgets() {

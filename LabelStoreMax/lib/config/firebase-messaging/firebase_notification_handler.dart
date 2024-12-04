@@ -7,11 +7,20 @@ import 'package:flutter_app/app/events/order_notification_event.dart';
 import 'package:flutter_app/bootstrap/helpers.dart';
 import 'package:flutter_app/resources/pages/account_order_detail_page.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 import '../../app/events/product_notification_event.dart';
 
 class FirebaseNotifications {
+  static final FirebaseNotifications _singleton = FirebaseNotifications._internal();
+
+  factory FirebaseNotifications() {
+    return _singleton;
+  }
+
+  FirebaseNotifications._internal();
+
   FirebaseMessaging? _firebaseMessaging;
   BuildContext? context;
 
@@ -52,7 +61,7 @@ class FirebaseNotifications {
 
   void firebaseCloudMessaging_Listeners(BuildContext context) {
     //ask permission
-    askPermission();
+    //askPermission();
 
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -104,7 +113,7 @@ class FirebaseNotifications {
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: Colors.white,
-          title: Text("Nuova Notifica: " + (message.notification?.title ?? ""), style: TextStyle(color: Colors.black)),
+          title: Text((message.notification?.title ?? ""), style: TextStyle(color: Colors.black)),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -149,7 +158,7 @@ class FirebaseNotifications {
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: Colors.white,
-          title: Text("Nuova Notifica: " + (message.notification?.title ?? ""), style: TextStyle(color: Colors.black)),
+          title: Text((message.notification?.title ?? ""), style: TextStyle(color: Colors.black)),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -189,6 +198,53 @@ class FirebaseNotifications {
       carPlay: true,
       sound: true,
     );
+  }
+
+  _showNotificationPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.notifications_off, color: Colors.red),
+              SizedBox(width: 10),
+              Text("Notifiche Disabilitate".tr()),
+            ],
+          ),
+          content: Text(
+            "NDM".tr(),
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel".tr(), style: TextStyle(color: Colors.red)),
+            ),
+            TextButton(
+              onPressed: () async {
+                await NotificationPermissions.requestNotificationPermissions();
+                askPermission();
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                "Attiva Notifiche".tr(),
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  checkPermission() async {
+    final permissionStatus = await NotificationPermissions.getNotificationPermissionStatus();
+    if (permissionStatus != PermissionStatus.granted) {
+      _showNotificationPopup(context!);
+    }
   }
 }
 
