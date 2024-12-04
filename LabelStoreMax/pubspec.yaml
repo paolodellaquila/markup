@@ -60,6 +60,7 @@ dependencies:
   flutter_html: ^3.0.0-beta.2
   badges: ^3.1.2
   notification_permissions: ^0.6.1
+  app_settings: ^5.1.1
 
   #firebase
   firebase_messaging: ^14.9.3

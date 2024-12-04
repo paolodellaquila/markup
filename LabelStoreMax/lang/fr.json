@@ -308,6 +308,7 @@
   "Do not show again": "Ne plus afficher",
   "Attiva Notifiche": "Activer les notifications",
   "Notifiche Disabilitate": "Notifications désactivées",
-  "NDM": "Vous ne recevrez pas de mises à jour importantes, telles que des promotions exclusives ou des notifications concernant vos commandes.\n\nActivez les notifications dès maintenant pour ne manquer aucune actualité !"
+  "NDM": "Vous ne recevrez pas de mises à jour importantes, telles que des promotions exclusives ou des notifications concernant vos commandes.\n\nActivez les notifications dès maintenant pour ne manquer aucune actualité !",
+  "Notifiche Push": "Notifications Push"
 
 }
