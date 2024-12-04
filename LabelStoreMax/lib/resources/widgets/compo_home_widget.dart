@@ -170,6 +170,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
 
         ///banner popup
         homePopupBanner = HomePopupBanner(
+          uniqueId: popup.child("uniqueId").value.toString(),
           title: popup.child("title").value.toString(),
           message: popup.child("message").value.toString(),
           imageURL: popup.child("image").value.toString(),
@@ -281,6 +282,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
                   ],
                 ),
                 PromoPopup(
+                  uniqueId: homePopupBanner?.uniqueId ?? "",
                   title: homePopupBanner?.title ?? "",
                   message: homePopupBanner?.message ?? "",
                   imageURL: homePopupBanner?.imageURL ?? "",

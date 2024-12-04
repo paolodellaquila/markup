@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/cached_image_widget.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PromoPopup extends StatefulWidget {
+  final String uniqueId;
   final String title;
   final String message;
   final String? imageURL;
 
   PromoPopup({
+    required this.uniqueId,
     required this.title,
     required this.message,
     this.imageURL,
@@ -21,6 +25,7 @@ class _PromoPopupState extends State<PromoPopup> with SingleTickerProviderStateM
   AnimationController? _animationController;
   Animation<Offset>? _offsetAnimation;
   bool _isVisible = false;
+  bool _doNotShowAgain = false;
 
   @override
   void initState() {
@@ -29,15 +34,10 @@ class _PromoPopupState extends State<PromoPopup> with SingleTickerProviderStateM
   }
 
   Future<void> _initPopup() async {
-    if (widget.message.isEmpty || widget.title.isEmpty) {
-      return;
-    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool hasDismissedPopup = prefs.getBool(widget.uniqueId) ?? false;
 
-    //SharedPreferences prefs = await SharedPreferences.getInstance();
-    //bool hasDismissedPopup = prefs.getBool('hasDismissedPopup') ?? false;
-    bool hasDismissedPopup = false;
-
-    if (!hasDismissedPopup) {
+    if (!hasDismissedPopup && widget.message.isNotEmpty && widget.title.isNotEmpty) {
       _animationController = AnimationController(
         duration: const Duration(milliseconds: 500),
         vsync: this,
@@ -61,9 +61,11 @@ class _PromoPopupState extends State<PromoPopup> with SingleTickerProviderStateM
   }
 
   void _dismissPopup() async {
-    ///TODO capire come non renderlo invasivo, ma se controlliamo le shared potrebbe non vedersi più sempre
-    /*SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('hasDismissedPopup', true);*/
+    if (_doNotShowAgain) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(widget.uniqueId, true);
+    }
+
     _animationController!.reverse().then((_) {
       setState(() {
         _isVisible = false;
@@ -154,6 +156,24 @@ class _PromoPopupState extends State<PromoPopup> with SingleTickerProviderStateM
                             ),
                           },
                         ),
+                      ),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: _doNotShowAgain,
+                            onChanged: (value) {
+                              setState(() {
+                                _doNotShowAgain = value ?? false;
+                              });
+                            },
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Do not show again'.tr(),
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
