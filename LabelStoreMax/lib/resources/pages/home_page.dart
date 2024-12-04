@@ -36,10 +36,7 @@ class _HomePageState extends NyState<HomePage> {
 
   final WooSignalApp? _wooSignalApp = AppHelper.instance.appConfig;
 
-  @override
-  init() async {
-    await _enableFcmNotifications();
-
+  _initDependencies() async {
     if (Platform.isIOS) {
       ///TRACKING ADV iOS
       await _trackingAdv_iOS();
@@ -47,6 +44,13 @@ class _HomePageState extends NyState<HomePage> {
       ///TRACKING ADV ANDROID
       await _trackingAdv_Android();
     }
+
+    await _enableFcmNotifications();
+  }
+
+  @override
+  init() {
+    _initDependencies();
   }
 
   Future<void> _trackingAdv_iOS() async {

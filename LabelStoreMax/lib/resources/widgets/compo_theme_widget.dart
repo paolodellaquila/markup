@@ -9,11 +9,14 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/app/models/cart.dart';
 import 'package:flutter_app/resources/pages/categories_page.dart';
 import 'package:flutter_app/resources/pages/settings_page.dart';
+import 'package:flutter_app/resources/widgets/cart_quantity_widget.dart';
 import 'package:flutter_app/utils/product_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
@@ -66,12 +69,18 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
     );
   }
 
+  _loadCart() async {
+    await Cart.getInstance.getCart();
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
 
     _loadTabs();
     _loadAnimations();
+    _loadCart();
 
     ProductManager().initialize();
   }
@@ -123,6 +132,25 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
           : AnimatedBottomNavigationBar.builder(
               itemCount: iconList.length,
               tabBuilder: (int index, bool isActive) {
+                if (iconList[index] == Icons.shopping_bag && Cart.getInstance.cartLineItems.isNotEmpty) {
+                  return Center(
+                    child: badges.Badge(
+                      badgeContent: CartQuantity(color: Colors.white),
+                      badgeAnimation: badges.BadgeAnimation.fade(animationDuration: Duration(milliseconds: 500)),
+                      badgeStyle: badges.BadgeStyle(
+                        shape: badges.BadgeShape.circle,
+                        badgeColor: Colors.redAccent,
+                        elevation: 0,
+                      ),
+                      showBadge: Cart.getInstance.cartLineItems.isNotEmpty,
+                      child: Icon(
+                        Icons.shopping_bag_outlined,
+                        size: 32,
+                        color: isActive && !isMainMenuSelected ? Colors.black : Colors.black26,
+                      ),
+                    ),
+                  );
+                }
                 return Icon(
                   iconList[index],
                   size: 24,

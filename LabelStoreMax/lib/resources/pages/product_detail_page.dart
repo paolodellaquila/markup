@@ -220,7 +220,7 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
                           ));
                 }),
           Padding(
-            padding: const EdgeInsets.only(top: 2),
+            padding: const EdgeInsets.only(top: 2, right: 6),
             child: CartIconWidget(),
           ),
         ],

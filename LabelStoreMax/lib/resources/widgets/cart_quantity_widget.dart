@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import '/app/models/cart.dart';
-import '/app/models/cart_line_item.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
+import '/app/models/cart.dart';
+import '/app/models/cart_line_item.dart';
+
 class CartQuantity extends StatefulWidget {
-  CartQuantity({super.key, this.childOfNavBar = false});
+  CartQuantity({super.key, this.color = Colors.black, this.childOfNavBar = false});
 
   final bool childOfNavBar;
+  final Color color;
 
   static String state = "cart_quantity";
 
@@ -38,16 +40,16 @@ class _CartQuantityState extends NyState<CartQuantity> {
         List<int?> cartItems = data.map((e) => e.quantity).toList();
         String cartValue = "0";
         if (cartItems.isNotEmpty) {
-          cartValue = cartItems
-              .reduce((value, element) => value! + element!)
-              .toString();
+          cartValue = cartItems.reduce((value, element) => value! + element!).toString();
         }
         if (cartValue == "0" && _childOfNavBar == true) {
           return SizedBox.shrink();
         }
         return Text(
           cartValue,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: widget.color,
+              ),
           textAlign: TextAlign.center,
         );
       },

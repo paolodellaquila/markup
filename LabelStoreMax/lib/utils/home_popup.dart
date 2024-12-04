@@ -157,23 +157,33 @@ class _PromoPopupState extends State<PromoPopup> with SingleTickerProviderStateM
                           },
                         ),
                       ),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: _doNotShowAgain,
-                            onChanged: (value) {
-                              setState(() {
-                                _doNotShowAgain = value ?? false;
-                              });
-                            },
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _doNotShowAgain = !_doNotShowAgain;
+                            });
+                          },
+                          child: Row(
+                            children: [
+                              Checkbox(
+                                value: _doNotShowAgain,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _doNotShowAgain = value ?? false;
+                                  });
+                                },
+                              ),
+                              Flexible(
+                                child: Text(
+                                  'Do not show again'.tr(),
+                                  style: TextStyle(fontSize: 14),
+                                ),
+                              ),
+                            ],
                           ),
-                          Expanded(
-                            child: Text(
-                              'Do not show again'.tr(),
-                              style: TextStyle(fontSize: 14),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
