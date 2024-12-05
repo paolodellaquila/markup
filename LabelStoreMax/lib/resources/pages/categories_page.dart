@@ -22,17 +22,15 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
-  late TabController _tabController;
+  TabController? _tabController;
 
   List<ProductCategory> mainCategories = [];
   Map<String, List<ProductCategory>> subCategories = {};
-  Map<String, List<ProductCategory>> outlet = {};
 
   final TextEditingController _txtSearchController = TextEditingController();
   bool isSearching = false;
-  int? selectedOutletId;
 
-  int _previousTabIndex = 0;
+  int _selectedCatId = 0;
 
   _loadCategories() async {
     // Define the static order
@@ -66,27 +64,28 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
       mainCategories.removeWhere((element) => (element.name ?? "").contains("Special Price"));
     }
 
-    for (ProductCategory category in mainCategories) {
-      List<ProductCategory> subCats = await (appWooSignal((api) => api.getProductCategories(parent: category.id, perPage: 50, hideEmpty: true)));
-      subCategories[category.id.toString()] = subCats;
-    }
+    _selectedCatId = mainCategories.first.id!;
+    await _loadCategoryItems(_selectedCatId);
 
     _tabController = TabController(length: mainCategories.length, vsync: this);
-    _tabController.addListener(_tabChanged);
+    _tabController?.addListener(_tabChanged);
+
     setState(() {});
   }
 
   ///reset selected outlet
   void _tabChanged() {
-    selectedOutletId = null;
-    outlet.clear();
+    _selectedCatId = mainCategories[_tabController!.index].id!;
     setState(() {});
+
+    if (subCategories[_selectedCatId.toString()] != null) return;
+
+    _loadCategoryItems(_selectedCatId);
   }
 
-  _loadOutlet(int subCatId) async {
-    ///Only for outlet
-    List<ProductCategory> subSubCats = await (appWooSignal((api) => api.getProductCategories(parent: subCatId, perPage: 50, hideEmpty: true)));
-    outlet[subCatId.toString()] = subSubCats;
+  _loadCategoryItems(int subCatId) async {
+    List<ProductCategory> subCats = await (appWooSignal((api) => api.getProductCategories(parent: subCatId, perPage: 50, hideEmpty: true)));
+    subCategories[subCatId.toString()] = subCats;
     setState(() {});
   }
 
@@ -112,7 +111,7 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
 
   @override
   void dispose() {
-    _tabController.dispose();
+    _tabController?.dispose();
     _txtSearchController.dispose();
     super.dispose();
   }
@@ -136,7 +135,7 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
           ),
         ],
       ),
-      body: mainCategories.isEmpty || (selectedOutletId != null && outlet.isEmpty)
+      body: _tabController == null
           ? Center(
               child: AppLoaderWidget(),
             )
@@ -171,88 +170,88 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
                     tabs: mainCategories.map((category) => Tab(text: category.name)).toList(),
                   ),
                   Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: mainCategories.map((category) {
-                        final subCats = selectedOutletId != null ? outlet[selectedOutletId.toString()] ?? [] : subCategories[category.id.toString()] ?? [];
-                        return subCats.isEmpty
-                            ? Center(child: Text("No categories available".tr()))
-                            : GridView.builder(
-                                padding: const EdgeInsets.all(8),
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 0.8,
-                                  crossAxisSpacing: 8,
-                                  mainAxisSpacing: 8,
-                                ),
-                                itemCount: subCats.length,
-                                itemBuilder: (context, index) {
-                                  final subCategory = subCats[index];
-                                  return Card(
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(8),
-                                      onTap: () {
-                                        ///Fix only for Outlet
-                                        if (subCategory.id == 276 || subCategory.id == 275) {
-                                          setState(() {
-                                            selectedOutletId = subCategory.id;
-                                          });
-                                          _loadOutlet(subCategory.id!);
-                                          return;
-                                        }
-                                        routeTo(BrowseCategoryPage.path, data: subCategory);
-                                      },
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Stack(
-                                          children: [
-                                            if (subCategory.image?.src != null) ...[
-                                              Positioned.fill(
-                                                child: ClipRRect(
-                                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-                                                  child: CachedImageWidget(
-                                                    image: subCategory.image?.src ?? "",
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                ),
-                                              ),
-                                              Positioned.fill(
-                                                child: ClipRRect(
-                                                  borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
-                                                  child: Container(
-                                                    color: Colors.black.withOpacity(0.1),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                            // Stacked text
-                                            Align(
-                                              alignment: subCategory.image?.src == null ? Alignment.center : Alignment.bottomCenter,
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: Column(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  children: [
-                                                    Text(
-                                                      (subCategory.name ?? "").replaceAll("&amp;", "&"),
-                                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                                            color: subCategory.image?.src == null ? Colors.black : Colors.white,
-                                                          ),
-                                                      textAlign: TextAlign.center,
+                    child: subCategories[_selectedCatId.toString()] == null
+                        ? Center(
+                            child: AppLoaderWidget(),
+                          )
+                        : TabBarView(
+                            controller: _tabController,
+                            children: mainCategories.map((category) {
+                              final subCats = subCategories[category.id.toString()] ?? [];
+                              return subCats.isEmpty
+                                  ? SizedBox.shrink()
+                                  : GridView.builder(
+                                      padding: const EdgeInsets.all(8),
+                                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 2,
+                                        childAspectRatio: 0.8,
+                                        crossAxisSpacing: 8,
+                                        mainAxisSpacing: 8,
+                                      ),
+                                      itemCount: subCats.length,
+                                      itemBuilder: (context, index) {
+                                        final subCategory = subCats[index];
+                                        return Card(
+                                          child: InkWell(
+                                            borderRadius: BorderRadius.circular(8),
+                                            onTap: () {
+                                              ///Fix only for Outlet
+                                              if (subCategory.id == 276 || subCategory.id == 275) {
+                                                return;
+                                              }
+                                              routeTo(BrowseCategoryPage.path, data: subCategory);
+                                            },
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(8),
+                                              child: Stack(
+                                                children: [
+                                                  if (subCategory.image?.src != null) ...[
+                                                    Positioned.fill(
+                                                      child: ClipRRect(
+                                                        borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                                                        child: CachedImageWidget(
+                                                          image: subCategory.image?.src ?? "",
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Positioned.fill(
+                                                      child: ClipRRect(
+                                                        borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                                                        child: Container(
+                                                          color: Colors.black.withOpacity(0.1),
+                                                        ),
+                                                      ),
                                                     ),
                                                   ],
-                                                ),
+                                                  // Stacked text
+                                                  Align(
+                                                    alignment: subCategory.image?.src == null ? Alignment.center : Alignment.bottomCenter,
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.all(8.0),
+                                                      child: Column(
+                                                        mainAxisSize: MainAxisSize.min,
+                                                        children: [
+                                                          Text(
+                                                            (subCategory.name ?? "").replaceAll("&amp;", "&"),
+                                                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                                  color: subCategory.image?.src == null ? Colors.black : Colors.white,
+                                                                ),
+                                                            textAlign: TextAlign.center,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              );
-                      }).toList(),
-                    ),
+                                          ),
+                                        );
+                                      },
+                                    );
+                            }).toList(),
+                          ),
                   ),
                 ],
               ),
