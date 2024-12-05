@@ -40,7 +40,7 @@ class CartPage extends StatefulWidget {
   createState() => _CartPageState();
 }
 
-class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixin {
+class _CartPageState extends NyState<CartPage> {
   _CartPageState();
 
   List<CartLineItem> _cartLines = [];
@@ -227,8 +227,6 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -368,7 +366,4 @@ class _CartPageState extends NyState<CartPage> with AutomaticKeepAliveClientMixi
       ),
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

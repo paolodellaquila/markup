@@ -118,14 +118,14 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
                 if (iconList[index] == Icons.shopping_bag) {
                   return TabBarCartIcon(
                       icon: Icon(
-                    Icons.shopping_bag_outlined,
-                    size: 32,
+                    Icons.shopping_bag,
+                    size: 28,
                     color: isActive && !isMainMenuSelected ? Colors.black : Colors.black26,
                   ));
                 }
                 return Icon(
                   iconList[index],
-                  size: 24,
+                  size: 28,
                   color: isActive && !isMainMenuSelected ? Colors.black : Colors.black26,
                 );
               },
