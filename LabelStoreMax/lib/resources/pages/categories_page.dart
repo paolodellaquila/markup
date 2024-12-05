@@ -26,9 +26,13 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
 
   List<ProductCategory> mainCategories = [];
   Map<String, List<ProductCategory>> subCategories = {};
+  Map<String, List<ProductCategory>> outlet = {};
 
   final TextEditingController _txtSearchController = TextEditingController();
   bool isSearching = false;
+  int? selectedOutletId;
+
+  int _previousTabIndex = 0;
 
   _loadCategories() async {
     // Define the static order
@@ -68,6 +72,21 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
     }
 
     _tabController = TabController(length: mainCategories.length, vsync: this);
+    _tabController.addListener(_tabChanged);
+    setState(() {});
+  }
+
+  ///reset selected outlet
+  void _tabChanged() {
+    selectedOutletId = null;
+    outlet.clear();
+    setState(() {});
+  }
+
+  _loadOutlet(int subCatId) async {
+    ///Only for outlet
+    List<ProductCategory> subSubCats = await (appWooSignal((api) => api.getProductCategories(parent: subCatId, perPage: 50, hideEmpty: true)));
+    outlet[subCatId.toString()] = subSubCats;
     setState(() {});
   }
 
@@ -117,7 +136,7 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
           ),
         ],
       ),
-      body: mainCategories.isEmpty
+      body: mainCategories.isEmpty || (selectedOutletId != null && outlet.isEmpty)
           ? Center(
               child: AppLoaderWidget(),
             )
@@ -155,9 +174,9 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
                     child: TabBarView(
                       controller: _tabController,
                       children: mainCategories.map((category) {
-                        final subCats = subCategories[category.id.toString()] ?? [];
+                        final subCats = selectedOutletId != null ? outlet[selectedOutletId.toString()] ?? [] : subCategories[category.id.toString()] ?? [];
                         return subCats.isEmpty
-                            ? const Center(child: Text("No subcategories available"))
+                            ? Center(child: Text("No categories available".tr()))
                             : GridView.builder(
                                 padding: const EdgeInsets.all(8),
                                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -173,6 +192,14 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
                                     child: InkWell(
                                       borderRadius: BorderRadius.circular(8),
                                       onTap: () {
+                                        ///Fix only for Outlet
+                                        if (subCategory.id == 276 || subCategory.id == 275) {
+                                          setState(() {
+                                            selectedOutletId = subCategory.id;
+                                          });
+                                          _loadOutlet(subCategory.id!);
+                                          return;
+                                        }
                                         routeTo(BrowseCategoryPage.path, data: subCategory);
                                       },
                                       child: ClipRRect(
