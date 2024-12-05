@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/app/models/cart.dart';
-import 'package:flutter_app/resources/pages/categories_page.dart';
+import 'package:flutter_app/resources/pages/category/categories_page.dart';
 import 'package:flutter_app/resources/pages/settings_page.dart';
 import 'package:flutter_app/resources/widgets/tab_bar_cart_icon.dart';
 import 'package:flutter_app/utils/product_manager.dart';

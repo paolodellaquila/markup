@@ -1,3 +1,4 @@
+import 'package:flutter_app/resources/pages/category/custom_sub_category_page.dart';
 import 'package:flutter_app/resources/pages/splash_page.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
@@ -87,4 +88,6 @@ appRouter() => nyRoutes((router) {
       router.route(AccountShippingDetailsPage.path, (context) => AccountShippingDetailsPage());
 
       router.route(NotificationsPage.path, (context) => NotificationsPage());
+
+      router.route(BrowseCustomCategoryPage.path, (context) => BrowseCustomCategoryPage(), transition: PageTransitionType.bottomToTop);
     });

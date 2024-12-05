@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/bootstrap/helpers.dart';
 import 'package:flutter_app/resources/pages/browse_category_page.dart';
 import 'package:flutter_app/resources/pages/browse_search_page.dart';
+import 'package:flutter_app/resources/pages/category/custom_sub_category_page.dart';
+import 'package:flutter_app/resources/pages/category/sub_category_data.dart';
 import 'package:flutter_app/resources/widgets/app_loader_widget.dart';
 import 'package:flutter_app/resources/widgets/cached_image_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -195,8 +197,10 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
                                           child: InkWell(
                                             borderRadius: BorderRadius.circular(8),
                                             onTap: () {
-                                              ///Fix only for Outlet
+                                              ///Outlet sub category explore
                                               if (subCategory.id == 276 || subCategory.id == 275) {
+                                                routeTo(BrowseCustomCategoryPage.path,
+                                                    data: SubCategoryData(title: category.name ?? "", mainCategories: subCats));
                                                 return;
                                               }
                                               routeTo(BrowseCategoryPage.path, data: subCategory);
