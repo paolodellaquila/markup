@@ -207,7 +207,7 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
                                                   mainAxisSize: MainAxisSize.min,
                                                   children: [
                                                     Text(
-                                                      subCategory.name ?? "",
+                                                      (subCategory.name ?? "").replaceAll("&amp;", "&"),
                                                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                                             color: subCategory.image?.src == null ? Colors.black : Colors.white,
                                                           ),

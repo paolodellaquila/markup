@@ -10,7 +10,6 @@
 
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
-import 'package:flutter_app/app/models/cart.dart';
 import 'package:flutter_app/resources/widgets/cart_quantity_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
@@ -46,13 +45,13 @@ class _CartIconWidgetState extends State<CartIconWidget> {
               alignment: Alignment.center,
               child: badges.Badge(
                 badgeContent: CartQuantity(color: Colors.white),
-                badgeAnimation: badges.BadgeAnimation.fade(animationDuration: Duration(milliseconds: 500)),
+                badgeAnimation: badges.BadgeAnimation.scale(animationDuration: Duration(milliseconds: 500)),
                 badgeStyle: badges.BadgeStyle(
                   shape: badges.BadgeShape.circle,
                   badgeColor: Colors.redAccent,
                   elevation: 0,
                 ),
-                showBadge: Cart.getInstance.cartLineItems.isNotEmpty,
+                showBadge: true,
                 child: Container(),
               ),
             )

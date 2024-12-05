@@ -28,9 +28,9 @@ class Cart {
   Cart._privateConstructor();
   static final Cart getInstance = Cart._privateConstructor();
 
-  List<CartLineItem> cartLineItems = [];
-
   Future<List<CartLineItem>> getCart() async {
+    List<CartLineItem> cartLineItems = [];
+
     String? currentCartArrJSON = await (NyStorage.read(SharedKey.cart));
     if (currentCartArrJSON != null) {
       cartLineItems = (jsonDecode(currentCartArrJSON) as List<dynamic>).map((i) => CartLineItem.fromJson(i)).toList();
