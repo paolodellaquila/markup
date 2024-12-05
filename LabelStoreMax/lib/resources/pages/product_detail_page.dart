@@ -19,7 +19,6 @@ import 'package:woosignal/models/response/woosignal_app.dart';
 import '/app/controllers/product_detail_controller.dart';
 import '/app/models/cart_line_item.dart';
 import '/bootstrap/app_helper.dart';
-import '/bootstrap/enums/wishlist_action_enums.dart';
 import '/bootstrap/helpers.dart';
 import '/resources/widgets/cart_icon_widget.dart';
 import '/resources/widgets/product_detail_body_widget.dart';
@@ -204,23 +203,8 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[
-          if (_wooSignalApp!.wishlistEnabled!)
-            NyFutureBuilder(
-                future: hasAddedWishlistProduct(_product?.id),
-                child: (context, dynamic isInFavourites) {
-                  return isInFavourites
-                      ? IconButton(
-                          onPressed: () => widget.controller.toggleWishList(onSuccess: () => setState(() {}), wishlistAction: WishlistAction.remove),
-                          icon: Icon(Icons.favorite, size: 32, color: Colors.red))
-                      : IconButton(
-                          onPressed: () => widget.controller.toggleWishList(onSuccess: () => setState(() {}), wishlistAction: WishlistAction.add),
-                          icon: Icon(
-                            Icons.favorite_border,
-                            size: 32,
-                          ));
-                }),
           Padding(
-            padding: const EdgeInsets.only(top: 2, right: 6),
+            padding: const EdgeInsets.only(top: 2, right: 8),
             child: CartIconWidget(),
           ),
         ],
@@ -235,6 +219,7 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
                     children: <Widget>[
                       Expanded(
                         child: ProductDetailBodyWidget(
+                          controller: widget.controller,
                           wooSignalApp: _wooSignalApp,
                           product: _product,
                           productVariations: _productVariations,

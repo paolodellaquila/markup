@@ -75,7 +75,7 @@ appRouter() => nyRoutes((router) {
 
       // Account Section
 
-      router.route(AccountLoginPage.path, (context) => AccountLoginPage(), transition: PageTransitionType.bottomToTop);
+      router.route(AccountLoginPage.path, (context) => AccountLoginPage(), transition: PageTransitionType.fade);
 
       router.route(AccountRegistrationPage.path, (context) => AccountRegistrationPage());
 

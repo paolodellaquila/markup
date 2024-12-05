@@ -51,7 +51,6 @@ class _PromoPopupState extends State<PromoPopup> with SingleTickerProviderStateM
         curve: Curves.easeInOut,
       ));
 
-      // Delay to show the popup
       await Future.delayed(Duration(seconds: 2));
       setState(() {
         _isVisible = true;
@@ -81,111 +80,116 @@ class _PromoPopupState extends State<PromoPopup> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return _isVisible
         ? SlideTransition(
             position: _offsetAnimation!,
             child: Material(
               color: Colors.transparent,
               child: Center(
-                child: Container(
-                  width: 300,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Stack(
-                        children: [
-                          if (widget.imageURL != null) ...[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 16),
-                              child: CachedImageWidget(
-                                image: widget.imageURL,
-                                width: 300,
-                                height: 250,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ],
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: GestureDetector(
-                              onTap: _dismissPopup,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  shape: BoxShape.circle,
+                child: SingleChildScrollView(
+                  child: Container(
+                    width: screenWidth * 0.9, // Responsive width
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Stack(
+                          children: [
+                            if (widget.imageURL != null) ...[
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16),
+                                child: CachedImageWidget(
+                                  image: widget.imageURL,
+                                  width: screenWidth * 0.8, // Adjust image size
+                                  height: screenHeight * 0.3,
+                                  fit: BoxFit.cover,
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(6.0),
-                                  child: Icon(
-                                    Icons.close,
-                                    color: Colors.white,
+                              ),
+                            ],
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                onTap: _dismissPopup,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.black,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(6.0),
+                                    child: Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
+                          ],
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          widget.title,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: screenWidth * 0.05, // Dynamic font size
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        widget.title,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
                         ),
-                      ),
-                      SingleChildScrollView(
-                        child: Html(
-                          data: widget.message,
-                          style: {
-                            'body': Style(
-                              textAlign: TextAlign.center,
-                            ),
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _doNotShowAgain = !_doNotShowAgain;
-                            });
-                          },
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value: _doNotShowAgain,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _doNotShowAgain = value ?? false;
-                                  });
-                                },
+                        SingleChildScrollView(
+                          child: Html(
+                            data: widget.message,
+                            style: {
+                              'body': Style(
+                                fontSize: FontSize(screenWidth * 0.04),
+                                textAlign: TextAlign.center,
                               ),
-                              Flexible(
-                                child: Text(
-                                  'Do not show again'.tr(),
-                                  style: TextStyle(fontSize: 14),
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _doNotShowAgain = !_doNotShowAgain;
+                              });
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Checkbox(
+                                  value: _doNotShowAgain,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _doNotShowAgain = value ?? false;
+                                    });
+                                  },
                                 ),
-                              ),
-                            ],
+                                Text(
+                                  'Do not show again'.tr(),
+                                  style: TextStyle(fontSize: screenWidth * 0.035),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

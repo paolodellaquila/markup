@@ -99,13 +99,17 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     ///CHECK LAST FIREBASE MESSAGE
     final remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (remoteMessage != null) {
-      FacebookAppEvents().logEvent(name: 'push_notification_open', parameters: {'message': remoteMessage.notification.toString()});
+      try {
+        FacebookAppEvents().logEvent(name: 'push_notification_open', parameters: {'message': remoteMessage.notification?.title});
+      } catch (e) {
+        print("error: $e");
+      }
 
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: Colors.white,
-          title: Text("Nuova Notifica: " + (remoteMessage.notification?.title ?? ""), style: TextStyle(color: Colors.black)),
+          title: Text("Nuova Notifica: ${remoteMessage.notification?.title ?? ""}", style: TextStyle(color: Colors.black)),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -433,7 +437,7 @@ Widget _categoryCoverSection(BuildContext context, ProductCategory catProds, Hom
       height: MediaQuery.of(context).size.height,
       showIndicator: true,
       slideIndicator: CircularSlideIndicator(),
-      indicatorMargin: 96,
+      indicatorMargin: 86,
     ),
     items: _getCategoryImages(catProds.id!).map((image) {
       return InkWell(
@@ -448,7 +452,7 @@ Widget _categoryCoverSection(BuildContext context, ProductCategory catProds, Hom
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 2.2, bottom: 24.0, left: 8),
+                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 2.4, bottom: 24.0, left: 8),
                 child: Container(
                   color: Colors.black38,
                   child: Padding(

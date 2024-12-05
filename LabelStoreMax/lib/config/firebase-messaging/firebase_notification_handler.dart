@@ -40,7 +40,11 @@ class FirebaseNotifications {
   Future onSelectNotification(String? payload) async {}
 
   Future onDidReceiveLocalNotification(int? id, String? title, String? body, String? payload) async {
-    FacebookAppEvents().logEvent(name: 'push_notification_open', parameters: {'message': payload});
+    try {
+      FacebookAppEvents().logEvent(name: 'push_notification_open', parameters: {'message': payload});
+    } catch (e) {
+      print(e);
+    }
 
     // display a dialog with the notification details, tap ok to go to another page
     showDialog(
@@ -107,7 +111,11 @@ class FirebaseNotifications {
             ));
       }
 
-      FacebookAppEvents().logEvent(name: 'push_notification_open', parameters: {'message': message});
+      try {
+        FacebookAppEvents().logEvent(name: 'push_notification_open', parameters: {'message': message});
+      } catch (e) {
+        print(e);
+      }
 
       showDialog(
         context: context,
@@ -152,7 +160,11 @@ class FirebaseNotifications {
         _maybeShowSnackBar(context, message);
       }
 
-      FacebookAppEvents().logEvent(name: 'push_notification_open', parameters: {'message': message});
+      try {
+        FacebookAppEvents().logEvent(name: 'push_notification_open', parameters: {'message': message});
+      } catch (e) {
+        print(e);
+      }
 
       showDialog(
         context: context,

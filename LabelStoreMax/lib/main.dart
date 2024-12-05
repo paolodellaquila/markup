@@ -27,7 +27,9 @@ void main() async {
 
   runApp(
     MediaQuery(
-      data: MediaQueryData.fromWindow(ui.window),
+      data: MediaQueryData.fromWindow(ui.window).copyWith(
+        textScaler: TextScaler.linear(1.0),
+      ),
       child: Directionality(
         textDirection: TextDirection.ltr,
         child: AppBuild(
