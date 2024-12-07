@@ -19,36 +19,33 @@ class UniversalLinkManagerCubit {
     init();
   }
 
-  //extract product permalink from deep link
-  ///ex: https://markupitalia.com/shop/d-v-f-12-100-extra-fine-merinos/
   String? extractProductPermalink(String url) {
-    // Create a regular expression to match the product permalink in the URL
     final regex = RegExp(r'/shop/([^/]+)');
     final match = regex.firstMatch(url);
-
-    // Check if a match is found and return the permalink
     if (match != null && match.groupCount > 0) {
       return match.group(1)!;
     }
-
-    // Return an empty string if no match is found
     return null;
   }
 
-  ///INIT
+  /// INIT
   init() async {
-    //check app opened from dynamic link
+    // Process initial app link only once
     final openDynLink = await appLinks.getInitialAppLink();
     if (openDynLink != null) {
-      //extract product permalink from deep link
       deeplinkProduct = extractProductPermalink(openDynLink.toString()) ?? '';
+      //await _handleDynamicLink(openDynLink);
     }
     appLinks.allUriLinkStream.listen(onListenDynamicLink);
   }
 
   /// DYNAMIC LINKS LISTENER
   Future<void> onListenDynamicLink(Uri deepLink) async {
-    //extract product permalink from deep link
+    await _handleDynamicLink(deepLink);
+  }
+
+  /// Handle Dynamic Link
+  Future<void> _handleDynamicLink(Uri deepLink) async {
     deeplinkProduct = extractProductPermalink(deepLink.toString()) ?? '';
     if (deeplinkProduct != null && deeplinkProduct!.isNotEmpty) {
       NyNavigator.instance.router.navigatorKey?.currentContext?.loaderOverlay.show();

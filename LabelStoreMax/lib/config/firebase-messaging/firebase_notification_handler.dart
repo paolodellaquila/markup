@@ -50,7 +50,7 @@ class FirebaseNotifications {
     showDialog(
       context: context!,
       builder: (BuildContext context) => CupertinoAlertDialog(
-        title: Text("Nuova Notifica" + (title ?? "")),
+        title: Text((title ?? "")),
         content: Text(body ?? ""),
         actions: [
           CupertinoDialogAction(

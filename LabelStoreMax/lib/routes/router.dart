@@ -1,5 +1,4 @@
 import 'package:flutter_app/resources/pages/category/custom_sub_category_page.dart';
-import 'package:flutter_app/resources/pages/splash_page.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 import '/resources/pages/account_delete_page.dart';
@@ -33,9 +32,7 @@ import '/resources/pages/wishlist_page_widget.dart';
 |-------------------------------------------------------------------------- */
 
 appRouter() => nyRoutes((router) {
-      router.route(SplashScreen.path, (context) => SplashScreen(), initialRoute: true);
-
-      router.route(HomePage.path, (context) => HomePage());
+      router.route(HomePage.path, (context) => HomePage(), initialRoute: true);
 
       router.route(CartPage.path, (context) => CartPage());
 

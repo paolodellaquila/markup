@@ -13,6 +13,9 @@ import '/bootstrap/boot.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  ///Deeplink
+  UniversalLinkManagerCubit().init();
+
   ///Nylo Framework
   Nylo nylo = await Nylo.init(setup: Boot.nylo, setupFinished: Boot.finished);
 
@@ -21,9 +24,6 @@ void main() async {
   FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
   analytics.logAppOpen();
-
-  ///Deeplink
-  UniversalLinkManagerCubit().init();
 
   runApp(
     MediaQuery(

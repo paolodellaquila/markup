@@ -17,6 +17,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/resources/pages/product_detail_page.dart';
+import 'package:flutter_app/resources/widgets/buttons.dart';
 import 'package:flutter_app/resources/widgets/cached_image_widget.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_banner.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_flash_promo.dart';
@@ -26,7 +27,9 @@ import 'package:flutter_app/resources/widgets/home_data/home_new_in_donna.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_new_in_uomo.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_popup_banner.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
+import 'package:flutter_app/utils/app_version/app_version_check.dart';
 import 'package:flutter_app/utils/home_popup.dart';
+import 'package:flutter_app/utils/remote_config_manager.dart';
 import 'package:flutter_app/utils/scroll_animation.dart';
 import 'package:flutter_app/utils/shake_service.dart';
 import 'package:flutter_app/utils/universal_manager_cubit.dart';
@@ -70,12 +73,17 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
   PageController controller = PageController(initialPage: 0);
   bool loadHomeCompleted = false;
 
+  bool _checkIsAppLocked = false;
+
   @override
   boot() async {
-    // Start listening for shake events
     ShakeService().startListening(context);
-    ui_update();
-    unawaited(_checkStartingDeeplinkProduct());
+    _ui_update();
+    await _checkAppVersion();
+    if (!_checkIsAppLocked) {
+      await _check_last_firebase_message();
+      await _checkStartingDeeplinkProduct();
+    }
     await _loadHome();
   }
 
@@ -87,7 +95,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     super.dispose();
   }
 
-  Future<void> ui_update() async {
+  Future<void> _ui_update() async {
     ///ANDROID REFRESH RATE
     if (Platform.isAndroid) {
       await FlutterDisplayMode.setHighRefreshRate();
@@ -95,7 +103,9 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
 
     ///ANDROID STATUS BAR FIX
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.white));
+  }
 
+  Future<void> _check_last_firebase_message() async {
     ///CHECK LAST FIREBASE MESSAGE
     final remoteMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (remoteMessage != null) {
@@ -109,7 +119,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
         context: context,
         builder: (context) => AlertDialog(
           backgroundColor: Colors.white,
-          title: Text("Nuova Notifica: ${remoteMessage.notification?.title ?? ""}", style: TextStyle(color: Colors.black)),
+          title: Text("${remoteMessage.notification?.title ?? ""}", style: TextStyle(color: Colors.black)),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
@@ -136,7 +146,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     if (deeplinkProduct != null && deeplinkProduct.isNotEmpty) {
       NyNavigator.instance.router.navigatorKey?.currentContext?.loaderOverlay.show();
       List<Product> products = await appWooSignal((api) => api.getProducts(slug: deeplinkProduct));
-      NyNavigator.instance.router.navigatorKey?.currentContext?.loaderOverlay.show();
+      NyNavigator.instance.router.navigatorKey?.currentContext?.loaderOverlay.hide();
       if (products.isNotEmpty) {
         UniversalLinkManagerCubit().deeplinkProduct = null;
         routeTo(ProductDetailPage.path, data: products.first);
@@ -244,6 +254,49 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
     categories[indexDonna].name = "New in Donna";
 
     categories.sort((a, b) => a.id!.compareTo(b.id!));
+  }
+
+  _checkAppVersion() async {
+    await RemoteConfigManager.instance.init();
+    _checkIsAppLocked = await AppVersionCheck.checkAppVersion();
+
+    if (_checkIsAppLocked) {
+      showModalBottomSheet(
+          isDismissible: false,
+          enableDrag: false,
+          context: context,
+          builder: (BuildContext context) => WillPopScope(
+                onWillPop: () async => false,
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.report_outlined, size: 48),
+                      SizedBox(height: 16),
+                      Text(
+                        "Update Needed".tr(),
+                        style: context.textTheme().headlineMedium,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        "App Blocked Desc".tr(),
+                        style: context.textTheme().bodyLarge,
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 16),
+                      PrimaryButton(
+                        title: "Update".tr(),
+                        action: () => Platform.isIOS
+                            ? openBrowserTab(url: RemoteConfigManager.instance.appStoreUrl)
+                            : openBrowserTab(url: RemoteConfigManager.instance.playStoreUrl),
+                      ),
+                      SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ));
+    }
   }
 
   @override
