@@ -32,7 +32,6 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -49,13 +48,13 @@ class _SettingsPageState extends State<SettingsPage> {
                   margin: const EdgeInsets.all(32),
                   child: Image.asset(
                     "public/assets/app_icon/logo_completed.png",
-                    height: height * 0.15,
+                    height: 72,
                     alignment: Alignment.center,
                   ),
                 ),
 
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
