@@ -31,7 +31,6 @@ import 'package:flutter_app/utils/app_version/app_version_check.dart';
 import 'package:flutter_app/utils/home_popup.dart';
 import 'package:flutter_app/utils/remote_config_manager.dart';
 import 'package:flutter_app/utils/scroll_animation.dart';
-import 'package:flutter_app/utils/shake_service.dart';
 import 'package:flutter_app/utils/universal_manager_cubit.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
@@ -77,7 +76,6 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
 
   @override
   boot() async {
-    ShakeService().startListening(context);
     _ui_update();
     await _checkAppVersion();
     if (!_checkIsAppLocked) {
@@ -89,8 +87,6 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
 
   @override
   void dispose() {
-    // Stop listening for shake events
-    ShakeService().dispose();
     _controller?.dispose();
     super.dispose();
   }

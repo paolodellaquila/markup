@@ -7,6 +7,7 @@ import 'package:flutter_app/resources/pages/browse_search_page.dart';
 import 'package:flutter_app/resources/pages/category/custom_sub_category_page.dart';
 import 'package:flutter_app/resources/pages/category/sub_category_data.dart';
 import 'package:flutter_app/resources/widgets/app_loader_widget.dart';
+import 'package:flutter_app/resources/widgets/buttons.dart';
 import 'package:flutter_app/resources/widgets/cached_image_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product_category.dart';
@@ -95,9 +96,13 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
     if (_txtSearchController.text.isEmpty) return;
     if (_txtSearchController.text.length < 3) return;
 
-    ///firebase
-    FirebaseAnalytics.instance.logSearch(searchTerm: _txtSearchController.text);
-    FacebookAppEvents().logViewContent(type: "search", id: _txtSearchController.text);
+    try {
+      ///log
+      FirebaseAnalytics.instance.logSearch(searchTerm: _txtSearchController.text);
+      FacebookAppEvents().logViewContent(type: "search", id: _txtSearchController.text);
+    } catch (e) {
+      print("Error logging search: $e");
+    }
 
     routeTo(BrowseSearchPage.path, data: _txtSearchController.text, onPop: (value) {
       if (["notic", "compo"].contains(widget.wooSignalApp!.theme) == false) {
@@ -162,6 +167,11 @@ class _CategoriesPageState extends NyState<CategoriesPage> with AutomaticKeepAli
                       onSubmitted: (_) => _actionSearch,
                     ),
                     const SizedBox(height: 16),
+                    PrimaryButton(
+                      title: trans("Search"),
+                      action: _actionSearch,
+                    ),
+                    const SizedBox(height: 36),
                   ],
                   TabBar(
                     enableFeedback: true,

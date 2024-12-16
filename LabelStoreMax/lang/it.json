@@ -108,8 +108,8 @@
   "Select a country": "Seleziona un Paese",
   "Menu": "Menù",
   "About Us": "Su di noi",
-  "Sort: Date New to Old": "Ordina dal più recente",
-  "Sort: Date Old to New": "Ordina dal meno recente",
+  "Sort: Date New to Old": "Ordina dal PIÙ recente",
+  "Sort: Date Old to New": "Ordina dal MENO recente",
   "Something went wrong": "Qualcosa è andato storto",
   "Product variation does not exist": "La variante del prodotto non esiste",
   "This variation is unavailable": "Questa variante non è disponibile",
@@ -169,7 +169,7 @@
   "Sort: Name A-Z": "Ordina per Nome",
   "Sort: Name Z-A": "Ordina: Nome Z-A",
   "Cancel": "Annulla",
-  "Sort results": "Filtra Capi",
+  "Sort results": "Ordina per",
   "you're now logged in": "Ora sei loggato",
   "Hello": "Benvenuto su Markup",
   "Welcome back": "Siamo entusiasti di riaverti con noi!",
@@ -319,6 +319,7 @@
   "Notifiche Disabilitate": "Notifiche Disabilitate",
   "NDM": "Non riceverai aggiornamenti importanti, come promozioni esclusive o notifiche sui tuoi ordini.\n\nAttiva ora le notifiche per non perdere nessuna novità!",
   "Notifiche Push": "Notifiche Push",
-  "No categories available": "Nessuna categoria disponibile"
-
+  "No categories available": "Nessuna categoria disponibile",
+  "Filters": "Filtri",
+  "Empty Sort": "Clicca per ordinare"
 }

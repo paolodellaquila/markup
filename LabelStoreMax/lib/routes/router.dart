@@ -1,4 +1,5 @@
 import 'package:flutter_app/resources/pages/category/custom_sub_category_page.dart';
+import 'package:flutter_app/resources/pages/product_filters_page.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 import '/resources/pages/account_delete_page.dart';
@@ -87,4 +88,6 @@ appRouter() => nyRoutes((router) {
       router.route(NotificationsPage.path, (context) => NotificationsPage());
 
       router.route(BrowseCustomCategoryPage.path, (context) => BrowseCustomCategoryPage(), transition: PageTransitionType.bottomToTop);
+
+      router.route(ProductFiltersPage.path, (context) => ProductFiltersPage(), transition: PageTransitionType.bottomToTop);
     });

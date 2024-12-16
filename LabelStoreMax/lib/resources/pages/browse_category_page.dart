@@ -8,8 +8,12 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'package:facebook_app_events/facebook_app_events.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/resources/pages/browse_search_page.dart';
+import 'package:flutter_app/resources/widgets/buttons.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart' as ws_product;
 import 'package:woosignal/models/response/product_category.dart';
@@ -20,6 +24,7 @@ import '/resources/pages/product_detail_page.dart';
 import '/resources/widgets/product_item_container_widget.dart';
 import '/resources/widgets/safearea_widget.dart';
 import '/resources/widgets/woosignal_ui.dart';
+import 'product_filters_page.dart';
 
 class BrowseCategoryPage extends NyStatefulWidget {
   static String path = "/browse-category";
@@ -29,13 +34,32 @@ class BrowseCategoryPage extends NyStatefulWidget {
 
 class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
   ProductCategory? productCategory;
-  double _minPrice = 0;
-  double _maxPrice = 1000;
   List<ws_product.Product> _freezeProducts = [];
 
   _BrowseCategoryPageState();
 
   SortByType? _sortByType;
+  String? _sortTitle;
+
+  final TextEditingController _txtSearchController = TextEditingController();
+  bool isSearching = false;
+
+  _actionSearch() {
+    if (_txtSearchController.text.isEmpty) return;
+    if (_txtSearchController.text.length < 3) return;
+
+    try {
+      ///log
+      FirebaseAnalytics.instance.logSearch(searchTerm: _txtSearchController.text);
+      FacebookAppEvents().logViewContent(type: "search", id: _txtSearchController.text);
+    } catch (e) {
+      print("Error logging search: $e");
+    }
+
+    routeTo(BrowseSearchPage.path, data: _txtSearchController.text, onPop: (value) {
+      Navigator.pop(context);
+    });
+  }
 
   @override
   init() async {
@@ -51,43 +75,117 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(trans("Browse"), style: Theme.of(context).textTheme.titleMedium),
-            afterNotNull(productCategory, child: () => Text(parseHtmlString(productCategory!.name)), loading: CupertinoActivityIndicator())
+            afterNotNull(productCategory, child: () => Text(parseHtmlString(productCategory!.name)), loading: CupertinoActivityIndicator()),
           ],
         ),
         centerTitle: true,
-        actions: <Widget>[
+        actions: [
           IconButton(
-            icon: Icon(Icons.tune),
-            onPressed: _modalSheetTune,
-          )
+            icon: Icon(Icons.search),
+            onPressed: () {
+              setState(() {
+                isSearching = !isSearching;
+              });
+            },
+          ),
         ],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(32),
+          child: Center(
+            child: afterNotNull(
+              productCategory,
+              child: () => Padding(
+                  padding: const EdgeInsets.only(left: 24, right: 18),
+                  child: _freezeProducts.isNotEmpty
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () => routeTo(ProductFiltersPage.path, data: _freezeProducts),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.filter_list_outlined, size: 18),
+                                  const SizedBox(width: 4),
+                                  Text("Filters".tr(), style: Theme.of(context).textTheme.bodyLarge),
+                                ],
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: _modalSheetTune,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.compare_arrows_outlined, size: 18),
+                                  const SizedBox(width: 4),
+                                  Text(_sortTitle ?? trans("Empty Sort"), style: Theme.of(context).textTheme.bodyMedium),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      : const SizedBox.shrink()),
+            ),
+          ),
+        ),
       ),
       body: SafeAreaWidget(
-          child: NyPullToRefresh.grid(
-        data: (page) async {
-          final products = await appWooSignal((api) => api.getProducts(
-                perPage: 25,
-                category: productCategory?.id.toString(),
-                page: page,
-                status: "publish",
-                stockStatus: "instock",
-              ));
-          _freezeProducts = products;
-          return products;
-        },
-        child: (context, product) {
-          return Container(
-            height: 320,
-            child: ProductItemContainer(
-              product: product,
-              onTap: () => _showProduct(product),
+          child: Column(
+        children: [
+          const SizedBox(height: 16),
+          if (isSearching) ...[
+            NyTextField.compact(
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                hintText: trans("Search hint"),
+                hintStyle: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
+              ),
+              backgroundColor: Colors.grey.shade200,
+              controller: _txtSearchController,
+              style: Theme.of(context).textTheme.bodySmall,
+              keyboardType: TextInputType.text,
+              autocorrect: false,
+              autoFocus: false,
+              textCapitalization: TextCapitalization.sentences,
+              onSubmitted: (_) => _actionSearch,
             ),
-          );
-        },
-        stateName: 'browse_category_pull_to_refresh',
-        sort: (products) {
-          return _sortProducts(products, by: _sortByType ?? SortByType.dateDesc);
-        },
+            const SizedBox(height: 16),
+            PrimaryButton(
+              title: trans("Search"),
+              action: _actionSearch,
+            ),
+            const SizedBox(height: 36),
+          ],
+          Expanded(
+            child: NyPullToRefresh.grid(
+              data: (page) async {
+                final products = await appWooSignal((api) => api.getProducts(
+                      perPage: 25,
+                      category: productCategory?.id.toString(),
+                      page: page,
+                      status: "publish",
+                      stockStatus: "instock",
+                    ));
+                setState(() {
+                  _freezeProducts = products;
+                });
+                return products;
+              },
+              child: (context, product) {
+                return Container(
+                  height: 320,
+                  child: ProductItemContainer(
+                    product: product,
+                    onTap: () => _showProduct(product),
+                  ),
+                );
+              },
+              stateName: 'browse_category_pull_to_refresh',
+              sort: (products) {
+                return _sortProducts(products, by: _sortByType ?? SortByType.dateDesc);
+              },
+            ),
+          ),
+        ],
       )),
     );
   }
@@ -127,15 +225,6 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
           return date2.compareTo(date1);
         });
         break;
-      case SortByType.price:
-        final temp_product = products.where((product) {
-          double price = parseWcPrice(product.price);
-          return price >= _minPrice && price <= _maxPrice;
-        }).toList();
-
-        if (temp_product.isNotEmpty) {
-          products = temp_product;
-        }
       case SortByType.clear:
         products = _freezeProducts;
         break;
@@ -153,15 +242,14 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
           children: [
             ..._buildSortOptions(setState),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 ///Clear
                 Padding(
                   padding: const EdgeInsets.only(top: 24.0),
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                      _minPrice = 0;
-                      _maxPrice = 1000;
+                      _sortTitle = null;
                       _sortByType = SortByType.clear;
                       _applySort();
                       pop();
@@ -185,6 +273,8 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
                     ),
                   ),
                 ),
+
+                const SizedBox(width: 16),
 
                 ///Close
                 Padding(
@@ -218,53 +308,6 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
     );
   }
 
-  Widget _buildPriceSlider(StateSetter setState) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Text(
-            trans("Price"),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        RangeSlider(
-          values: RangeValues(_minPrice, _maxPrice),
-          min: 0,
-          max: 2000,
-          divisions: 40,
-          labels: RangeLabels(
-            "\$${_minPrice.toStringAsFixed(0)}",
-            "\$${_maxPrice.toStringAsFixed(0)}",
-          ),
-          onChanged: (RangeValues values) {
-            setState(() {
-              _minPrice = values.start;
-              _maxPrice = values.end;
-            });
-          },
-          onChangeEnd: (RangeValues values) {
-            _sortByType = SortByType.price;
-            _applySort();
-          },
-          activeColor: Colors.blue,
-          inactiveColor: Colors.grey[300],
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text(
-            "${'Price Range'.tr()}: \$${_minPrice.toStringAsFixed(0)} - \$${_maxPrice.toStringAsFixed(0)}",
-            style: TextStyle(color: Colors.grey[600]),
-          ),
-        ),
-      ],
-    );
-  }
-
   List<Widget> _buildSortOptions(StateSetter setState) {
     return [
       _buildLinkButton(
@@ -273,6 +316,7 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
         isSelected: _sortByType == SortByType.nameAZ,
         onTap: () {
           setState(() {
+            _sortTitle = trans("Sort: Name A-Z");
             _sortByType = SortByType.nameAZ;
           });
           _applySort();
@@ -281,10 +325,11 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
       _buildDivider(),
       _buildLinkButton(
         title: trans("Sort: Date New to Old"),
-        icon: Icons.history,
+        icon: Icons.update_outlined,
         isSelected: _sortByType == SortByType.dateDesc,
         onTap: () {
           setState(() {
+            _sortTitle = trans("Sort: Date New to Old");
             _sortByType = SortByType.dateDesc;
           });
           _applySort();
@@ -297,13 +342,12 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
         isSelected: _sortByType == SortByType.dateAsc,
         onTap: () {
           setState(() {
+            _sortTitle = trans("Sort: Date Old to New");
             _sortByType = SortByType.dateAsc;
           });
           _applySort();
         },
       ),
-      _buildDivider(),
-      _buildPriceSlider(setState),
     ];
   }
 
@@ -339,6 +383,7 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
 
   void _applySort() {
     StateAction.refreshPage('browse_category_pull_to_refresh', setState: () {});
+    setState(() {});
     //pop();
   }
 

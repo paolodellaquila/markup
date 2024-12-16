@@ -310,5 +310,7 @@
   "Notifiche Disabilitate": "通知已禁用",
   "NDM": "您将不会收到重要的更新，例如独家促销或有关您的订单的通知。\n\n立即打开通知，这样您就不会错过任何新闻！",
   "Notifiche Push": "推送通知",
-  "No categories available": "没有可用的类别"
+  "No categories available": "没有可用的类别",
+  "Filters": "过滤器",
+  "Empty Sort": "空排序"
 }
