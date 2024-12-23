@@ -32,7 +32,7 @@ stripePay(context, {TaxRate? taxRate}) async {
 
   Stripe.publishableKey = liveMode
       ? "pk_live_51QRXzgIzl4XsOW4zTU4q24HdcoYKYzo685hUtc9Al6EsKHBeyZfRI6Y0lM1ectV2k9GZUIwGGCG1JJzEMetfvo2E00qp2uf8Jz"
-      : "pk_test_51QRXzgIzl4XsOW4zCv3VuX1nFoKY2IQT3jsWBCwJUh11FoIJqRKKboYmUxqLNcZwWiCrePwHQFh4dDyB20L14FJ900GRGhRszF"; // Don't change this value
+      : "pk_test_0jMmpBntJ6UkizPkfiB8ZJxH"; // Don't change this value
   await Stripe.instance.applySettings();
 
   if (Stripe.stripeAccountId == '') {
@@ -92,16 +92,34 @@ stripePay(context, {TaxRate? taxRate}) async {
 
     updateState(CheckoutConfirmationPage.path, data: {"reloadState": true});
 
-    OrderWC orderWC = await buildOrderWC(taxRate: taxRate);
+    OrderWC orderWC = await buildOrderWC(taxRate: taxRate, markPaid: true);
     Order? order = await (appWooSignal((api) => api.createOrder(orderWC)));
 
     if (order == null) {
-      showToastNotification(
-        context,
-        title: trans("Error"),
-        description: trans("Something went wrong, please contact our store"),
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: Text("Error".tr()),
+          content: Text("Something went wrong during order creation process".tr()),
+          actions: [
+            TextButton(
+              onPressed: () {
+                updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+                context.pop();
+              },
+              child: Text("Retry".tr()),
+            ),
+            TextButton(
+              onPressed: () {
+                updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+                context.pop();
+                openBrowserTab(url: "https://markupitalia.com/contatti/");
+              },
+              child: Text("Assistance".tr()),
+            ),
+          ],
+        ),
       );
-      updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
       return;
     }
 

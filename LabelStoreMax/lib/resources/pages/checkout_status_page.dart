@@ -9,6 +9,7 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/config/firebase-messaging/firebase_notification_handler.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/order.dart';
@@ -182,7 +183,8 @@ class _CheckoutStatusState extends NyState<CheckoutStatusPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: PrimaryButton(
                     title: trans("Back to Home"),
-                    action: () {
+                    action: () async {
+                      await FirebaseNotifications().checkPermission();
                       routeToInitial();
                     },
                   ),

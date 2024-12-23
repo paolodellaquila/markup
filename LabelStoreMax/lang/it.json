@@ -294,7 +294,7 @@
   "Riceverai i dettagli del tuo ordine via email": "Riceverai i dettagli del tuo ordine via email",
   "Product not available": "Il prodotto non è momentamente acquistabile",
   "With a minium of": "Con un minimo importo di",
-  "Something went wrong during order creation process": "Qualcosa è andato storto durante il processo di creazione dell'ordine",
+  "Something went wrong during order creation process": "Qualcosa è andato storto durante il processo di creazione dell'ordine.\n\nControlla di non aver utilizzato un Coupon valido solo 1 volta.",
   "Assistance": "Assistenza",
   "Apply Another Coupon": "Applica un altro coupon",
   "An error occurred. Please retry.": "Si è verificato un errore. Riprova.",
@@ -321,5 +321,7 @@
   "Notifiche Push": "Notifiche Push",
   "No categories available": "Nessuna categoria disponibile",
   "Filters": "Filtri",
-  "Empty Sort": "Clicca per ordinare"
+  "Empty Sort": "Clicca per ordinare",
+  "Coupon Warning": "Il coupon può essere utilizzato solo 1 volta",
+  "Coupon Success": "Coupon applicato con successo"
 }

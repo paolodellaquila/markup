@@ -312,6 +312,8 @@
   "Notifiche Push": "Notifications Push",
   "No categories available": "Aucune catégorie disponible",
   "Filters": "Filtres",
-  "Empty Sort": "Pas de tri"
+  "Empty Sort": "Pas de tri",
+  "Coupon Warning": "Le coupon ne peut être utilisé qu'une seule fois",
+  "Coupon Success": "Coupon appliqué avec succès"
 
 }

@@ -286,7 +286,7 @@
   "Riceverai i dettagli del tuo ordine via email": "You will receive the details of your order via email",
   "Product not available": "Product not available",
   "With a minium of": "With a minium of",
-  "Something went wrong during order creation process": "Something went wrong during order creation process",
+  "Something went wrong during order creation process": "Something went wrong during order creation processn\n\nCheck that you have not used a Coupon valid only 1 time.",
   "Assistance": "Assistance",
   "Apply Another Coupon": "Apply Another Coupon",
   "An error occurred. Please retry." : "An error occurred. Please retry.",
@@ -313,6 +313,8 @@
   "Notifiche Push": "Push Notifications",
   "No categories available": "No categories available",
   "Filters": "Filters",
-  "Empty Sort": "Tap to Sort"
+  "Empty Sort": "Tap to Sort",
+  "Coupon Warning": "The coupon can be used only 1 time",
+  "Coupon Success": "Coupon successfully applied"
 
 }

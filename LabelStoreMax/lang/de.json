@@ -312,6 +312,8 @@
   "Notifiche Push": "Push-Benachrichtigungen",
   "No categories available": "Keine Kategorien verfügbar",
   "Filters": "Filter",
-  "Empty Sort": "Sortieren"
+  "Empty Sort": "Sortieren",
+  "Coupon Warning": "Der Gutschein kann nur 1 Mal verwendet werden",
+  "Coupon Success": "Gutschein erfolgreich angewendet"
 
 }

@@ -23,7 +23,7 @@ List<PaymentType> paymentTypeList = [
     id: 1,
     name: "Stripe",
     description: "${trans("Debit or Credit Card")} (Apple Pay / Google Pay)",
-    assetImage: "dark_powered_by_stripe.png",
+    assetImage: "light_powered_by_stripe.png",
     pay: stripePay,
   ),
 
