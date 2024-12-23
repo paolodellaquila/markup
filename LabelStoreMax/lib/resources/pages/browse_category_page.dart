@@ -12,6 +12,7 @@ import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/app/models/filter_rules.dart';
 import 'package:flutter_app/resources/pages/browse_search_page.dart';
 import 'package:flutter_app/resources/widgets/buttons.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -35,6 +36,8 @@ class BrowseCategoryPage extends NyStatefulWidget {
 class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
   ProductCategory? productCategory;
   List<ws_product.Product> _freezeProducts = [];
+  List<ws_product.Product>? _filteredProducts = [];
+  FilterRules? _filterRules;
 
   _BrowseCategoryPageState();
 
@@ -101,14 +104,57 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             GestureDetector(
-                              onTap: () => routeTo(ProductFiltersPage.path, data: _freezeProducts),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.filter_list_outlined, size: 18),
-                                  const SizedBox(width: 4),
-                                  Text("Filters".tr(), style: Theme.of(context).textTheme.bodyLarge),
-                                ],
-                              ),
+                              onTap: () async {
+                                routeTo(ProductFiltersPage.path, data: {"products": _freezeProducts, "filters": _filterRules}, onPop: (result) {
+                                  if (result != null) {
+                                    if (result["rules"] != null) {
+                                      _filterRules = result["rules"];
+                                      _filteredProducts = _applyFilters(result["rules"], _freezeProducts);
+                                      _applySort();
+                                    } else {
+                                      _filterRules = null;
+                                      _filteredProducts = null;
+                                      _sortByType = SortByType.clear;
+                                      _applySort();
+                                    }
+                                  }
+                                });
+                              },
+                              child: _filterRules == null
+                                  ? Row(
+                                      children: [
+                                        Icon(Icons.filter_list_outlined, size: 18),
+                                        const SizedBox(width: 4),
+                                        Text("Filters".tr(), style: Theme.of(context).textTheme.bodyLarge),
+                                      ],
+                                    )
+                                  : Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.black,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                Icons.filter_list_outlined,
+                                                size: 18,
+                                                color: Colors.white,
+                                              ),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                  "${_filterRules!.selectedAttributes.isNotEmpty ? _filterRules!.selectedAttributes.length : ''} ${"Filters".tr()}",
+                                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                        color: Colors.white,
+                                                      )),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                             ),
                             GestureDetector(
                               onTap: _modalSheetTune,
@@ -181,6 +227,9 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
               },
               stateName: 'browse_category_pull_to_refresh',
               sort: (products) {
+                if (_filteredProducts != null && _filteredProducts!.isNotEmpty) {
+                  return _sortProducts(_filteredProducts!, by: _sortByType ?? SortByType.dateDesc);
+                }
                 return _sortProducts(products, by: _sortByType ?? SortByType.dateDesc);
               },
             ),
@@ -238,70 +287,10 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
       title: trans("Sort results"),
       bodyWidget: StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
         return Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ..._buildSortOptions(setState),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                ///Clear
-                Padding(
-                  padding: const EdgeInsets.only(top: 24.0),
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      _sortTitle = null;
-                      _sortByType = SortByType.clear;
-                      _applySort();
-                      pop();
-                    },
-                    icon: Icon(Icons.cancel, color: Colors.grey[700]),
-                    label: Text(
-                      trans("Clear filters"),
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.grey[700],
-                      backgroundColor: Colors.grey[200],
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(width: 16),
-
-                ///Close
-                Padding(
-                  padding: const EdgeInsets.only(top: 24.0),
-                  child: ElevatedButton.icon(
-                    onPressed: pop,
-                    icon: Icon(Icons.cancel, color: Colors.grey[700]),
-                    label: Text(
-                      trans("Close"),
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.grey[700],
-                      backgroundColor: Colors.grey[200],
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
         );
       }),
@@ -389,5 +378,23 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
 
   _showProduct(ws_product.Product product) {
     routeTo(ProductDetailPage.path, data: product);
+  }
+
+  List<ws_product.Product> _applyFilters(FilterRules filters, List<ws_product.Product> products) {
+    return products.where((product) {
+      // Filter by selected attributes
+      bool matchesAttributes = filters.selectedAttributes.entries.every((entry) {
+        final attribute = entry.key;
+        final selectedValues = entry.value;
+        return product.attributes.any(
+            (productAttribute) => productAttribute.id == attribute.id && productAttribute.options?.any((option) => selectedValues.contains(option)) == true);
+      });
+
+      // Filter by price range
+      final productPrice = double.tryParse(product.price ?? "0") ?? 0;
+      bool matchesPrice = productPrice >= filters.selectedPriceRange.minPrice && productPrice <= filters.selectedPriceRange.maxPrice;
+
+      return matchesAttributes && matchesPrice;
+    }).toList();
   }
 }

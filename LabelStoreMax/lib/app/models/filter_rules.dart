@@ -58,11 +58,11 @@ class FilterRules {
 
   FilterRules copyWithPriceRange(PriceRange priceRange) {
     return FilterRules(
-        categories: categories,
         hashTags: hashTags,
         selectedHashTags: selectedHashTags,
         selectedPriceRange: priceRange,
-        selectableAttributes: selectableAttributes);
+        selectableAttributes: selectableAttributes,
+        categories: categories);
   }
 
   factory FilterRules.getSelectableAttributes(List<Product> products) {
@@ -79,31 +79,27 @@ class FilterRules {
     List<int> hashTagIds = [];
     List<Tag> hashTags = [];
 
-    products.forEach((product) => {
-          product.tags != null
-              ? product.tags.forEach((Tag hashTag) => {
-                    if (!hashTagIds.contains(hashTag.id)) {hashTagIds.add(hashTag.id!), hashTags.add(hashTag)}
-                  })
-              : {},
-          product.attributes != null
-              ?
-              // returnAttributes.addAll({for (var attribute in product.selectableAttributes) attribute: []})
-              product.attributes.forEach((attribute) => {
-                    if (attribute != null)
-                      {
-                        if (attributesIdToString[attribute.id] == null)
-                          {attributesIdToString[attribute.id!] = [], attributesIdToAttribute[attribute.id!] = attribute},
-                        attributesIdToString[attribute.id]?.addAll(attribute.options?.toList() ?? [])
-                      }
-                  })
-              : {},
-          if (double.parse(product.price ?? "0") > maxPrice) maxPrice = double.parse(product.price ?? "0"),
-          if (double.parse(product.price ?? "0") < minPrice) minPrice = double.parse(product.price ?? "0"),
-          //TOOD: change to categories instead of categoryIds
-          product.categories.forEach((Category category) => {
-                if (!categoryIds.contains(category.id)) {categoryIds.add(category.id!), categories[category] = false}
-              })
-        });
+    products.forEach((product) {
+      product.tags.forEach((Tag hashTag) => {
+            if (!hashTagIds.contains(hashTag.id)) {hashTagIds.add(hashTag.id!), hashTags.add(hashTag)}
+          });
+
+      product.attributes.sort((a, b) => a.position!.compareTo(b.position!));
+      product.attributes.forEach((attribute) => {
+            if (attribute != null && attribute.options != null && (attribute.options ?? []).isNotEmpty && (attribute.options ?? []).length > 1)
+              {
+                if (attributesIdToString[attribute.id] == null) {attributesIdToString[attribute.id!] = [], attributesIdToAttribute[attribute.id!] = attribute},
+                attributesIdToString[attribute.id]?.addAll(attribute.options?.toList() ?? [])
+              }
+          });
+
+      if (double.parse(product.price ?? "0") > maxPrice) maxPrice = double.parse(product.price ?? "0");
+      if (double.parse(product.price ?? "0") < minPrice) minPrice = double.parse(product.price ?? "0");
+      //TOOD: change to categories instead of categoryIds
+      product.categories.forEach((Category category) => {
+            if (!categoryIds.contains(category.id)) {categoryIds.add(category.id!), categories[category] = false}
+          });
+    });
     attributesIdToString.keys
         .forEach((attributeById) => {returnAttributes[attributesIdToAttribute[attributeById]!!] = attributesIdToString[attributeById]!.toSet().toList()});
 

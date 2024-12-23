@@ -19,8 +19,14 @@ class _ProductFiltersPageState extends NyState<ProductFiltersPage> {
   FilterRules? rules;
 
   _prepareFilters() {
-    List<PR.Product> products = widget.controller.data();
-    rules = FilterRules.getSelectableAttributes(products);
+    final data = widget.controller.data();
+
+    List<PR.Product> products = data["products"];
+    if (data["filters"] != null) {
+      rules = data["filters"];
+    } else {
+      rules = FilterRules.getSelectableAttributes(products);
+    }
   }
 
   @override
@@ -34,6 +40,17 @@ class _ProductFiltersPageState extends NyState<ProductFiltersPage> {
       appBar: AppBar(
         title: Text('Filters'.tr()),
         centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: GestureDetector(
+              onTap: () {
+                context.pop(result: {"rules": null});
+              },
+              child: Text('Clear Filters'.tr()),
+            ),
+          ),
+        ],
       ),
       body: rules == null
           ? AppLoaderWidget()
@@ -120,22 +137,22 @@ class _ProductFiltersPageState extends NyState<ProductFiltersPage> {
                         .values
                         .toList(growable: false),
                   ],
-                  FilterSelectableVisibleOption<PR.Category>(
-                    title: 'Category',
-                    children: rules!.categories.map((category, isSelected) => MapEntry(
-                        category,
-                        FilterSelectableItem(
-                          text: (category.name ?? "").replaceAll("&amp;", "&").tr(),
-                          isSelected: isSelected,
-                        ))),
-                    onSelected: _onCategorySelected,
-                  ),
+                  // FilterSelectableVisibleOption<PR.Category>(
+                  //   title: 'Category',
+                  //   children: rules!.categories.map((category, isSelected) => MapEntry(
+                  //       category,
+                  //       FilterSelectableItem(
+                  //         text: (category.name ?? "").replaceAll("&amp;", "&").tr(),
+                  //         isSelected: isSelected,
+                  //       ))),
+                  //   onSelected: _onCategorySelected,
+                  // ),
                 ],
               ),
             ),
       bottomNavigationBar: AcceptBottomNavigation(
         onApply: () {
-          Navigator.of(context).pop(rules);
+          context.pop(result: {"rules": rules});
         },
       ),
     );

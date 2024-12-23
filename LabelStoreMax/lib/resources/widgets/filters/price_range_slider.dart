@@ -43,7 +43,7 @@ class OpenFlutterPriceRangeSlider extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Text(
-            "${'Price Range'.tr()}: \€${min.toStringAsFixed(0)} - \€${max.toStringAsFixed(0)}",
+            "${'Price Range'.tr()}: \€${selectedMin.toStringAsFixed(0)} - \€${selectedMax.toStringAsFixed(0)}",
             style: TextStyle(color: Colors.grey[600]),
           ),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/buttons.dart';
+import 'package:nylo_framework/nylo_framework.dart';
 
 class AcceptBottomNavigation extends StatelessWidget {
   final VoidCallback? onApply;
@@ -13,17 +14,23 @@ class AcceptBottomNavigation extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Expanded(
-            child: SecondaryButton(
-              title: 'Discard',
-              action: () {
-                Navigator.of(context).pop();
-              },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SecondaryButton(
+                title: 'Discard',
+                action: () {
+                  context.pop();
+                },
+              ),
             ),
           ),
           Expanded(
-            child: PrimaryButton(
-              title: 'Apply',
-              action: onApply!,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: PrimaryButton(
+                title: 'Apply',
+                action: onApply!,
+              ),
             ),
           )
         ],
