@@ -51,8 +51,8 @@ android {
         applicationId "com.airon.markup"
         minSdkVersion 21
         targetSdkVersion 34
-        versionCode 26
-        versionName "1.0.19"
+        versionCode 27
+        versionName "1.0.20"
         multiDexEnabled true
     }
 
