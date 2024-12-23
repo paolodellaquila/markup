@@ -52,7 +52,6 @@ List<PaymentType> paymentTypeList = [
   ),
 
   // e.g. add more here
-
   addPayment(
     id: 6,
     name: "Scalapay",

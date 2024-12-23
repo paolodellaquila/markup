@@ -17,7 +17,7 @@ class AcceptBottomNavigation extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: SecondaryButton(
-                title: 'Discard',
+                title: 'Cancel'.tr(),
                 action: () {
                   context.pop();
                 },
@@ -28,7 +28,7 @@ class AcceptBottomNavigation extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: PrimaryButton(
-                title: 'Apply',
+                title: 'Apply'.tr(),
                 action: onApply!,
               ),
             ),
