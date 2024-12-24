@@ -9,6 +9,8 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/app/models/cart.dart';
+import 'package:flutter_app/app/models/cart_line_item.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/payload/order_wc.dart';
@@ -33,6 +35,9 @@ stripePay(context, {TaxRate? taxRate}) async {
   Stripe.publishableKey = liveMode
       ? "pk_live_51QRXzgIzl4XsOW4zTU4q24HdcoYKYzo685hUtc9Al6EsKHBeyZfRI6Y0lM1ectV2k9GZUIwGGCG1JJzEMetfvo2E00qp2uf8Jz"
       : "pk_test_0jMmpBntJ6UkizPkfiB8ZJxH"; // Don't change this value
+
+  Stripe.merchantIdentifier = getEnv('STRIPE_MERCHANT_IDENTIFIER');
+
   await Stripe.instance.applySettings();
 
   if (Stripe.stripeAccountId == '') {
@@ -62,14 +67,28 @@ stripePay(context, {TaxRate? taxRate}) async {
       return;
     }
 
+    List<CartLineItem> cartItems = await Cart.getInstance.getCart();
+    String total = await Cart.getInstance.getTotal();
+
     await Stripe.instance.initPaymentSheet(
       paymentSheetParameters: SetupPaymentSheetParameters(
-          style: Theme.of(context).brightness == Brightness.light ? ThemeMode.light : ThemeMode.dark,
-          merchantDisplayName: getEnv('APP_NAME', defaultValue: wooSignalApp?.appName),
-          customerId: rsp!['customer'],
-          paymentIntentClientSecret: rsp!['client_secret'],
-          customerEphemeralKeySecret: rsp!['ephemeral_key'],
-          setupIntentClientSecret: rsp!['setup_intent_secret']),
+        style: Theme.of(context).brightness == Brightness.light ? ThemeMode.light : ThemeMode.dark,
+        merchantDisplayName: getEnv('APP_NAME', defaultValue: wooSignalApp?.appName),
+        customerId: rsp!['customer'],
+        paymentIntentClientSecret: rsp!['client_secret'],
+        customerEphemeralKeySecret: rsp!['ephemeral_key'],
+        setupIntentClientSecret: rsp!['setup_intent_secret'],
+        applePay: PaymentSheetApplePay(
+          merchantCountryCode: getEnv('STRIPE_MERCHANT_COUNTRY_CODE'),
+          //cartItems: cartItems.map((item) => ApplePayCartSummaryItem.immediate(label: item.name ?? "", amount: item.total.toString())).toList(),
+        ),
+        googlePay: PaymentSheetGooglePay(
+          currencyCode: "EUR",
+          merchantCountryCode: getEnv('STRIPE_MERCHANT_COUNTRY_CODE'),
+          label: getEnv('APP_NAME', defaultValue: wooSignalApp?.appName),
+          amount: total,
+        ),
+      ),
     );
 
     await Stripe.instance.presentPaymentSheet();

@@ -41,7 +41,7 @@ class _HomePageState extends NyState<HomePage> {
     await _enableFcmNotifications();
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final bool? logAutoEnable = prefs.getBool('ADV_META_2_logAutoEnable');
+    final bool? logAutoEnable = prefs.getBool('ADV_META_3_logAutoEnable');
 
     if (Platform.isIOS) {
       ///TRACKING ADV iOS
@@ -65,6 +65,7 @@ class _HomePageState extends NyState<HomePage> {
       // Wait for dialog popping animation
       await Future.delayed(const Duration(milliseconds: 200));
       // Request system's tracking authorization dialog
+      AppTrackingTransparency.requestTrackingAuthorization();
       await AppTrackingTransparency.requestTrackingAuthorization();
     }
 
@@ -93,7 +94,7 @@ class _HomePageState extends NyState<HomePage> {
       personalizationStorageConsentGranted: advTracking,
       securityStorageConsentGranted: advTracking,
     );
-    await prefs.setBool('ADV_META_2_logAutoEnable', advTracking);
+    await prefs.setBool('ADV_META_3_logAutoEnable', advTracking);
   }
 
   Future<bool?> _showCustomTrackingDialog(BuildContext context) async => showDialog<bool>(
@@ -103,27 +104,16 @@ class _HomePageState extends NyState<HomePage> {
           onPopInvoked: (popResult) {
             return;
           },
-          child: AlertDialog(
-            title: Text('Normativa Trasparenza Pubblicitaria v2'.tr()),
-            content: Text("${'Caro utente'.tr()}\n${'cookie'.tr()}"),
-            actions: Platform.isAndroid
-                ? [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: Text('Rifiuto'.tr()),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: Text('Accept'.tr()),
-                    ),
-                  ]
-                : [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: Text('Continue'.tr()),
-                    ),
-                  ],
-          ),
+          child: AlertDialog(title: Text('Normativa Trasparenza Pubblicitaria V3'.tr()), content: Text("${'Caro utente'.tr()}\n${'cookie'.tr()}"), actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('Rifiuto'.tr()),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text('Accept'.tr()),
+            ),
+          ]),
         ),
       );
 

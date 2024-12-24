@@ -47,7 +47,7 @@ class _ProductFiltersPageState extends NyState<ProductFiltersPage> {
               onTap: () {
                 context.pop(result: {"rules": null});
               },
-              child: Text('Clear Filters'.tr()),
+              child: Text('Clear filters'.tr()),
             ),
           ),
         ],
