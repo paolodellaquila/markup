@@ -154,9 +154,6 @@ class _SettingsPageState extends State<SettingsPage> {
                                       }
                                       setState(() => notificationValue = value);
                                     }),
-                                onTap: () {
-                                  NyLanguageSwitcher.showBottomModal(context);
-                                },
                               );
                             }
                             return SizedBox.shrink();

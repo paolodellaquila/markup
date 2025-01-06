@@ -9,158 +9,159 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/app/models/cart.dart';
-import 'package:flutter_paypal_payment/flutter_paypal_payment.dart';
+import 'package:flutter_app/app/models/checkout_session.dart';
+import 'package:flutter_app/app/models/scalapay/order.dart';
+import 'package:flutter_app/app/models/scalapay/order_response.dart';
+import 'package:flutter_app/app/networking/scalapay/scalapay_api.dart';
+import 'package:flutter_app/bootstrap/app_helper.dart';
+import 'package:flutter_app/resources/pages/checkout_status_page.dart';
+import 'package:flutter_app/resources/pages/scalapay/scalapay_checkout.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/payload/order_wc.dart';
 import 'package:woosignal/models/response/order.dart';
 import 'package:woosignal/models/response/tax_rate.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
 
-import '/app/models/cart_line_item.dart';
-import '/app/models/checkout_session.dart';
-import '/bootstrap/app_helper.dart';
 import '/bootstrap/data/order_wc.dart';
 import '/bootstrap/helpers.dart';
 import '/resources/pages/checkout_confirmation_page.dart';
-import '/resources/pages/checkout_status_page.dart';
 
 scalapayPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
+  final scalapayApi = ScalapayApi()..init();
+
   await checkout(taxRate, (total, billingDetails, cart) async {
-    WooSignalApp? wooSignalApp = AppHelper.instance.appConfig;
+    try {
+      WooSignalApp? wooSignalApp = AppHelper.instance.appConfig;
 
-    List<CartLineItem> cartLineItems = await cart.getCart();
+      String taxTotal = '';
+      if (AppHelper.instance.appConfig!.productPricesIncludeTax == 0) {
+        taxTotal = await cart.taxAmount(taxRate);
+      }
 
-    String taxTotal = '';
-    if (AppHelper.instance.appConfig!.productPricesIncludeTax == 0) {
-      taxTotal = await cart.taxAmount(taxRate);
-    }
+      String? currencyCode = wooSignalApp?.currencyMeta?.code;
 
-    String subtotal = await Cart.getInstance.getSubtotal();
-    // ///Update subtotal
-    // if (CheckoutSession.getInstance.coupon != null) {
-    //   String discountAmount = await Cart.getInstance.couponDiscountAmount();
-    //   subtotal = (double.parse(subtotal) - double.parse(discountAmount)).toStringAsFixed(2);
-    // }
+      String shippingTotal = CheckoutSession.getInstance.shippingType?.getTotal() ?? "0";
 
-    String discountAmount = await Cart.getInstance.couponDiscountAmount();
+      if (taxTotal == "") {
+        taxTotal = "0";
+      }
 
-    String? currencyCode = wooSignalApp?.currencyMeta?.code;
+      if (shippingTotal == "" || shippingTotal == "min_amount" || CheckoutSession.getInstance.coupon?.freeShipping == true) {
+        shippingTotal = "0";
+      } else {
+        ///FIX shipping total
+        shippingTotal = shippingTotal.replaceAll(",", ".");
+      }
 
-    String shippingTotal = CheckoutSession.getInstance.shippingType?.getTotal() ?? "0";
-    String description = "(${cartLineItems.length}) items from ${getEnv('APP_NAME')}".tr(arguments: {"appName": getEnv('APP_NAME')});
-    description += ": ${cartLineItems.map((item) => "${item.name} (${item.variationOptions})").join(", ")}";
+      OrderWC orderWC = await buildOrderWC(taxRate: taxRate, markPaid: true);
+      ScalapayOrder scalapayOrder = ScalapayOrder.fromOrderWC(orderWC,
+          total: total,
+          currency: currencyCode!,
+          taxTotal: taxTotal,
+          shippingTotal: shippingTotal,
+          countryCode: billingDetails?.billingAddress?.customerCountry?.countryCode ?? "IT");
 
-    if (taxTotal == "") {
-      taxTotal = "0";
-    }
+      ScalapayOrderResponse orderResponse = await scalapayApi.createOrder(scalapayOrder);
 
-    if (shippingTotal == "" || shippingTotal == "min_amount" || CheckoutSession.getInstance.coupon?.freeShipping == true) {
-      shippingTotal = "0";
-    } else {
-      ///FIX shipping total
-      shippingTotal = shippingTotal.replaceAll(",", ".");
-    }
-
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (BuildContext context) => PaypalCheckoutView(
-          sandboxMode: getEnv('PAYPAL_LIVE_MODE') != true,
-          clientId: getEnv('PAYPAL_CLIENT_ID'),
-          secretKey: getEnv('PAYPAL_SECRET_KEY'),
-          note: "Contact us for any questions on your order.".tr(),
-          transactions: [
-            {
-              "amount": {
-                "total": total,
-                "currency": currencyCode?.toUpperCase(),
-                "details": {"subtotal": subtotal, "shipping": shippingTotal, "shipping_discount": discountAmount, "tax": taxTotal}
-              },
-              "description": description,
-              "item_list": {
-                "items": cartLineItems
-                    .map((item) => {"name": item.name, "quantity": item.quantity, "price": item.total, "currency": currencyCode?.toUpperCase()})
-                    .toList(),
-                "shipping_address": {
-                  "recipient_name": "${billingDetails?.shippingAddress?.nameFull()}",
-                  "line1": billingDetails?.shippingAddress?.addressLine,
-                  "line2": "",
-                  "city": billingDetails?.shippingAddress?.city,
-                  "country_code": billingDetails?.shippingAddress?.customerCountry?.countryCode,
-                  "postal_code": billingDetails?.shippingAddress?.postalCode,
-                  "phone": billingDetails?.shippingAddress?.phoneNumber,
-                  "state": billingDetails?.shippingAddress?.customerCountry?.state?.name
+      if (orderResponse.checkoutUrl == null || orderResponse.token == null) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: Text("Error".tr()),
+            content: Text("Something went wrong during order creation process".tr()),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+                  context.pop();
                 },
-              }
-            }
-          ],
-          onSuccess: (Map params) async {
-            OrderWC orderWC = await buildOrderWC(taxRate: taxRate, markPaid: true);
-            Order? order = await (appWooSignal((api) => api.createOrder(orderWC)));
+                child: Text("Retry".tr()),
+              ),
+              TextButton(
+                onPressed: () {
+                  updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+                  context.pop();
+                  openBrowserTab(url: "https://markupitalia.com/contatti/");
+                },
+                child: Text("Assistance".tr()),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
 
-            if (order == null) {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  title: Text("Error".tr()),
-                  content: Text("Something went wrong during order creation process".tr()),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
-                        context.pop();
-                      },
-                      child: Text("Retry".tr()),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
-                        context.pop();
-                        openBrowserTab(url: "https://markupitalia.com/contatti/");
-                      },
-                      child: Text("Assistance".tr()),
-                    ),
-                  ],
-                ),
-              );
-              return;
-            }
-
-            ///Paypal error
-            if (params["error"] == true && !params["message"].contains("Success")) {
-              showToastNotification(
-                context,
-                title: trans("Something went wrong"),
-                description: trans("please contact us"),
-              );
-              updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
-              context.pop();
-              return;
-            }
-
-            routeTo(CheckoutStatusPage.path, data: order);
-          },
-          onError: (error) {
-            NyLogger.error(error.toString());
-            showToastNotification(
-              context,
-              title: trans("Something went wrong"),
-              description: trans("please contact us"),
-            );
-            updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
-            context.pop();
-          },
-          onCancel: () {
-            showToastNotification(
-              context,
-              title: trans("Payment Cancelled"),
-              description: trans("The payment has been cancelled"),
-            );
-            updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
-            context.pop();
-          },
+      // Redirect user to Scalapay payment page
+      bool success = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ScalapayCheckout(scalapayOrder: scalapayOrder, orderResponse: orderResponse),
         ),
-      ),
-    );
+      );
+
+      if (success) {
+        await scalapayApi.delayOrder(orderResponse.token!);
+        await scalapayApi.capturePayment(orderResponse.token!);
+        // Delay the payment
+        await scalapayApi.delayOrder(orderResponse.token!);
+
+        // Wait for the order to be confirmed and capture the payment
+        // (This step should be triggered after successful shipment confirmation)
+        await scalapayApi.capturePayment(orderResponse.token!);
+
+        Order? order = await (appWooSignal((api) => api.createOrder(orderWC)));
+
+        if (order == null) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: Text("Error".tr()),
+              content: Text("Something went wrong during order creation process".tr()),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+                    context.pop();
+                  },
+                  child: Text("Retry".tr()),
+                ),
+                TextButton(
+                  onPressed: () {
+                    updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+                    context.pop();
+                    openBrowserTab(url: "https://markupitalia.com/contatti/");
+                  },
+                  child: Text("Assistance".tr()),
+                ),
+              ],
+            ),
+          );
+        }
+
+        routeTo(CheckoutStatusPage.path, data: order);
+      } else {
+        NyLogger.error("Scalapay Payment failed");
+        showToastNotification(
+          style: ToastNotificationStyleType.DANGER,
+          context,
+          title: trans("Something went wrong"),
+          description: trans("please contact us"),
+        );
+        updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+        Navigator.pop(context);
+        return;
+      }
+    } catch (e) {
+      NyLogger.error(e.toString());
+      showToastNotification(
+        style: ToastNotificationStyleType.DANGER,
+        context,
+        title: trans("Something went wrong"),
+        description: trans("please contact us"),
+      );
+      updateState(CheckoutConfirmationPage.path, data: {"reloadState": false});
+      Navigator.pop(context);
+      return;
+    }
   });
 }

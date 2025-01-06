@@ -2,43 +2,82 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_app/app/models/scalapay/configuration.dart';
+import 'package:flutter_app/app/models/scalapay/order.dart';
 import 'package:flutter_app/app/models/scalapay/order_response.dart';
+import 'package:flutter_app/utils/Dio/dio_logger_interceptor.dart';
 import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/response/order.dart';
 
 class ScalapayApi {
-  get _baseUrl => getEnv('SCALAPAY_LIVE_MODE') == true ? 'https://api.scalapay.com' : 'https://integration.api.scalapay.com';
-  final dio = Dio();
+  String get _baseUrl => getEnv('SCALAPAY_LIVE_MODE') == true ? 'https://api.scalapay.com' : 'https://integration.api.scalapay.com';
+  String get _apiToken => getEnv('SCALAPAY_LIVE_MODE') == true ? getEnv('SCALAPAY_API_TOKEN') : getEnv('SCALAPAY_API_TOKEN_DEV');
 
-  Future<ScalapayConfiguration> getConfiguration() async {
-    final response = await dio.get(
-      _baseUrl + '/v2/configurations',
-      options: Options(
-        headers: {
-          HttpHeaders.contentTypeHeader: "application/json",
-          HttpHeaders.authorizationHeader: "Bearer ${getEnv('SCALAPAY_API_TOKEN')}",
-        },
-      ),
-    );
+  final Dio dio = Dio();
 
-    final json = jsonDecode(response.data);
-    return ScalapayConfiguration.fromJson(json);
+  init() {
+    dio.interceptors.add(DioLoggerInterceptor(
+      request: true,
+      requestHeader: true,
+      requestBody: true,
+      responseBody: true,
+      responseHeader: true,
+      error: true,
+      compact: false,
+      maxWidth: 120,
+    ));
   }
 
-  Future<ScalapayOrderResponse> createOrder(Order order) async {
+  // Fetch payment configurations
+  Future<ScalapayConfiguration> getConfiguration() async {
+    final response = await dio.get(
+      '$_baseUrl/v2/configurations',
+      options: _defaultHeaders(),
+    );
+    return ScalapayConfiguration.fromJson(jsonDecode(response.data));
+  }
+
+  // Create an order
+  Future<ScalapayOrderResponse> createOrder(ScalapayOrder order) async {
     final response = await dio.post(
-      _baseUrl + '/v2/orders',
-      options: Options(
-        headers: {
-          HttpHeaders.contentTypeHeader: "application/json",
-          HttpHeaders.authorizationHeader: "Bearer ${getEnv('SCALAPAY_API_TOKEN')}",
-          HttpHeaders.acceptHeader: "application/json",
-        },
-      ),
+      '$_baseUrl/v2/orders',
+      options: _defaultHeaders(),
       data: jsonEncode(order.toJson()),
     );
+    return ScalapayOrderResponse.fromJson(response.data);
+  }
 
-    final json = jsonDecode(response.data);
-    return ScalapayOrderResponse.fromJson(json);
+  // Delay an order
+  Future<void> delayOrder(String token) async {
+    await dio.post(
+      '$_baseUrl/v2/payments/$token/delay',
+      options: _defaultHeaders(),
+    );
+  }
+
+  // Capture payment for an order
+  Future<void> capturePayment(String token) async {
+    await dio.post(
+      '$_baseUrl/v2/payments/capture',
+      options: _defaultHeaders(),
+      data: jsonEncode({"token": token}),
+    );
+  }
+
+  // Void an order
+  Future<void> voidOrder(String token) async {
+    await dio.post(
+      '$_baseUrl/v2/payments/$token/void',
+      options: _defaultHeaders(),
+    );
+  }
+
+  // Common headers method
+  Options _defaultHeaders() {
+    return Options(
+      headers: {
+        HttpHeaders.acceptHeader: "application/json",
+        HttpHeaders.contentTypeHeader: "application/json",
+        HttpHeaders.authorizationHeader: "Bearer ${_apiToken}",
+      },
+    );
   }
 }
