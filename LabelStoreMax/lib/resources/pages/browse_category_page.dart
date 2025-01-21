@@ -8,8 +8,15 @@
 //  distributed under the License is distributed on an "AS IS" BASIS,
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import 'package:facebook_app_events/facebook_app_events.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/app/models/filter_rules.dart';
+import 'package:flutter_app/resources/pages/browse_search_page.dart';
+import 'package:flutter_app/resources/widgets/buttons.dart';
+import 'package:flutter_app/resources/widgets/shared/location_banner.dart';
+import 'package:flutter_app/utils/language_utility.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart' as ws_product;
 import 'package:woosignal/models/response/product_category.dart';
@@ -20,6 +27,7 @@ import '/resources/pages/product_detail_page.dart';
 import '/resources/widgets/product_item_container_widget.dart';
 import '/resources/widgets/safearea_widget.dart';
 import '/resources/widgets/woosignal_ui.dart';
+import 'product_filters_page.dart';
 
 class BrowseCategoryPage extends NyStatefulWidget {
   static String path = "/browse-category";
@@ -29,13 +37,34 @@ class BrowseCategoryPage extends NyStatefulWidget {
 
 class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
   ProductCategory? productCategory;
-  double _minPrice = 0;
-  double _maxPrice = 1000;
   List<ws_product.Product> _freezeProducts = [];
+  List<ws_product.Product>? _filteredProducts = [];
+  FilterRules? _filterRules;
 
   _BrowseCategoryPageState();
 
   SortByType? _sortByType;
+  String? _sortTitle;
+
+  final TextEditingController _txtSearchController = TextEditingController();
+  bool isSearching = false;
+
+  _actionSearch() {
+    if (_txtSearchController.text.isEmpty) return;
+    if (_txtSearchController.text.length < 3) return;
+
+    try {
+      ///log
+      FirebaseAnalytics.instance.logSearch(searchTerm: _txtSearchController.text);
+      FacebookAppEvents().logViewContent(type: "search", id: _txtSearchController.text);
+    } catch (e) {
+      print("Error logging search: $e");
+    }
+
+    routeTo(BrowseSearchPage.path, data: _txtSearchController.text, onPop: (value) {
+      Navigator.pop(context);
+    });
+  }
 
   @override
   init() async {
@@ -51,43 +80,168 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(trans("Browse"), style: Theme.of(context).textTheme.titleMedium),
-            afterNotNull(productCategory, child: () => Text(parseHtmlString(productCategory!.name)), loading: CupertinoActivityIndicator())
+            afterNotNull(productCategory, child: () => Text(parseHtmlString(productCategory!.name)), loading: CupertinoActivityIndicator()),
           ],
         ),
         centerTitle: true,
-        actions: <Widget>[
+        actions: [
           IconButton(
-            icon: Icon(Icons.tune),
-            onPressed: _modalSheetTune,
-          )
+            icon: Icon(Icons.search),
+            onPressed: () {
+              setState(() {
+                isSearching = !isSearching;
+              });
+            },
+          ),
         ],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(LanguageUtility.instance.isOutsideItaly ? 72 : 32),
+          child: Center(
+            child: Column(
+              children: [
+                afterNotNull(
+                  productCategory,
+                  child: () => Padding(
+                      padding: const EdgeInsets.only(left: 24, right: 18),
+                      child: _freezeProducts.isNotEmpty
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () async {
+                                    routeTo(ProductFiltersPage.path, data: {"products": _freezeProducts, "filters": _filterRules}, onPop: (result) {
+                                      if (result != null) {
+                                        if (result["rules"] != null) {
+                                          _filterRules = result["rules"];
+                                          _filteredProducts = _applyFilters(result["rules"], _freezeProducts);
+                                          _applySort();
+                                        } else {
+                                          _filterRules = null;
+                                          _filteredProducts = null;
+                                          _sortByType = SortByType.clear;
+                                          _applySort();
+                                        }
+                                      }
+                                    });
+                                  },
+                                  child: _filterRules == null
+                                      ? Row(
+                                          children: [
+                                            Icon(Icons.filter_list_outlined, size: 18),
+                                            const SizedBox(width: 4),
+                                            Text("Filters".tr(), style: Theme.of(context).textTheme.bodyLarge),
+                                          ],
+                                        )
+                                      : Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.black,
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Center(
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    Icons.filter_list_outlined,
+                                                    size: 18,
+                                                    color: Colors.white,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                      "${_filterRules!.selectedAttributes.isNotEmpty ? _filterRules!.selectedAttributes.length : ''} ${"Filters".tr()}",
+                                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                            color: Colors.white,
+                                                          )),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                ),
+                                GestureDetector(
+                                  onTap: _modalSheetTune,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Icon(Icons.compare_arrows_outlined, size: 18),
+                                      const SizedBox(width: 4),
+                                      Text(_sortTitle ?? trans("Empty Sort"), style: Theme.of(context).textTheme.bodyMedium),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox.shrink()),
+                ),
+                LocationBanner(productCategory: true),
+              ],
+            ),
+          ),
+        ),
       ),
       body: SafeAreaWidget(
-          child: NyPullToRefresh.grid(
-        data: (page) async {
-          final products = await appWooSignal((api) => api.getProducts(
-                perPage: 25,
-                category: productCategory?.id.toString(),
-                page: page,
-                status: "publish",
-                stockStatus: "instock",
-              ));
-          _freezeProducts = products;
-          return products;
-        },
-        child: (context, product) {
-          return Container(
-            height: 320,
-            child: ProductItemContainer(
-              product: product,
-              onTap: () => _showProduct(product),
+          child: Column(
+        children: [
+          const SizedBox(height: 16),
+          if (isSearching) ...[
+            NyTextField.compact(
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                hintText: trans("Search hint"),
+                hintStyle: Theme.of(context).textTheme.bodySmall!.copyWith(color: Colors.black),
+              ),
+              backgroundColor: Colors.grey.shade200,
+              controller: _txtSearchController,
+              style: Theme.of(context).textTheme.bodySmall,
+              keyboardType: TextInputType.text,
+              autocorrect: false,
+              autoFocus: false,
+              textCapitalization: TextCapitalization.sentences,
+              onSubmitted: (_) => _actionSearch,
             ),
-          );
-        },
-        stateName: 'browse_category_pull_to_refresh',
-        sort: (products) {
-          return _sortProducts(products, by: _sortByType ?? SortByType.dateDesc);
-        },
+            const SizedBox(height: 16),
+            PrimaryButton(
+              title: trans("Search"),
+              action: _actionSearch,
+            ),
+            const SizedBox(height: 36),
+          ],
+          Expanded(
+            child: NyPullToRefresh.grid(
+              data: (page) async {
+                final products = await appWooSignal((api) => api.getProducts(
+                      perPage: 25,
+                      category: productCategory?.id.toString(),
+                      page: page,
+                      status: "publish",
+                      stockStatus: "instock",
+                    ));
+                setState(() {
+                  _freezeProducts = products;
+                });
+                return products;
+              },
+              child: (context, product) {
+                return Container(
+                  height: 320,
+                  child: ProductItemContainer(
+                    product: product,
+                    onTap: () => _showProduct(product),
+                  ),
+                );
+              },
+              stateName: 'browse_category_pull_to_refresh',
+              sort: (products) {
+                if (_filteredProducts != null && _filteredProducts!.isNotEmpty) {
+                  return _sortProducts(_filteredProducts!, by: _sortByType ?? SortByType.dateDesc);
+                }
+                return _sortProducts(products, by: _sortByType ?? SortByType.dateDesc);
+              },
+            ),
+          ),
+        ],
       )),
     );
   }
@@ -127,15 +281,6 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
           return date2.compareTo(date1);
         });
         break;
-      case SortByType.price:
-        final temp_product = products.where((product) {
-          double price = parseWcPrice(product.price);
-          return price >= _minPrice && price <= _maxPrice;
-        }).toList();
-
-        if (temp_product.isNotEmpty) {
-          products = temp_product;
-        }
       case SortByType.clear:
         products = _freezeProducts;
         break;
@@ -149,119 +294,13 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
       title: trans("Sort results"),
       bodyWidget: StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
         return Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ..._buildSortOptions(setState),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ///Clear
-                Padding(
-                  padding: const EdgeInsets.only(top: 24.0),
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      _minPrice = 0;
-                      _maxPrice = 1000;
-                      _sortByType = SortByType.clear;
-                      _applySort();
-                      pop();
-                    },
-                    icon: Icon(Icons.cancel, color: Colors.grey[700]),
-                    label: Text(
-                      trans("Clear filters"),
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.grey[700],
-                      backgroundColor: Colors.grey[200],
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                    ),
-                  ),
-                ),
-
-                ///Close
-                Padding(
-                  padding: const EdgeInsets.only(top: 24.0),
-                  child: ElevatedButton.icon(
-                    onPressed: pop,
-                    icon: Icon(Icons.cancel, color: Colors.grey[700]),
-                    label: Text(
-                      trans("Close"),
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.grey[700],
-                      backgroundColor: Colors.grey[200],
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
         );
       }),
-    );
-  }
-
-  Widget _buildPriceSlider(StateSetter setState) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          child: Text(
-            trans("Price"),
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        RangeSlider(
-          values: RangeValues(_minPrice, _maxPrice),
-          min: 0,
-          max: 2000,
-          divisions: 40,
-          labels: RangeLabels(
-            "\$${_minPrice.toStringAsFixed(0)}",
-            "\$${_maxPrice.toStringAsFixed(0)}",
-          ),
-          onChanged: (RangeValues values) {
-            setState(() {
-              _minPrice = values.start;
-              _maxPrice = values.end;
-            });
-          },
-          onChangeEnd: (RangeValues values) {
-            _sortByType = SortByType.price;
-            _applySort();
-          },
-          activeColor: Colors.blue,
-          inactiveColor: Colors.grey[300],
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text(
-            "${'Price Range'.tr()}: \$${_minPrice.toStringAsFixed(0)} - \$${_maxPrice.toStringAsFixed(0)}",
-            style: TextStyle(color: Colors.grey[600]),
-          ),
-        ),
-      ],
     );
   }
 
@@ -273,6 +312,7 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
         isSelected: _sortByType == SortByType.nameAZ,
         onTap: () {
           setState(() {
+            _sortTitle = trans("Sort: Name A-Z");
             _sortByType = SortByType.nameAZ;
           });
           _applySort();
@@ -281,10 +321,11 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
       _buildDivider(),
       _buildLinkButton(
         title: trans("Sort: Date New to Old"),
-        icon: Icons.history,
+        icon: Icons.update_outlined,
         isSelected: _sortByType == SortByType.dateDesc,
         onTap: () {
           setState(() {
+            _sortTitle = trans("Sort: Date New to Old");
             _sortByType = SortByType.dateDesc;
           });
           _applySort();
@@ -297,13 +338,12 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
         isSelected: _sortByType == SortByType.dateAsc,
         onTap: () {
           setState(() {
+            _sortTitle = trans("Sort: Date Old to New");
             _sortByType = SortByType.dateAsc;
           });
           _applySort();
         },
       ),
-      _buildDivider(),
-      _buildPriceSlider(setState),
     ];
   }
 
@@ -339,10 +379,29 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
 
   void _applySort() {
     StateAction.refreshPage('browse_category_pull_to_refresh', setState: () {});
+    setState(() {});
     //pop();
   }
 
   _showProduct(ws_product.Product product) {
     routeTo(ProductDetailPage.path, data: product);
+  }
+
+  List<ws_product.Product> _applyFilters(FilterRules filters, List<ws_product.Product> products) {
+    return products.where((product) {
+      // Filter by selected attributes
+      bool matchesAttributes = filters.selectedAttributes.entries.every((entry) {
+        final attribute = entry.key;
+        final selectedValues = entry.value;
+        return product.attributes.any(
+            (productAttribute) => productAttribute.id == attribute.id && productAttribute.options?.any((option) => selectedValues.contains(option)) == true);
+      });
+
+      // Filter by price range
+      final productPrice = double.tryParse(product.price ?? "0") ?? 0;
+      bool matchesPrice = productPrice >= filters.selectedPriceRange.minPrice && productPrice <= filters.selectedPriceRange.maxPrice;
+
+      return matchesAttributes && matchesPrice;
+    }).toList();
   }
 }

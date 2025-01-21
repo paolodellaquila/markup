@@ -12,8 +12,10 @@ import 'dart:io';
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/config/firebase-messaging/firebase_notification_handler.dart';
+import 'package:flutter_app/utils/language_utility.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
@@ -36,49 +38,66 @@ class _HomePageState extends NyState<HomePage> {
 
   final WooSignalApp? _wooSignalApp = AppHelper.instance.appConfig;
 
-  @override
-  init() async {
+  _initDependencies() async {
+    await LanguageUtility.instance.init(context, setLanguage: true);
+
     await _enableFcmNotifications();
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final bool? logAutoEnable = prefs.getBool('ADV_META_3_logAutoEnable');
 
     if (Platform.isIOS) {
       ///TRACKING ADV iOS
-      await _trackingAdv_iOS();
+      await _trackingAdv_iOS(logAutoEnable, prefs);
     } else {
       ///TRACKING ADV ANDROID
-      await _trackingAdv_Android();
+      await _trackingAdv_Android(logAutoEnable, prefs);
     }
   }
 
-  Future<void> _trackingAdv_iOS() async {
+  @override
+  init() {
+    _initDependencies();
+  }
+
+  Future<void> _trackingAdv_iOS(bool? logAutoEnable, SharedPreferences prefs) async {
     // If the system can show an authorization request dialog
-    if (await AppTrackingTransparency.trackingAuthorizationStatus == TrackingStatus.notDetermined) {
+    if (await AppTrackingTransparency.trackingAuthorizationStatus == TrackingStatus.notDetermined || logAutoEnable == null) {
       // Show a custom explainer dialog before the system dialog
       await _showCustomTrackingDialog(context);
       // Wait for dialog popping animation
       await Future.delayed(const Duration(milliseconds: 200));
       // Request system's tracking authorization dialog
+      AppTrackingTransparency.requestTrackingAuthorization();
       await AppTrackingTransparency.requestTrackingAuthorization();
     }
 
     final result = await AppTrackingTransparency.trackingAuthorizationStatus == TrackingStatus.authorized;
-    await _checkADVAndEnabledIt(advTracking: result, logApp: result);
+    await _checkADVAndEnabledIt(advTracking: result, logApp: result, prefs: prefs);
   }
 
-  Future<void> _trackingAdv_Android() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final bool? logAutoEnable = prefs.getBool('ADV_META_logAutoEnable');
+  Future<void> _trackingAdv_Android(bool? logAutoEnable, SharedPreferences prefs) async {
     if (logAutoEnable == null) {
       final result = await _showCustomTrackingDialog(context);
       if (result != null) {
-        await _checkADVAndEnabledIt(advTracking: result, logApp: result);
-        await prefs.setBool('ADV_META_logAutoEnable', result);
+        await _checkADVAndEnabledIt(advTracking: result, logApp: result, prefs: prefs);
       }
     }
   }
 
-  _checkADVAndEnabledIt({required bool advTracking, required bool logApp}) async {
+  _checkADVAndEnabledIt({required bool advTracking, required bool logApp, required SharedPreferences prefs}) async {
     FacebookAppEvents().setAdvertiserTracking(enabled: advTracking);
     FacebookAppEvents().setAutoLogAppEventsEnabled(logApp);
+    FirebaseAnalytics.instance.setConsent(
+      adStorageConsentGranted: advTracking,
+      analyticsStorageConsentGranted: logApp,
+      adPersonalizationSignalsConsentGranted: advTracking,
+      adUserDataConsentGranted: advTracking,
+      functionalityStorageConsentGranted: advTracking,
+      personalizationStorageConsentGranted: advTracking,
+      securityStorageConsentGranted: advTracking,
+    );
+    await prefs.setBool('ADV_META_3_logAutoEnable', advTracking);
   }
 
   Future<bool?> _showCustomTrackingDialog(BuildContext context) async => showDialog<bool>(
@@ -88,27 +107,17 @@ class _HomePageState extends NyState<HomePage> {
           onPopInvoked: (popResult) {
             return;
           },
-          child: AlertDialog(
-            title: Text('Caro utente'.tr()),
-            content: Text('cookie'.tr()),
-            actions: Platform.isAndroid
-                ? [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: Text('Rifiuto'.tr()),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: Text('Accept'.tr()),
-                    ),
-                  ]
-                : [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: Text('Continue'.tr()),
-                    ),
-                  ],
-          ),
+          child:
+              AlertDialog(title: Text('Normativa Trasparenza Pubblicitaria'.tr() + " V3"), content: Text("${'Caro utente'.tr()}\n${'cookie'.tr()}"), actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text('Rifiuto'.tr()),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text('Accept'.tr()),
+            ),
+          ]),
         ),
       );
 

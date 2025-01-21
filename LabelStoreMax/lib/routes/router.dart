@@ -1,4 +1,5 @@
-import 'package:flutter_app/resources/pages/splash_page.dart';
+import 'package:flutter_app/resources/pages/category/custom_sub_category_page.dart';
+import 'package:flutter_app/resources/pages/product_filters_page.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
 import '/resources/pages/account_delete_page.dart';
@@ -32,9 +33,7 @@ import '/resources/pages/wishlist_page_widget.dart';
 |-------------------------------------------------------------------------- */
 
 appRouter() => nyRoutes((router) {
-      router.route(SplashScreen.path, (context) => SplashScreen(), initialRoute: true);
-
-      router.route(HomePage.path, (context) => HomePage());
+      router.route(HomePage.path, (context) => HomePage(), initialRoute: true);
 
       router.route(CartPage.path, (context) => CartPage());
 
@@ -74,7 +73,7 @@ appRouter() => nyRoutes((router) {
 
       // Account Section
 
-      router.route(AccountLoginPage.path, (context) => AccountLoginPage(), transition: PageTransitionType.bottomToTop);
+      router.route(AccountLoginPage.path, (context) => AccountLoginPage(), transition: PageTransitionType.fade);
 
       router.route(AccountRegistrationPage.path, (context) => AccountRegistrationPage());
 
@@ -87,4 +86,8 @@ appRouter() => nyRoutes((router) {
       router.route(AccountShippingDetailsPage.path, (context) => AccountShippingDetailsPage());
 
       router.route(NotificationsPage.path, (context) => NotificationsPage());
+
+      router.route(BrowseCustomCategoryPage.path, (context) => BrowseCustomCategoryPage(), transition: PageTransitionType.bottomToTop);
+
+      router.route(ProductFiltersPage.path, (context) => ProductFiltersPage(), transition: PageTransitionType.bottomToTop);
     });

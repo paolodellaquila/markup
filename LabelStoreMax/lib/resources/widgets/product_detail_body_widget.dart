@@ -9,8 +9,10 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/app/controllers/product_detail_controller.dart';
 import 'package:flutter_app/resources/widgets/product_detail_description_widget.dart';
 import 'package:flutter_app/resources/widgets/shared/alert_box.dart';
+import 'package:flutter_app/resources/widgets/shared/location_banner.dart';
 import 'package:flutter_app/utils/product_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
@@ -25,17 +27,18 @@ import '/resources/widgets/product_detail_reviews_widget.dart';
 import '/resources/widgets/product_detail_upsell_widget.dart';
 
 class ProductDetailBodyWidget extends StatefulWidget {
-  const ProductDetailBodyWidget({
-    super.key,
-    required this.product,
-    required this.productVariations,
-    required this.wooSignalApp,
-    required this.onSizeColorSelected,
-    this.selectedProductVariation,
-    this.productOnSalePrice,
-    this.productOriginalPrice,
-  });
+  const ProductDetailBodyWidget(
+      {super.key,
+      required this.controller,
+      required this.product,
+      required this.productVariations,
+      required this.wooSignalApp,
+      required this.onSizeColorSelected,
+      this.selectedProductVariation,
+      this.productOnSalePrice,
+      this.productOriginalPrice});
 
+  final ProductDetailController controller;
   final Product? product;
   final List<ProductVariation> productVariations;
   final ProductVariation? selectedProductVariation;
@@ -64,7 +67,14 @@ class _ProductDetailBodyWidgetState extends State<ProductDetailBodyWidget> {
             onTapImage: (i) => _viewProductImages(context, i)),
         // </Image Swiper>
 
+        Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: LocationBanner(productCategory: true),
+        ),
+
         ProductDetailHeaderWidget(
+          controller: widget.controller,
+          wooSignalApp: widget.wooSignalApp,
           product: widget.product,
           productOnSalePrice: widget.productOnSalePrice,
           selectedProductVariation: widget.selectedProductVariation,

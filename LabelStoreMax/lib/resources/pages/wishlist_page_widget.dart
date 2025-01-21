@@ -89,134 +89,123 @@ class _WishListPageWidgetState extends NyState<WishListPageWidget> {
                       return InkWell(
                         onTap: () => routeTo(ProductDetailPage.path, data: product),
                         child: Card(
-                          elevation: 8,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: Colors.white,
-                            ),
-                            child: ListView(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              children: [
-                                Stack(
-                                  children: [
-                                    Container(
-                                      height: 220,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(3.0),
-                                        child: Stack(
-                                          children: [
-                                            Container(
+                          child: ListView(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            children: [
+                              Stack(
+                                children: [
+                                  Container(
+                                    height: 220,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(3.0),
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            height: double.infinity,
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
                                               color: Colors.grey[100],
-                                              height: double.infinity,
-                                              width: double.infinity,
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(8),
+                                                topRight: Radius.circular(8),
+                                              ),
                                             ),
-                                            CachedImageWidget(
+                                          ),
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(8),
+                                              topRight: Radius.circular(8),
+                                            ),
+                                            child: CachedImageWidget(
                                               image: (product.images.isNotEmpty ? product.images.first.src : getEnv("PRODUCT_PLACEHOLDER_IMAGE")),
                                               fit: BoxFit.cover,
                                               height: 220,
                                               width: double.maxFinite,
                                             ),
-                                            if (isProductNew(product))
-                                              Container(
-                                                padding: EdgeInsets.all(4),
-                                                child: Text(
-                                                  "New",
-                                                  style: TextStyle(color: Colors.white),
-                                                ),
-                                                decoration: BoxDecoration(color: Colors.black),
+                                          ),
+                                          if (isProductNew(product))
+                                            Container(
+                                              padding: EdgeInsets.all(4),
+                                              child: Text(
+                                                "New",
+                                                style: TextStyle(color: Colors.white),
                                               ),
-                                            if (product!.onSale! && product!.type != "variable")
-                                              Positioned(
-                                                bottom: 0,
-                                                left: 0,
-                                                right: 0,
-                                                child: Container(
-                                                  padding: EdgeInsets.all(3),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white70,
-                                                  ),
-                                                  child: RichText(
-                                                    textAlign: TextAlign.center,
-                                                    text: TextSpan(
-                                                      text: '',
-                                                      style: Theme.of(context).textTheme.bodyLarge,
-                                                      children: <TextSpan>[
-                                                        TextSpan(
-                                                          text:
-                                                              "${workoutSaleDiscount(salePrice: product.salePrice, priceBefore: product.regularPrice)}% ${trans("off")}",
-                                                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                                                                color: Colors.black,
-                                                                fontSize: 13,
-                                                              ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                              decoration: BoxDecoration(color: Colors.black),
+                                            ),
+                                          if (product!.onSale! && product!.type != "variable")
+                                            Positioned(
+                                              bottom: 0,
+                                              left: 0,
+                                              right: 0,
+                                              child: Container(
+                                                padding: EdgeInsets.all(3),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white70,
+                                                ),
+                                                child: RichText(
+                                                  textAlign: TextAlign.center,
+                                                  text: TextSpan(
+                                                    text: '',
+                                                    style: Theme.of(context).textTheme.bodyLarge,
+                                                    children: <TextSpan>[
+                                                      TextSpan(
+                                                        text:
+                                                            "${workoutSaleDiscount(salePrice: product.salePrice, priceBefore: product.regularPrice)}% ${trans("off")}",
+                                                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                                                              color: Colors.black,
+                                                              fontSize: 13,
+                                                            ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
-                                          ],
-                                        ),
+                                            ),
+                                        ],
                                       ),
                                     ),
-                                    Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        child: IconButton(
-                                          icon: Icon(
-                                            Icons.favorite,
-                                            color: Colors.red,
-                                          ),
-                                          onPressed: () => _removeFromWishlist(product),
+                                  ),
+                                  Positioned(
+                                    right: 0,
+                                    top: 0,
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.favorite,
+                                          color: Colors.red,
                                         ),
+                                        onPressed: () => _removeFromWishlist(product),
                                       ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      product.name!,
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      formatStringCurrency(total: product.price),
+                                      style: context.textTheme().bodyLarge?.copyWith(
+                                            color: Colors.black,
+                                            fontSize: 18,
+                                          ),
                                     )
                                   ],
                                 ),
-                                Container(
-                                  padding: EdgeInsets.all(8),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        product.name!,
-                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              formatStringCurrency(total: product.price),
-                                              style: context.textTheme().bodyLarge,
-                                            ),
-                                          ),
-                                          if (product.permalink != null) ...[
-                                            Container(
-                                              alignment: Alignment.center,
-                                              child: IconButton(
-                                                icon: Icon(
-                                                  Icons.share,
-                                                  color: Colors.blue,
-                                                  size: 20,
-                                                ),
-                                                onPressed: () => _shareProduct(product),
-                                              ),
-                                            )
-                                          ],
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       );

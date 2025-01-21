@@ -59,6 +59,7 @@ class _CouponPageState extends NyState<CouponPage> {
   }
 
   final _formKey = GlobalKey<FormState>();
+  var showLimitUsageAlert = false;
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +201,24 @@ class _CouponPageState extends NyState<CouponPage> {
       if (limitPerUser != null && coupon.usedBy!.map((e) => e.toLowerCase()).where((usedBy) => usedBy == emailAddress!.toLowerCase()).length >= limitPerUser) {
         _showAlert(message: "${trans('You cannot redeem this coupon')}.", style: ToastNotificationStyleType.WARNING);
         return;
+      }
+
+      if (limitPerUser != null) {
+        await showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: Text("Success".tr()),
+            content: Text("${'Coupon Success'.tr()}\n\n${'Attention'.tr()}!\n${'Coupon Warning'.tr()}"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  context.pop();
+                },
+                child: Text("Ok".tr()),
+              ),
+            ],
+          ),
+        );
       }
 
       _successAddCoupon(coupon);

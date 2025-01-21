@@ -269,7 +269,7 @@
   "Save Note": "Enregistrer la note",
   "Enter order note": "Saisir le bon de commande",
   "Order note must be less than 100 characters": "Le bon de commande doit comporter moins de 100 caractères",
-  "Select your language": "choisissez votre langue",
+  "Select your language": "Choisissez votre langue",
   "Attention": "Attention",
   "incl. tax": "TTC",
   "excl. tax": "HT",
@@ -303,6 +303,22 @@
   "cookie": "Nous tenons à votre vie privée et à votre sécurité.\n\nPar conséquent, nous vous demandons d'utiliser vos données pour personnaliser les annonces et les contenus.\n\nVous pouvez modifier ce choix à tout moment depuis les paramètres de l'application.\n\nNos partenaires collecteront des données et utiliseront un identifiant unique sur votre appareil pour vous montrer des annonces",
   "Rifiuto": "Refuser",
   "Discover More": "Découvrir plus",
-  "Are you sure you want to logout?": "Êtes-vous sûr de vouloir vous déconnecter ?"
+  "Are you sure you want to logout?": "Êtes-vous sûr de vouloir vous déconnecter ?",
+  "Paga in 3 rate senza interessi": "Payez en 3 fois sans frais",
+  "Do not show again": "Ne plus afficher",
+  "Attiva Notifiche": "Activer les notifications",
+  "Notifiche Disabilitate": "Notifications désactivées",
+  "NDM": "Vous ne recevrez pas de mises à jour importantes, telles que des promotions exclusives ou des notifications concernant vos commandes.\n\nActivez les notifications dès maintenant pour ne manquer aucune actualité !",
+  "Notifiche Push": "Notifications Push",
+  "No categories available": "Aucune catégorie disponible",
+  "Filters": "Filtres",
+  "Empty Sort": "Pas de tri",
+  "Coupon Warning": "Le coupon ne peut être utilisé qu'une seule fois",
+  "Coupon Success": "Coupon appliqué avec succès",
+  "Dear User, you are outside Italy.": "Cher utilisateur, vous êtes en dehors de l'Italie.",
+  "Shopping is available only on our website.": "Les achats sont disponibles uniquement sur notre site Web.",
+  "Normativa Trasparenza Pubblicitaria": "Publicité transparente",
+  "Price may vary": "Le Prix peut varier",
+  "View on Website": "Voir sur le Site"
 
 }

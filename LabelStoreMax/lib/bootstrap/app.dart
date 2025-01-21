@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:nylo_framework/nylo_framework.dart';
+import 'package:pull_to_refresh_flutter3/pull_to_refresh_flutter3.dart';
 
 // ignore: must_be_immutable
 class AppBuild extends StatelessWidget {
@@ -94,9 +95,16 @@ class AppBuild extends StatelessWidget {
                   localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
                     return locale;
                   },
-                  localizationsDelegates: NyLocalization.instance.delegates,
+                  localizationsDelegates: NyLocalization.instance.delegates.toList() + [RefreshLocalizations.delegate],
                   locale: NyLocalization.instance.locale,
-                  supportedLocales: supportedLocales,
+                  supportedLocales: supportedLocales.toList() + [
+                    const Locale('en', 'US'),
+                    const Locale('it', 'IT'),
+                    const Locale('zh', 'ZH'),
+                    const Locale('fr', 'FR'),
+                    const Locale('es', 'ES'),
+                    const Locale('de', 'DE'),
+                  ],
                 ),
               ),
             ),

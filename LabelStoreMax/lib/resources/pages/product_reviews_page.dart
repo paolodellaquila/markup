@@ -9,19 +9,19 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
-import '/bootstrap/helpers.dart';
-import '/resources/widgets/no_results_for_products_widget.dart';
-import '/resources/widgets/product_review_item_container_widget.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
 import 'package:woosignal/models/response/product_review.dart';
 
+import '/bootstrap/helpers.dart';
+import '/resources/widgets/no_results_for_products_widget.dart';
+import '/resources/widgets/product_review_item_container_widget.dart';
+
 class ProductReviewsPage extends NyStatefulWidget {
   static String path = "/product-reviews";
 
-  ProductReviewsPage({Key? key})
-      : super(path, key: key, child: _ProductReviewsPageState());
+  ProductReviewsPage({Key? key}) : super(path, key: key, child: _ProductReviewsPageState());
 }
 
 class _ProductReviewsPageState extends NyState<ProductReviewsPage> {
@@ -46,8 +46,7 @@ class _ProductReviewsPageState extends NyState<ProductReviewsPage> {
               height: mediaQuery.size.height / 5,
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               margin: EdgeInsets.symmetric(vertical: 16),
-              decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: Colors.black12))),
+              decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black12))),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -107,11 +106,8 @@ class _ProductReviewsPageState extends NyState<ProductReviewsPage> {
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   margin: EdgeInsets.only(bottom: 8),
-                  decoration: BoxDecoration(
-                      border:
-                          Border(bottom: BorderSide(color: Colors.black12))),
-                  child:
-                      ProductReviewItemContainerWidget(productReview: review),
+                  decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.black12))),
+                  child: ProductReviewItemContainerWidget(productReview: review),
                 );
               },
               empty: NoResultsForProductsWidget(),

@@ -10,17 +10,18 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/config/firebase-messaging/firebase_notification_handler.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/response/order.dart';
+
 import '/bootstrap/helpers.dart';
 import '/resources/widgets/safearea_widget.dart';
 import '/resources/widgets/woosignal_ui.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/response/order.dart';
 
 class AccountOrderDetailPage extends NyStatefulWidget {
   static String path = "/account-order-detail";
 
-  AccountOrderDetailPage({Key? key})
-      : super(path, key: key, child: _AccountOrderDetailPageState());
+  AccountOrderDetailPage({Key? key}) : super(path, key: key, child: _AccountOrderDetailPageState());
 }
 
 class _AccountOrderDetailPageState extends NyState<AccountOrderDetailPage> {
@@ -40,14 +41,14 @@ class _AccountOrderDetailPageState extends NyState<AccountOrderDetailPage> {
         leading: Container(
           child: IconButton(
             icon: Icon(Icons.arrow_back_ios),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              FirebaseNotifications().checkPermission();
+              Navigator.pop(context);
+            },
           ),
           margin: EdgeInsets.only(left: 0),
         ),
-        title: afterNotNull(_orderId,
-            child: () =>
-                Text("${trans("Order").capitalize()} #${_orderId.toString()}"),
-            loading: CupertinoActivityIndicator()),
+        title: afterNotNull(_orderId, child: () => Text("${trans("Order").capitalize()} #${_orderId.toString()}"), loading: CupertinoActivityIndicator()),
         centerTitle: true,
       ),
       resizeToAvoidBottomInset: false,
@@ -88,8 +89,7 @@ class _AccountOrderDetailPageState extends NyState<AccountOrderDetailPage> {
                       ),
                       child: Text(
                         (_order?.status ?? "").capitalize(),
-                        style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                       ),
                     )
                   ],
@@ -108,20 +108,14 @@ class _AccountOrderDetailPageState extends NyState<AccountOrderDetailPage> {
                     Flexible(
                       child: Text(
                         [
-                          [
-                            _order?.shipping?.firstName,
-                            _order?.shipping?.lastName
-                          ].where((t) => t != null).toList().join(" "),
+                          [_order?.shipping?.firstName, _order?.shipping?.lastName].where((t) => t != null).toList().join(" "),
                           _order?.shipping?.address1,
                           _order?.shipping?.address2,
                           _order?.shipping?.city,
                           _order?.shipping?.state,
                           _order?.shipping?.postcode,
                           _order?.shipping?.country,
-                        ]
-                            .where((t) => (t != "" && t != null))
-                            .toList()
-                            .join("\n"),
+                        ].where((t) => (t != "" && t != null)).toList().join("\n"),
                         textAlign: TextAlign.right,
                       ),
                     ),
@@ -129,12 +123,8 @@ class _AccountOrderDetailPageState extends NyState<AccountOrderDetailPage> {
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  boxShadow: (Theme.of(context).brightness == Brightness.light)
-                      ? wsBoxShadow()
-                      : null,
-                  color: (Theme.of(context).brightness == Brightness.light)
-                      ? Colors.white
-                      : Color(0xFF2C2C2C),
+                  boxShadow: (Theme.of(context).brightness == Brightness.light) ? wsBoxShadow() : null,
+                  color: (Theme.of(context).brightness == Brightness.light) ? Colors.white : Color(0xFF2C2C2C),
                 ),
               ),
               Expanded(
@@ -143,13 +133,11 @@ class _AccountOrderDetailPageState extends NyState<AccountOrderDetailPage> {
                     LineItems lineItem = _order!.lineItems![i];
                     return Card(
                       child: ListTile(
-                        contentPadding: EdgeInsets.only(
-                            top: 5, bottom: 5, left: 8, right: 6),
+                        contentPadding: EdgeInsets.only(top: 5, bottom: 5, left: 8, right: 6),
                         title: Container(
                           decoration: BoxDecoration(
                             border: Border(
-                              bottom: BorderSide(
-                                  color: Color(0xFFFCFCFC), width: 1),
+                              bottom: BorderSide(color: Color(0xFFFCFCFC), width: 1),
                             ),
                           ),
                           child: Row(
@@ -167,8 +155,7 @@ class _AccountOrderDetailPageState extends NyState<AccountOrderDetailPage> {
                                 width: 70,
                                 alignment: Alignment.topRight,
                                 child: Text(
-                                  formatStringCurrency(total: lineItem.total)
-                                      .capitalize(),
+                                  formatStringCurrency(total: lineItem.total).capitalize(),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -178,9 +165,7 @@ class _AccountOrderDetailPageState extends NyState<AccountOrderDetailPage> {
                           ),
                         ),
                         subtitle: Container(
-                          decoration: BoxDecoration(
-                              border: Border(
-                                  top: BorderSide(color: Colors.grey[100]!))),
+                          decoration: BoxDecoration(border: Border(top: BorderSide(color: Colors.grey[100]!))),
                           padding: const EdgeInsets.only(top: 10),
                           margin: EdgeInsets.only(top: 4),
                           child: Row(
@@ -195,18 +180,14 @@ class _AccountOrderDetailPageState extends NyState<AccountOrderDetailPage> {
                                     formatStringCurrency(
                                       total: lineItem.price,
                                     ),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
+                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                           fontWeight: FontWeight.w600,
                                         ),
                                     textAlign: TextAlign.left,
                                   ),
                                   Text(
                                     "x ${lineItem.quantity.toString()}",
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
+                                    style: Theme.of(context).textTheme.bodyLarge,
                                     textAlign: TextAlign.left,
                                   ),
                                 ],

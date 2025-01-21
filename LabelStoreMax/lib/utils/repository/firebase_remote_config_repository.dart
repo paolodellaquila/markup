@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_app/resources/pages/splash_page.dart';
+import 'package:flutter_app/resources/pages/home_page.dart';
 import 'package:flutter_app/utils/remote_config_manager.dart';
 import 'package:flutter_app/utils/repository/remote_config_repository.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -31,7 +31,7 @@ class FirebaseRemoteConfigRepository implements RemoteConfigRepository {
       if (event.updatedKeys.contains(RemoteConfigManager.MIN_APP_VERSION_KEY) || event.updatedKeys.contains(RemoteConfigManager.MIN_BUILD_NUMBER_KEY)) {
         await _remoteConfig.activate();
 
-        routeTo(SplashScreen.path, navigationType: NavigationType.pushReplace, pageTransition: PageTransitionType.fade);
+        routeTo(HomePage.path, navigationType: NavigationType.pushReplace, pageTransition: PageTransitionType.fade);
       }
     });
 
