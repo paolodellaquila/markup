@@ -269,7 +269,7 @@
   "Save Note": "Guardar nota",
   "Enter order note": "Introducir nota de pedido",
   "Order note must be less than 100 characters": "La nota del pedido debe tener menos de 100 caracteres.",
-  "Select your language": "elige tu idioma",
+  "Select your language": "Elige tu idioma",
   "Attention": "Atención",
   "incl. tax": "incl. impuestos",
   "excl. tax": "excl. impuestos",
@@ -303,6 +303,22 @@
   "cookie": "Nos importa tu privacidad y seguridad.\n\nPor ello, te pedimos que utilices tus datos para personalizar los anuncios y el contenido.\n\nPuedes cambiar esta opción en cualquier momento desde la configuración de la aplicación.\n\nNuestros socios recopilarán datos y utilizarán un identificador único en tu dispositivo para mostrarte anuncios",
   "Rifiuto": "Rechazar",
   "Discover More": "Descubre más",
-  "Are you sure you want to logout?": "¿Estás seguro de que quieres cerrar la sesión?"
+  "Are you sure you want to logout?": "¿Estás seguro de que quieres cerrar la sesión?",
+  "Paga in 3 rate senza interessi": "Paga en 3 cuotas sin intereses",
+  "Do not show again": "No mostrar de nuevo",
+  "Attiva Notifiche": "Activar notificaciones",
+  "Notifiche Disabilitate": "Notificaciones desactivadas",
+  "NDM": "No recibirás actualizaciones importantes, como promociones exclusivas o notificaciones sobre tus pedidos.\n\n¡Activa las notificaciones ahora para no perderte ninguna novedad!",
+  "Notifiche Push": "Notificaciones Push",
+  "No categories available": "No hay categorías disponibles",
+  "Filters": "Filtros",
+  "Empty Sort": "Ordenar",
+  "Coupon Warning": "El cupón solo se puede usar 1 vez",
+  "Coupon Success": "Cupón aplicado con éxito",
+  "Dear User, you are outside Italy.": "Estimado usuario, estás fuera de Italia.",
+  "Shopping is available only on our website.": "Las compras solo están disponibles en nuestro sitio web.",
+  "Normativa Trasparenza Pubblicitaria": "Normativa de transparencia publicitaria",
+  "Price may vary": "El Precio puede variar",
+  "View on Website": "Ver en el Sitio Web"
 
 }

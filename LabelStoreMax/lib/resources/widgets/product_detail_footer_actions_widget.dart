@@ -9,6 +9,7 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/utils/language_utility.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
 
@@ -98,11 +99,11 @@ class ProductDetailFooterActionsWidget extends StatelessWidget {
                   ),
                   alignment: Alignment.centerLeft,
                 )),*/
-                product!.type == "external"
+                product!.type == "external" || LanguageUtility.instance.isOutsideItaly
                     ? Flexible(
                         child: WooSignalButton(
                           key: key,
-                          title: trans("Buy Product"),
+                          title: trans("View on Website"),
                           action: onViewExternalProduct,
                           textStyle: Theme.of(context).textTheme.labelLarge!.copyWith(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                           bgColor: disabled ? Colors.grey : Colors.black,

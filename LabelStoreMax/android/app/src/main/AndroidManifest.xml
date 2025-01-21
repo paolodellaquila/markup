@@ -71,5 +71,10 @@
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="544740301751998"/>
         <meta-data android:name="com.facebook.sdk.ClientToken" android:value="8bf9a7847b670c3f6a20a96cfd547cd6"/>
 
+        <meta-data android:name="google_analytics_default_allow_analytics_storage" android:value="true" />
+        <meta-data android:name="google_analytics_default_allow_ad_storage" android:value="true" />
+        <meta-data android:name="google_analytics_default_allow_ad_user_data" android:value="true" />
+        <meta-data android:name="google_analytics_default_allow_ad_personalization_signals" android:value="true" />
+
     </application>
 </manifest>

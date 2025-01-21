@@ -30,8 +30,8 @@ class Cart {
 
   Future<List<CartLineItem>> getCart() async {
     List<CartLineItem> cartLineItems = [];
-    String? currentCartArrJSON = await (NyStorage.read(SharedKey.cart));
 
+    String? currentCartArrJSON = await (NyStorage.read(SharedKey.cart));
     if (currentCartArrJSON != null) {
       cartLineItems = (jsonDecode(currentCartArrJSON) as List<dynamic>).map((i) => CartLineItem.fromJson(i)).toList();
     }

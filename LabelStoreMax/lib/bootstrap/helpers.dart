@@ -74,14 +74,17 @@ Future<List<PaymentType?>> getPaymentTypes() async {
     }
   }
 
-  if (!appPaymentGateways.contains('Stripe') && AppHelper.instance.appConfig!.stripeEnabled == true) {
+  if (!appPaymentGateways.contains('Stripe') && AppHelper.instance.appConfig!.stripeEnabled == true && getEnv("STRIPE_ENABLED") == true) {
     paymentTypes.add(paymentTypeList.firstWhereOrNull((element) => element.name == "Stripe"));
   }
   if (!appPaymentGateways.contains('PayPal') && AppHelper.instance.appConfig!.paypalEnabled == true) {
     paymentTypes.add(paymentTypeList.firstWhereOrNull((element) => element.name == "PayPal"));
   }
-  if (!appPaymentGateways.contains('CashOnDelivery') && AppHelper.instance.appConfig!.codEnabled == true) {
-    paymentTypes.add(paymentTypeList.firstWhereOrNull((element) => element.name == "CashOnDelivery"));
+  // if (!appPaymentGateways.contains('CashOnDelivery') && AppHelper.instance.appConfig!.codEnabled == true) {
+  //   paymentTypes.add(paymentTypeList.firstWhereOrNull((element) => element.name == "CashOnDelivery"));
+  // }
+  if (!appPaymentGateways.contains('Scalapay') && getEnv("SCALAPAY_ENABLED") == true) {
+    paymentTypes.add(paymentTypeList.firstWhereOrNull((element) => element.name == "Scalapay"));
   }
 
   return paymentTypes.where((v) => v != null).toList();

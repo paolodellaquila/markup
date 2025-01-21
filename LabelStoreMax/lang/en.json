@@ -286,7 +286,7 @@
   "Riceverai i dettagli del tuo ordine via email": "You will receive the details of your order via email",
   "Product not available": "Product not available",
   "With a minium of": "With a minium of",
-  "Something went wrong during order creation process": "Something went wrong during order creation process",
+  "Something went wrong during order creation process": "Something went wrong during order creation processn\n\nCheck that you have not used a Coupon valid only 1 time.",
   "Assistance": "Assistance",
   "Apply Another Coupon": "Apply Another Coupon",
   "An error occurred. Please retry." : "An error occurred. Please retry.",
@@ -304,6 +304,22 @@
   "cookie": "We care about your privacy and security.\n\nTherefore, we ask you to use your data to personalize ads and content.\n\nYou can change this choice at any time from the app settings.\n\nOur partners will collect data and use a unique identifier on your device to show you ads",
   "Rifiuto": "Refuse",
   "Discover More": "Discover More",
-  "Are you sure you want to logout?": "Are you sure you want to logout?"
+  "Are you sure you want to logout?": "Are you sure you want to logout?",
+  "Paga in 3 rate senza interessi": "Pay in 3 installments without interest",
+  "Do not show again": "Do not show again",
+  "Attiva Notifiche": "Activate Notifications",
+  "Notifiche Disabilitate": "Notifications Disabled",
+  "NDM": "You will not receive important updates, such as exclusive promotions or notifications about your orders.\n\nTurn on notifications now so you don't miss any news!",
+  "Notifiche Push": "Push Notifications",
+  "No categories available": "No categories available",
+  "Filters": "Filters",
+  "Empty Sort": "Tap to Sort",
+  "Coupon Warning": "The coupon can be used only 1 time",
+  "Coupon Success": "Coupon successfully applied",
+  "Dear User, you are outside Italy.": "Dear User, you are outside Italy.",
+  "Shopping is available only on our website.": "Shopping is available only on our website.",
+  "Normativa Trasparenza Pubblicitaria": "Advertising Transparency Regulations",
+  "Price may vary": "Price may vary",
+  "View on Website": "View on Website"
 
 }

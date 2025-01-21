@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/config/firebase-messaging/firebase_notification_handler.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:wp_json_api/models/wp_user.dart';
 import 'package:wp_json_api/wp_json_api.dart';
@@ -19,6 +20,7 @@ class _NotificationsPageState extends NyState<NotificationsPage> {
   @override
   boot() async {
     _wpUser = (await WPJsonAPI.wpUser());
+    FirebaseNotifications().checkPermission();
   }
 
   @override

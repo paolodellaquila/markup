@@ -9,17 +9,16 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:nylo_framework/nylo_framework.dart';
+import 'package:woosignal/models/response/product.dart';
+import 'package:woosignal/models/response/product_variation.dart' as ws_product_variation;
+
 import '/app/models/cart.dart';
 import '/app/models/cart_line_item.dart';
 import '/bootstrap/enums/wishlist_action_enums.dart';
 import '/bootstrap/helpers.dart';
 import '/resources/widgets/cart_quantity_widget.dart';
 import '/resources/widgets/product_quantity_widget.dart';
-import 'package:nylo_framework/nylo_framework.dart';
-import 'package:woosignal/models/response/product.dart';
-import 'package:woosignal/models/response/product_variation.dart'
-    as ws_product_variation;
-
 import 'controller.dart';
 
 class ProductDetailController extends Controller {
@@ -33,13 +32,10 @@ class ProductDetailController extends Controller {
   }
 
   viewExternalProduct() {
-    if (product!.externalUrl != null && product!.externalUrl!.isNotEmpty) {
-      openBrowserTab(url: product!.externalUrl!);
-    }
+    if (product!.permalink != null) openBrowserTab(url: product!.permalink!);
   }
 
-  itemAddToCart(
-      {required CartLineItem cartLineItem, Function? onSuccess}) async {
+  itemAddToCart({required CartLineItem cartLineItem, Function? onSuccess}) async {
     await Cart.getInstance.addToCart(cartLineItem: cartLineItem);
     showStatusAlert(
       context,
@@ -59,8 +55,7 @@ class ProductDetailController extends Controller {
       if (quantity >= product!.stockQuantity!) {
         showToastNotification(context!,
             title: trans("Maximum quantity reached"),
-            description:
-                "${trans("Sorry, only")} ${product!.stockQuantity} ${trans("left")}",
+            description: "${trans("Sorry, only")} ${product!.stockQuantity} ${trans("left")}",
             style: ToastNotificationStyleType.INFO);
         return;
       }
@@ -70,8 +65,7 @@ class ProductDetailController extends Controller {
       if (onSuccess != null) {
         onSuccess();
       }
-      updateState(ProductQuantity.state,
-          data: {"product_id": product?.id, "quantity": quantity});
+      updateState(ProductQuantity.state, data: {"product_id": product?.id, "quantity": quantity});
     }
   }
 
@@ -81,14 +75,11 @@ class ProductDetailController extends Controller {
       if (onSuccess != null) {
         onSuccess();
       }
-      updateState(ProductQuantity.state,
-          data: {"product_id": product?.id, "quantity": quantity});
+      updateState(ProductQuantity.state, data: {"product_id": product?.id, "quantity": quantity});
     }
   }
 
-  toggleWishList(
-      {required Function onSuccess,
-      required WishlistAction wishlistAction}) async {
+  toggleWishList({required Function onSuccess, required WishlistAction wishlistAction}) async {
     String subtitleMsg;
     if (wishlistAction == WishlistAction.remove) {
       await removeWishlistProduct(product: product);
@@ -109,8 +100,7 @@ class ProductDetailController extends Controller {
   }
 
   ws_product_variation.ProductVariation? findProductVariation(
-      {required Map<int, dynamic> tmpAttributeObj,
-      required List<ws_product_variation.ProductVariation> productVariations}) {
+      {required Map<int, dynamic> tmpAttributeObj, required List<ws_product_variation.ProductVariation> productVariations}) {
     ws_product_variation.ProductVariation? tmpProductVariation;
 
     Map<String?, dynamic> tmpSelectedObj = {};

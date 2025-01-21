@@ -11,6 +11,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_app/app/controllers/product_detail_controller.dart';
+import 'package:flutter_app/bootstrap/enums/wishlist_action_enums.dart';
 import 'package:flutter_app/resources/widgets/woosignal_ui.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -18,30 +20,45 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:woosignal/models/response/product.dart';
 import 'package:woosignal/models/response/product_variation.dart';
+import 'package:woosignal/models/response/woosignal_app.dart';
 
 import '/bootstrap/helpers.dart';
 
-class ProductDetailHeaderWidget extends StatelessWidget {
-  const ProductDetailHeaderWidget({super.key, required this.product, this.productOnSalePrice, this.selectedProductVariation, this.productOriginalPrice});
+class ProductDetailHeaderWidget extends StatefulWidget {
+  const ProductDetailHeaderWidget(
+      {super.key,
+      required this.product,
+      this.productOnSalePrice,
+      this.selectedProductVariation,
+      this.productOriginalPrice,
+      required this.controller,
+      required this.wooSignalApp});
 
+  final ProductDetailController controller;
+  final WooSignalApp? wooSignalApp;
   final Product? product;
   final String? productOnSalePrice;
   final String? productOriginalPrice;
   final ProductVariation? selectedProductVariation;
 
+  @override
+  State<ProductDetailHeaderWidget> createState() => _ProductDetailHeaderWidgetState();
+}
+
+class _ProductDetailHeaderWidgetState extends State<ProductDetailHeaderWidget> {
   _modalBottomSheetMenu(BuildContext context) {
     wsModalBottom(
       context,
       title: trans("Description"),
       bodyWidget: SingleChildScrollView(
-        child: HtmlWidget(product!.description!),
+        child: HtmlWidget(widget.product!.description!),
       ),
     );
   }
 
   _calculateDiscountPrice() {
-    String? regularPrice = selectedProductVariation?.regularPrice ?? productOriginalPrice;
-    String? salePrice = selectedProductVariation?.salePrice ?? productOnSalePrice;
+    String? regularPrice = widget.selectedProductVariation?.regularPrice ?? widget.productOriginalPrice;
+    String? salePrice = widget.selectedProductVariation?.salePrice ?? widget.productOnSalePrice;
 
     double? discountPercentage;
     if (regularPrice != null && salePrice != null) {
@@ -70,36 +87,50 @@ class ProductDetailHeaderWidget extends StatelessWidget {
             children: [
               Flexible(
                 child: AutoSizeText(
-                  product!.name!,
+                  widget.product!.name!,
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontSize: 20),
                   textAlign: TextAlign.left,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
               ),
-              if (product!.permalink != null) ...[
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-                  child: GestureDetector(
-                    onTap: () {
-                      HapticFeedback.mediumImpact();
-                      Share.share(product!.permalink!);
-                    },
-                    child: Icon(
-                      Icons.share,
-                      size: 24,
-                      color: Colors.blue,
+              Row(
+                children: [
+                  if (widget.product!.permalink != null) ...[
+                    GestureDetector(
+                      onTap: () {
+                        HapticFeedback.mediumImpact();
+                        Share.share(widget.product!.permalink!);
+                      },
+                      child: Icon(
+                        Icons.share,
+                        size: 24,
+                        color: Colors.blue,
+                      ),
                     ),
-                  ),
-                ),
-              ],
+                  ],
+                  const SizedBox(width: 24),
+                  if (widget.wooSignalApp!.wishlistEnabled!)
+                    NyFutureBuilder(
+                        future: hasAddedWishlistProduct(widget.product?.id),
+                        child: (context, dynamic isInFavourites) {
+                          return isInFavourites
+                              ? GestureDetector(
+                                  onTap: () => widget.controller.toggleWishList(onSuccess: () => setState(() {}), wishlistAction: WishlistAction.remove),
+                                  child: Icon(Icons.favorite, size: 32, color: Colors.red))
+                              : GestureDetector(
+                                  onTap: () => widget.controller.toggleWishList(onSuccess: () => setState(() {}), wishlistAction: WishlistAction.add),
+                                  child: Icon(
+                                    Icons.favorite_border,
+                                    size: 32,
+                                  ));
+                        }),
+                ],
+              ),
             ],
           ),
-          const SizedBox(
-            height: 8,
-          ),
           AutoSizeText(
-            product!.sku!.isNotEmpty ? " (${product!.sku})" : "",
+            (widget.product!.sku!.isNotEmpty ? " (${widget.product!.sku})" : "").trim(),
             style: Theme.of(context).textTheme.headlineMedium!.copyWith(fontSize: 14),
             textAlign: TextAlign.left,
             overflow: TextOverflow.ellipsis,
@@ -109,13 +140,13 @@ class ProductDetailHeaderWidget extends StatelessWidget {
             height: 16,
           ),
           Container(
-            child: HtmlWidget(product!.shortDescription!.isNotEmpty ? product!.shortDescription! : product!.description!, renderMode: RenderMode.column,
-                onTapUrl: (String url) async {
+            child: HtmlWidget(widget.product!.shortDescription!.isNotEmpty ? widget.product!.shortDescription! : widget.product!.description!,
+                renderMode: RenderMode.column, onTapUrl: (String url) async {
               await launchUrl(Uri.parse(url));
               return true;
             }, textStyle: Theme.of(context).textTheme.bodyMedium),
           ),
-          if (product!.shortDescription!.isNotEmpty && product!.description!.isNotEmpty)
+          if (widget.product!.shortDescription!.isNotEmpty && widget.product!.description!.isNotEmpty)
             MaterialButton(
               child: Text(
                 trans("Full description"),
@@ -132,14 +163,14 @@ class ProductDetailHeaderWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              if (product!.onSale == true) ...[
+              if (widget.product!.onSale == true) ...[
                 Text(
-                  formatStringCurrency(total: selectedProductVariation?.regularPrice ?? productOriginalPrice),
+                  formatStringCurrency(total: widget.selectedProductVariation?.regularPrice ?? widget.productOriginalPrice),
                   style: TextStyle(color: Colors.grey, decoration: TextDecoration.lineThrough, fontSize: 20),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  formatStringCurrency(total: selectedProductVariation?.salePrice ?? productOnSalePrice),
+                  formatStringCurrency(total: widget.selectedProductVariation?.salePrice ?? widget.productOnSalePrice),
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         fontSize: 20,
                       ),
@@ -148,14 +179,14 @@ class ProductDetailHeaderWidget extends StatelessWidget {
                 const SizedBox(width: 8),
                 if (_calculateDiscountPrice() != null)
                   Chip(
-                    label: Text("-${_calculateDiscountPrice().toStringAsFixed(0)}% ${"Discount".tr()}"),
-                    backgroundColor: Colors.red[200],
-                    side: BorderSide(color: Colors.red[200]!),
+                    label: Text("-${_calculateDiscountPrice().toStringAsFixed(0)}% ${"Discount".tr()}", style: TextStyle(color: Colors.white)),
+                    backgroundColor: Colors.black,
+                    side: BorderSide(color: Colors.black),
                     padding: EdgeInsets.zero,
                   )
               ] else ...[
                 Text(
-                  formatStringCurrency(total: selectedProductVariation?.price ?? product!.price),
+                  formatStringCurrency(total: widget.selectedProductVariation?.price ?? widget.product!.price),
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         fontSize: 20,
                       ),

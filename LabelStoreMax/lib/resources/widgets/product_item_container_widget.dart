@@ -83,7 +83,7 @@ class ProductItemContainer extends StatelessWidget {
                             "${_calculateDiscountPrice(regularPrice: PriceExtractor.extractRegularPrice(product?.priceHtml), salePrice: product?.price)}%",
                             style: TextStyle(color: Colors.white),
                           ),
-                          decoration: BoxDecoration(color: Colors.red),
+                          decoration: BoxDecoration(color: Colors.black),
                         ),
                       ),
                     if (product!.onSale! && product!.type != "variable")

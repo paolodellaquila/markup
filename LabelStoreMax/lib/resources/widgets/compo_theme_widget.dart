@@ -12,8 +12,10 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_app/resources/pages/categories_page.dart';
+import 'package:flutter_app/app/models/cart.dart';
+import 'package:flutter_app/resources/pages/category/categories_page.dart';
 import 'package:flutter_app/resources/pages/settings_page.dart';
+import 'package:flutter_app/resources/widgets/tab_bar_cart_icon.dart';
 import 'package:flutter_app/utils/product_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
@@ -66,30 +68,20 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
     );
   }
 
+  _loadCart() async {
+    await Cart.getInstance.getCart();
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
 
     _loadTabs();
     _loadAnimations();
+    _loadCart();
 
     ProductManager().initialize();
-  }
-
-  bool onScrollNotification(ScrollNotification notification) {
-    if (notification is UserScrollNotification && notification.metrics.axis == Axis.vertical) {
-      switch (notification.direction) {
-        case ScrollDirection.forward:
-          _hideBottomBarAnimationController.reverse();
-          break;
-        case ScrollDirection.reverse:
-          _hideBottomBarAnimationController.forward();
-          break;
-        case ScrollDirection.idle:
-          break;
-      }
-    }
-    return false;
   }
 
   @override
@@ -123,9 +115,17 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
           : AnimatedBottomNavigationBar.builder(
               itemCount: iconList.length,
               tabBuilder: (int index, bool isActive) {
+                if (iconList[index] == Icons.shopping_bag) {
+                  return TabBarCartIcon(
+                      icon: Icon(
+                    Icons.shopping_bag,
+                    size: 28,
+                    color: isActive && !isMainMenuSelected ? Colors.black : Colors.black26,
+                  ));
+                }
                 return Icon(
                   iconList[index],
-                  size: 24,
+                  size: 28,
                   color: isActive && !isMainMenuSelected ? Colors.black : Colors.black26,
                 );
               },
@@ -141,6 +141,22 @@ class CompoThemeWidgetState extends State<CompoThemeWidget> with TickerProviderS
               //other params
             ),
     );
+  }
+
+  bool onScrollNotification(ScrollNotification notification) {
+    if (notification is UserScrollNotification && notification.metrics.axis == Axis.vertical) {
+      switch (notification.direction) {
+        case ScrollDirection.forward:
+          _hideBottomBarAnimationController.reverse();
+          break;
+        case ScrollDirection.reverse:
+          _hideBottomBarAnimationController.forward();
+          break;
+        case ScrollDirection.idle:
+          break;
+      }
+    }
+    return false;
   }
 
   List<BottomNavItem> bottomNavWidgets() {

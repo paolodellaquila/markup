@@ -19,7 +19,6 @@ import 'package:woosignal/models/response/woosignal_app.dart';
 import '/app/models/cart.dart';
 import '/app/models/checkout_session.dart';
 import '/app/models/customer_country.dart';
-import '/app/models/payment_type.dart';
 import '/bootstrap/app_helper.dart';
 import '/bootstrap/helpers.dart';
 import '/resources/widgets/app_loader_widget.dart';
@@ -53,11 +52,13 @@ class CheckoutConfirmationPageState extends NyState<CheckoutConfirmationPage> {
   @override
   init() async {
     CheckoutSession.getInstance.coupon = null;
+    //AUTO SELECT FIRST Payment method //TODO (disabled to force choose)
+    /*
     List<PaymentType?> paymentTypes = await getPaymentTypes();
-
     if (CheckoutSession.getInstance.paymentType == null && paymentTypes.isNotEmpty) {
       CheckoutSession.getInstance.paymentType = paymentTypes.firstWhere((paymentType) => paymentType?.id == 20, orElse: () => paymentTypes.first);
-    }
+    }*/
+
     _getTaxes();
   }
 
