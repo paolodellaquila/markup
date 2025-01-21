@@ -35,6 +35,7 @@ class LanguageUtility {
   // Method to check if the user is outside Italy
   bool get isOutsideItaly {
     String? countryCode = getUserCountryCode();
+    if (countryCode == null) return false;
     return countryCode != 'IT';
   }
 }
