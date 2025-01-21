@@ -314,6 +314,11 @@
   "Filters": "Filter",
   "Empty Sort": "Sortieren",
   "Coupon Warning": "Der Gutschein kann nur 1 Mal verwendet werden",
-  "Coupon Success": "Gutschein erfolgreich angewendet"
+  "Coupon Success": "Gutschein erfolgreich angewendet",
+  "Dear User, you are outside Italy.": "Lieber Benutzer, Sie sind außerhalb Italiens.",
+  "Shopping is available only on our website.": "Einkaufen ist nur auf unserer Website möglich.",
+  "Normativa Trasparenza Pubblicitaria": "Transparenzwerbung",
+  "Price may vary": "Der Preis kann variieren",
+  "View on Website": "Auf der Website anzeigen"
 
 }

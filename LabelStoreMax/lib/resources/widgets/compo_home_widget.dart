@@ -26,9 +26,11 @@ import 'package:flutter_app/resources/widgets/home_data/home_influencer.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_new_in_donna.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_new_in_uomo.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_popup_banner.dart';
+import 'package:flutter_app/resources/widgets/shared/location_banner.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
 import 'package:flutter_app/utils/app_version/app_version_check.dart';
 import 'package:flutter_app/utils/home_popup.dart';
+import 'package:flutter_app/utils/language_utility.dart';
 import 'package:flutter_app/utils/remote_config_manager.dart';
 import 'package:flutter_app/utils/scroll_animation.dart';
 import 'package:flutter_app/utils/universal_manager_cubit.dart';
@@ -311,6 +313,12 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
           )),
         ],
         elevation: 8,
+        bottom: LanguageUtility.instance.isOutsideItaly
+            ? PreferredSize(
+                preferredSize: Size.fromHeight(24),
+                child: LocationBanner(),
+              )
+            : null,
       ),
       body: !loadHomeCompleted
           ? AppLoaderWidget()

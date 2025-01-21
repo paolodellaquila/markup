@@ -269,7 +269,7 @@
   "Save Note": "Enregistrer la note",
   "Enter order note": "Saisir le bon de commande",
   "Order note must be less than 100 characters": "Le bon de commande doit comporter moins de 100 caractères",
-  "Select your language": "choisissez votre langue",
+  "Select your language": "Choisissez votre langue",
   "Attention": "Attention",
   "incl. tax": "TTC",
   "excl. tax": "HT",
@@ -314,6 +314,11 @@
   "Filters": "Filtres",
   "Empty Sort": "Pas de tri",
   "Coupon Warning": "Le coupon ne peut être utilisé qu'une seule fois",
-  "Coupon Success": "Coupon appliqué avec succès"
+  "Coupon Success": "Coupon appliqué avec succès",
+  "Dear User, you are outside Italy.": "Cher utilisateur, vous êtes en dehors de l'Italie.",
+  "Shopping is available only on our website.": "Les achats sont disponibles uniquement sur notre site Web.",
+  "Normativa Trasparenza Pubblicitaria": "Publicité transparente",
+  "Price may vary": "Le Prix peut varier",
+  "View on Website": "Voir sur le Site"
 
 }

@@ -315,6 +315,11 @@
   "Filters": "Filters",
   "Empty Sort": "Tap to Sort",
   "Coupon Warning": "The coupon can be used only 1 time",
-  "Coupon Success": "Coupon successfully applied"
+  "Coupon Success": "Coupon successfully applied",
+  "Dear User, you are outside Italy.": "Dear User, you are outside Italy.",
+  "Shopping is available only on our website.": "Shopping is available only on our website.",
+  "Normativa Trasparenza Pubblicitaria": "Advertising Transparency Regulations",
+  "Price may vary": "Price may vary",
+  "View on Website": "View on Website"
 
 }

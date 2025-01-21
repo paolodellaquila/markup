@@ -15,6 +15,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/app/models/filter_rules.dart';
 import 'package:flutter_app/resources/pages/browse_search_page.dart';
 import 'package:flutter_app/resources/widgets/buttons.dart';
+import 'package:flutter_app/resources/widgets/shared/location_banner.dart';
+import 'package:flutter_app/utils/language_utility.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart' as ws_product;
 import 'package:woosignal/models/response/product_category.dart';
@@ -93,83 +95,88 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(32),
+          preferredSize: Size.fromHeight(LanguageUtility.instance.isOutsideItaly ? 72 : 32),
           child: Center(
-            child: afterNotNull(
-              productCategory,
-              child: () => Padding(
-                  padding: const EdgeInsets.only(left: 24, right: 18),
-                  child: _freezeProducts.isNotEmpty
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: () async {
-                                routeTo(ProductFiltersPage.path, data: {"products": _freezeProducts, "filters": _filterRules}, onPop: (result) {
-                                  if (result != null) {
-                                    if (result["rules"] != null) {
-                                      _filterRules = result["rules"];
-                                      _filteredProducts = _applyFilters(result["rules"], _freezeProducts);
-                                      _applySort();
-                                    } else {
-                                      _filterRules = null;
-                                      _filteredProducts = null;
-                                      _sortByType = SortByType.clear;
-                                      _applySort();
-                                    }
-                                  }
-                                });
-                              },
-                              child: _filterRules == null
-                                  ? Row(
-                                      children: [
-                                        Icon(Icons.filter_list_outlined, size: 18),
-                                        const SizedBox(width: 4),
-                                        Text("Filters".tr(), style: Theme.of(context).textTheme.bodyLarge),
-                                      ],
-                                    )
-                                  : Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Center(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons.filter_list_outlined,
-                                                size: 18,
-                                                color: Colors.white,
+            child: Column(
+              children: [
+                afterNotNull(
+                  productCategory,
+                  child: () => Padding(
+                      padding: const EdgeInsets.only(left: 24, right: 18),
+                      child: _freezeProducts.isNotEmpty
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () async {
+                                    routeTo(ProductFiltersPage.path, data: {"products": _freezeProducts, "filters": _filterRules}, onPop: (result) {
+                                      if (result != null) {
+                                        if (result["rules"] != null) {
+                                          _filterRules = result["rules"];
+                                          _filteredProducts = _applyFilters(result["rules"], _freezeProducts);
+                                          _applySort();
+                                        } else {
+                                          _filterRules = null;
+                                          _filteredProducts = null;
+                                          _sortByType = SortByType.clear;
+                                          _applySort();
+                                        }
+                                      }
+                                    });
+                                  },
+                                  child: _filterRules == null
+                                      ? Row(
+                                          children: [
+                                            Icon(Icons.filter_list_outlined, size: 18),
+                                            const SizedBox(width: 4),
+                                            Text("Filters".tr(), style: Theme.of(context).textTheme.bodyLarge),
+                                          ],
+                                        )
+                                      : Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.black,
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Center(
+                                            child: Padding(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    Icons.filter_list_outlined,
+                                                    size: 18,
+                                                    color: Colors.white,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                      "${_filterRules!.selectedAttributes.isNotEmpty ? _filterRules!.selectedAttributes.length : ''} ${"Filters".tr()}",
+                                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                            color: Colors.white,
+                                                          )),
+                                                ],
                                               ),
-                                              const SizedBox(width: 4),
-                                              Text(
-                                                  "${_filterRules!.selectedAttributes.isNotEmpty ? _filterRules!.selectedAttributes.length : ''} ${"Filters".tr()}",
-                                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                        color: Colors.white,
-                                                      )),
-                                            ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                            ),
-                            GestureDetector(
-                              onTap: _modalSheetTune,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.compare_arrows_outlined, size: 18),
-                                  const SizedBox(width: 4),
-                                  Text(_sortTitle ?? trans("Empty Sort"), style: Theme.of(context).textTheme.bodyMedium),
-                                ],
-                              ),
-                            ),
-                          ],
-                        )
-                      : const SizedBox.shrink()),
+                                ),
+                                GestureDetector(
+                                  onTap: _modalSheetTune,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Icon(Icons.compare_arrows_outlined, size: 18),
+                                      const SizedBox(width: 4),
+                                      Text(_sortTitle ?? trans("Empty Sort"), style: Theme.of(context).textTheme.bodyMedium),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox.shrink()),
+                ),
+                LocationBanner(productCategory: true),
+              ],
             ),
           ),
         ),

@@ -279,7 +279,7 @@
   "Save Note": "Salva nota",
   "Enter order note": "Inserisci la nota dell'ordine",
   "Order note must be less than 100 characters": "La nota dell'ordine deve contenere meno di 100 caratteri",
-  "Select your language": "seleziona la tua lingua",
+  "Select your language": "Seleziona la tua lingua",
   "Attention": "Attenzione",
   "incl. tax": "Incluso IVA",
   "escl. tax": "Escluso IVA",
@@ -323,5 +323,10 @@
   "Filters": "Filtri",
   "Empty Sort": "Clicca per ordinare",
   "Coupon Warning": "Il coupon può essere utilizzato solo 1 volta",
-  "Coupon Success": "Coupon applicato con successo"
+  "Coupon Success": "Coupon applicato con successo",
+  "Dear User, you are outside Italy.": "Caro Utente, sei fuori dall'Italia.",
+  "Shopping is available only on our website.": "Lo shopping è disponibile solo sul nostro sito web.",
+  "Normativa Trasparenza Pubblicitaria": "Normativa Trasparenza Pubblicitaria",
+  "Price may vary": "Il Prezzo può variare",
+  "View on Website": "Visualizza sul Sito Web"
 }
