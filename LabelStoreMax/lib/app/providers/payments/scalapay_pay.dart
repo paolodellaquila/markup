@@ -100,8 +100,6 @@ scalapayPay(context, {TaxRate? taxRate, bool taxIncluded = false}) async {
       );
 
       if (success) {
-        await scalapayApi.delayOrder(orderResponse.token!);
-        await scalapayApi.capturePayment(orderResponse.token!);
         // Delay the payment
         await scalapayApi.delayOrder(orderResponse.token!);
 

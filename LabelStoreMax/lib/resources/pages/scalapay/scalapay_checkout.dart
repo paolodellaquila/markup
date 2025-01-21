@@ -25,7 +25,7 @@ class _ScalapayCheckoutState extends State<ScalapayCheckout> {
               NavigationDelegate(
                 onProgress: (int progress) {},
                 onPageStarted: (String url) {
-                  if (url.contains(widget.scalapayOrder.merchant.redirectConfirmUrl!)) {
+                  if ((url.contains(widget.scalapayOrder.merchant.redirectConfirmUrl!)) || (url.contains("returnTo=%2Fhome"))) {
                     Navigator.pop(context, true);
                   } else if (url.contains(widget.scalapayOrder.merchant.redirectCancelUrl!)) {
                     Navigator.pop(context, false);
