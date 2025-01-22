@@ -115,7 +115,7 @@ class _HomePageState extends NyState<HomePage> {
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: Text('Accept'.tr()),
+              child: Text(Platform.isAndroid ? 'Accept'.tr() : 'Continue'.tr()),
             ),
           ]),
         ),
