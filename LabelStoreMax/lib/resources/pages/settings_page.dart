@@ -6,6 +6,7 @@ import 'package:flutter_app/bootstrap/helpers.dart';
 import 'package:flutter_app/config/firebase-messaging/firebase_notification_handler.dart';
 import 'package:flutter_app/resources/pages/account_detail_page.dart';
 import 'package:flutter_app/resources/pages/account_login_page.dart';
+import 'package:flutter_app/resources/pages/chat_page.dart';
 import 'package:flutter_app/resources/widgets/app_version_widget.dart';
 import 'package:notification_permissions/notification_permissions.dart';
 import 'package:nylo_framework/nylo_framework.dart';
@@ -175,6 +176,18 @@ class _SettingsPageState extends State<SettingsPage> {
                         leading: Icon(Icons.contact_support_rounded),
                         trailing: Icon(Icons.arrow_forward_ios),
                         onTap: () => openBrowserTab(url: "https://markupitalia.com/contatti/"),
+                      ),
+                      const SizedBox(height: 8),
+                      const Divider(
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(height: 8),
+                      ListTile(
+                        contentPadding: const EdgeInsets.all(0.0),
+                        title: Text("Chat with us".tr()),
+                        leading: Icon(Icons.chat),
+                        trailing: Icon(Icons.arrow_forward_ios),
+                        onTap: () => routeTo(ChatPage.path),
                       ),
                       const SizedBox(height: 24),
                       ListTile(

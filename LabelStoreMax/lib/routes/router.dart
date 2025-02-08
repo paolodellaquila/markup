@@ -1,4 +1,5 @@
 import 'package:flutter_app/resources/pages/category/custom_sub_category_page.dart';
+import 'package:flutter_app/resources/pages/chat_page.dart';
 import 'package:flutter_app/resources/pages/product_filters_page.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
@@ -90,4 +91,6 @@ appRouter() => nyRoutes((router) {
       router.route(BrowseCustomCategoryPage.path, (context) => BrowseCustomCategoryPage(), transition: PageTransitionType.bottomToTop);
 
       router.route(ProductFiltersPage.path, (context) => ProductFiltersPage(), transition: PageTransitionType.bottomToTop);
+
+      router.route(ChatPage.path, (context) => ChatPage());
     });
