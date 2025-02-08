@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/utils/price_extractor.dart';
+import 'package:flutter_app/utils/product_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
 
@@ -80,7 +81,7 @@ class ProductItemContainer extends StatelessWidget {
                         child: Container(
                           padding: EdgeInsets.all(4),
                           child: Text(
-                            "${_calculateDiscountPrice(regularPrice: PriceExtractor.extractRegularPrice(product?.priceHtml), salePrice: product?.price)}%",
+                            "${_calculateDiscountPrice(regularPrice: PriceExtractor.extractRegularPrice(product?.priceHtml), salePrice: ProductManager().internationalPricingRate(product?.price))}%",
                             style: TextStyle(color: Colors.white),
                           ),
                           decoration: BoxDecoration(color: Colors.black),
@@ -145,7 +146,7 @@ class ProductItemContainer extends StatelessWidget {
                     SizedBox(width: 4),
                   ],
                   AutoSizeText(
-                    formatStringCurrency(total: product?.price),
+                    formatStringCurrency(total: ProductManager().internationalPricingRate(product?.price)),
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.w800),
                     textAlign: TextAlign.left,
                   ),

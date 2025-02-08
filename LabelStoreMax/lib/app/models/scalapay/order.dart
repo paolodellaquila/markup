@@ -101,8 +101,12 @@ class ScalapayOrder {
                 .toList() ??
             [],
         merchant: ScalapayMerchant(
-            redirectConfirmUrl: getEnv('SCALAPAY_LIVE_MODE') == true ? "" : "https://portal.integration.scalapay.com/failure-url",
-            redirectCancelUrl: getEnv('SCALAPAY_LIVE_MODE') == true ? "" : "https://portal.integration.scalapay.com/success-url"),
+            redirectConfirmUrl: getEnv('SCALAPAY_LIVE_MODE') == true
+                ? "https://portal.integration.scalapay.com/failure-url"
+                : "https://portal.integration.scalapay.com/failure-url",
+            redirectCancelUrl: getEnv('SCALAPAY_LIVE_MODE') == true
+                ? "https://portal.integration.scalapay.com/success-url"
+                : "https://portal.integration.scalapay.com/success-url"),
         merchantReference: orderWC.transactionId ?? "order-12345",
         taxAmount: ScalapayAmount(amount: taxTotal, currency: currency),
         shippingAmount: ScalapayAmount(amount: shippingTotal, currency: currency));

@@ -9,6 +9,7 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/resources/widgets/woosignal_ui.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:validated/validated.dart' as validate;
 import 'package:wp_json_api/models/responses/wp_user_info_response.dart';
@@ -26,7 +27,6 @@ import '/resources/widgets/buttons.dart';
 import '/resources/widgets/customer_address_input.dart';
 import '/resources/widgets/safearea_widget.dart';
 import '/resources/widgets/switch_address_tab.dart';
-import '/resources/widgets/woosignal_ui.dart';
 
 class AccountShippingDetailsPage extends StatefulWidget {
   static String path = "/account-shipping-details";
@@ -85,6 +85,7 @@ class _AccountShippingDetailsPageState extends NyState<AccountShippingDetailsPag
 
   @override
   boot() async {
+    FocusManager.instance.primaryFocus?.unfocus();
     await _fetchUserDetails();
   }
 
@@ -197,7 +198,6 @@ class _AccountShippingDetailsPageState extends NyState<AccountShippingDetailsPag
                           Expanded(
                             child: Container(
                                 decoration: BoxDecoration(
-                                  color: ThemeColor.get(context).backgroundContainer,
                                   borderRadius: BorderRadius.circular(10),
                                   boxShadow: (Theme.of(context).brightness == Brightness.light) ? wsBoxShadow() : null,
                                 ),
@@ -205,14 +205,6 @@ class _AccountShippingDetailsPageState extends NyState<AccountShippingDetailsPag
                                 margin: EdgeInsets.only(top: 8),
                                 child: (activeTab ?? tabBillingDetails())),
                           ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 16),
-                      height: 160,
-                      child: Column(
-                        children: <Widget>[
                           PrimaryButton(
                             title: trans("Confirm"),
                             action: _useDetailsTapped,

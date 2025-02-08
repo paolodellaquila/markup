@@ -1,3 +1,4 @@
+import 'package:flutter_app/utils/product_manager.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' as html_parser;
 
@@ -14,7 +15,7 @@ class PriceExtractor {
     if (delElement != null) {
       // Retrieve and clean the price text (removing non-numeric characters except for the decimal separator)
       final priceText = delElement.text.replaceAll(RegExp(r'[^\d,\.]'), '');
-      return priceText;
+      return ProductManager().internationalPricingRate(priceText);
     }
 
     // Return null if the <del> element is not found

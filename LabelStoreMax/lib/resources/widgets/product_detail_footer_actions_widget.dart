@@ -9,6 +9,7 @@
 //  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/utils/country_utility.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
 
@@ -98,7 +99,7 @@ class ProductDetailFooterActionsWidget extends StatelessWidget {
                   ),
                   alignment: Alignment.centerLeft,
                 )),*/
-                product!.type == "external"
+                product!.type == "external" || CountryUtility.instance.isOutsideItaly
                     ? Flexible(
                         child: WooSignalButton(
                           key: key,

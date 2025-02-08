@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_app/app/models/product_color.dart';
+import 'package:flutter_app/utils/country_utility.dart';
 import 'package:flutter_app/utils/remote_config_manager.dart';
 
 class ProductManager {
@@ -18,7 +19,16 @@ class ProductManager {
   final List<ProductColor> colors = [];
   final List<String> skuBanned = [];
   String shippingDelay = "";
-  double internationalPricingRate = RemoteConfigManager.instance.internationalPricingRate;
+
+  String? internationalPricingRate(String? price) {
+    try {
+      if (price == null) return null;
+      final doublePrice = double.parse(price.replaceAll(",", ".").replaceAll("€", "").trim());
+      return CountryUtility.instance.isOutsideItaly ? (doublePrice * RemoteConfigManager.instance.internationalPricingRate).toStringAsFixed(2) : price;
+    } catch (e) {
+      return null;
+    }
+  }
 
   Future<void> initialize() async {
     await syncColors();

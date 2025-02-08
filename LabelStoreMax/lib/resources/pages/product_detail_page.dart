@@ -11,6 +11,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
+import 'package:flutter_app/utils/country_utility.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart' as ws_product;
 import 'package:woosignal/models/response/product_variation.dart' as ws_product_variation;
@@ -232,9 +233,9 @@ class _ProductDetailState extends NyState<ProductDetailPage> {
                         ),
                       ),
                       // </Product body>
-                      _selectedProductVariation != null
+                      _selectedProductVariation != null || CountryUtility.instance.isOutsideItaly
                           ? ProductDetailFooterActionsWidget(
-                              disabled: _selectedProductVariation == null,
+                              disabled: _selectedProductVariation == null && !CountryUtility.instance.isOutsideItaly,
                               onAddToCart: _addItemToCart,
                               onViewExternalProduct: widget.controller.viewExternalProduct,
                               onAddQuantity: () => widget.controller.addQuantityTapped(),

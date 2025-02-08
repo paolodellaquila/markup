@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/app/controllers/product_detail_controller.dart';
 import 'package:flutter_app/bootstrap/enums/wishlist_action_enums.dart';
 import 'package:flutter_app/resources/widgets/woosignal_ui.dart';
+import 'package:flutter_app/utils/product_manager.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:share_plus/share_plus.dart';
@@ -165,12 +166,16 @@ class _ProductDetailHeaderWidgetState extends State<ProductDetailHeaderWidget> {
             children: [
               if (widget.product!.onSale == true) ...[
                 Text(
-                  formatStringCurrency(total: widget.selectedProductVariation?.regularPrice ?? widget.productOriginalPrice),
+                  ProductManager()
+                      .internationalPricingRate(formatStringCurrency(total: widget.selectedProductVariation?.regularPrice ?? widget.productOriginalPrice))
+                      .toString(),
                   style: TextStyle(color: Colors.grey, decoration: TextDecoration.lineThrough, fontSize: 20),
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  formatStringCurrency(total: widget.selectedProductVariation?.salePrice ?? widget.productOnSalePrice),
+                  ProductManager()
+                      .internationalPricingRate(formatStringCurrency(total: widget.selectedProductVariation?.salePrice ?? widget.productOnSalePrice))
+                      .toString(),
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         fontSize: 20,
                       ),
@@ -186,7 +191,9 @@ class _ProductDetailHeaderWidgetState extends State<ProductDetailHeaderWidget> {
                   )
               ] else ...[
                 Text(
-                  formatStringCurrency(total: widget.selectedProductVariation?.price ?? widget.product!.price),
+                  ProductManager()
+                      .internationalPricingRate(formatStringCurrency(total: widget.selectedProductVariation?.price ?? widget.product!.price))
+                      .toString(),
                   style: Theme.of(context).textTheme.headlineMedium!.copyWith(
                         fontSize: 20,
                       ),

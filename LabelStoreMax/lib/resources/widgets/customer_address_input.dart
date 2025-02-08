@@ -49,7 +49,6 @@ class CustomerAddressInput extends StatelessWidget {
             TextEditingRow(
               heading: trans("First Name"),
               controller: txtControllerFirstName,
-              shouldAutoFocus: true,
             ),
             TextEditingRow(
               heading: trans("Last Name"),
