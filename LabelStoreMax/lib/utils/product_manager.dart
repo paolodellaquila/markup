@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_app/app/models/product_color.dart';
+import 'package:flutter_app/utils/remote_config_manager.dart';
 
 class ProductManager {
   static final ProductManager _singleton = ProductManager._internal();
@@ -17,6 +18,14 @@ class ProductManager {
   final List<ProductColor> colors = [];
   final List<String> skuBanned = [];
   String shippingDelay = "";
+
+  String? internationalPricingRate(String price) {
+    try {
+      return (double.parse(price) * RemoteConfigManager.instance.internationalPricingRate).toString();
+    } catch (e) {
+      return null;
+    }
+  }
 
   Future<void> initialize() async {
     await syncColors();

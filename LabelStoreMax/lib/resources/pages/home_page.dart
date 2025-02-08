@@ -15,7 +15,7 @@ import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/config/firebase-messaging/firebase_notification_handler.dart';
-import 'package:flutter_app/utils/language_utility.dart';
+import 'package:flutter_app/utils/country_utility.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:woosignal/models/response/woosignal_app.dart';
@@ -39,7 +39,7 @@ class _HomePageState extends NyState<HomePage> {
   final WooSignalApp? _wooSignalApp = AppHelper.instance.appConfig;
 
   _initDependencies() async {
-    await LanguageUtility.instance.init(context, setLanguage: true);
+    await CountryUtility.instance.init(context, setLanguage: true);
 
     await _enableFcmNotifications();
 

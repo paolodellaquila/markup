@@ -189,12 +189,10 @@ class _SettingsPageState extends State<SettingsPage> {
                         trailing: Icon(Icons.arrow_forward_ios),
                         onTap: () => routeTo(ChatPage.path),
                       ),
-                      const SizedBox(height: 24),
                       ListTile(
                         contentPadding: const EdgeInsets.all(0.0),
                         title: AppVersionWidget(),
                       ),
-                      const SizedBox(height: 8),
                     ],
                   ),
                 ),

@@ -57,6 +57,6 @@ class RemoteConfigManager {
         APPSTORE_URL: 'https://apps.apple.com/app/markup-italia/id6538726254',
         PLAYSTORE_URL: 'https://play.google.com/store/search?q=Markup%20Italia&c=apps&hl=it',
         CHATBOT_URL: 'https://www.chatbase.co/chatbot-iframe/7zG7v5Fke8hpwjD5_8sBD',
-        INTERNATIONAL_PRICING_RATE_URL: 1.1525,
+        INTERNATIONAL_PRICING_RATE_URL: 1.0,
       });
 }

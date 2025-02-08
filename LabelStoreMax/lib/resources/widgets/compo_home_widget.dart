@@ -26,11 +26,11 @@ import 'package:flutter_app/resources/widgets/home_data/home_influencer.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_new_in_donna.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_new_in_uomo.dart';
 import 'package:flutter_app/resources/widgets/home_data/home_popup_banner.dart';
-import 'package:flutter_app/resources/widgets/shared/location_banner.dart';
+import 'package:flutter_app/resources/widgets/home_data/message_banner.dart';
+import 'package:flutter_app/resources/widgets/shared/message_banner.dart';
 import 'package:flutter_app/resources/widgets/store_logo_widget.dart';
 import 'package:flutter_app/utils/app_version/app_version_check.dart';
 import 'package:flutter_app/utils/home_popup.dart';
-import 'package:flutter_app/utils/language_utility.dart';
 import 'package:flutter_app/utils/remote_config_manager.dart';
 import 'package:flutter_app/utils/scroll_animation.dart';
 import 'package:flutter_app/utils/universal_manager_cubit.dart';
@@ -68,6 +68,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
   HomeTrend? homeTrend;
   HomeNewInDonna? homeNewInDonna;
   HomeNewInUomo? homeNewInUomo;
+  MessageBanner? homeMessageBanner;
 
   List<ProductCategory> categories = [];
 
@@ -166,6 +167,7 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
         final trend = snapshot.child("trend");
         final new_donna = snapshot.child("new-donna");
         final new_uomo = snapshot.child("new-uomo");
+        final messageBanner = snapshot.child("messageBanner");
 
         ///Banner
         homeBanner = HomeBanner(
@@ -211,6 +213,10 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
           title: new_uomo.child("title").value.toString(),
           subtitle: new_uomo.child("subtitle").value.toString(),
           images: (new_uomo.child("images").value as List<dynamic>).map((value) => value.toString()).toList(),
+        );
+
+        homeMessageBanner = MessageBanner(
+          messages: (messageBanner.value as List<dynamic>).map((value) => Message.fromJsonString(value.toString())).toList(),
         );
 
         ///video controller
@@ -313,10 +319,12 @@ class _CompoHomeWidgetState extends NyState<CompoHomeWidget> with AutomaticKeepA
           )),
         ],
         elevation: 8,
-        bottom: LanguageUtility.instance.isOutsideItaly
+        bottom: homeMessageBanner != null
             ? PreferredSize(
                 preferredSize: Size.fromHeight(24),
-                child: LocationBanner(),
+                child: MessageBannerWidget(
+                  messages: homeMessageBanner?.messages ?? [],
+                ),
               )
             : null,
       ),

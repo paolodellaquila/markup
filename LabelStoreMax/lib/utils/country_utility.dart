@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 
-class LanguageUtility {
+class CountryUtility {
   // Private constructor for the singleton pattern
-  LanguageUtility._privateConstructor();
+  CountryUtility._privateConstructor();
 
   // The single instance of the class
-  static final LanguageUtility instance = LanguageUtility._privateConstructor();
+  static final CountryUtility instance = CountryUtility._privateConstructor();
   static Map<String, dynamic> languageData = {};
 
   init(BuildContext context, {setLanguage = false}) async {
@@ -14,7 +14,7 @@ class LanguageUtility {
     languageData = response.data;
 
     if (setLanguage) {
-      final countryCode = LanguageUtility.instance.getUserCountryCode();
+      final countryCode = CountryUtility.instance.getUserCountryCode();
 
       if (countryCode != null) {
         await NyLocalization.instance.setLanguage(context, language: isOutsideItaly ? "en" : "it");
@@ -34,8 +34,9 @@ class LanguageUtility {
 
   // Method to check if the user is outside Italy
   bool get isOutsideItaly {
-    String? countryCode = getUserCountryCode();
-    if (countryCode == null) return false;
-    return countryCode != 'IT';
+    // String? countryCode = getUserCountryCode();
+    // if (countryCode == null) return false;
+    // return countryCode != 'IT';
+    return true;
   }
 }
