@@ -18,14 +18,7 @@ class ProductManager {
   final List<ProductColor> colors = [];
   final List<String> skuBanned = [];
   String shippingDelay = "";
-
-  String? internationalPricingRate(String price) {
-    try {
-      return (double.parse(price) * RemoteConfigManager.instance.internationalPricingRate).toString();
-    } catch (e) {
-      return null;
-    }
-  }
+  double internationalPricingRate = RemoteConfigManager.instance.internationalPricingRate;
 
   Future<void> initialize() async {
     await syncColors();

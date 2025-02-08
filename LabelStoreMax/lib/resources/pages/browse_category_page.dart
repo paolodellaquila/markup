@@ -15,8 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/app/models/filter_rules.dart';
 import 'package:flutter_app/resources/pages/browse_search_page.dart';
 import 'package:flutter_app/resources/widgets/buttons.dart';
-import 'package:flutter_app/resources/widgets/shared/location_banner.dart';
-import 'package:flutter_app/utils/language_utility.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart' as ws_product;
 import 'package:woosignal/models/response/product_category.dart';
@@ -95,7 +93,7 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(LanguageUtility.instance.isOutsideItaly ? 72 : 32),
+          preferredSize: Size.fromHeight(32),
           child: Center(
             child: Column(
               children: [
@@ -175,7 +173,6 @@ class _BrowseCategoryPageState extends NyState<BrowseCategoryPage> {
                             )
                           : const SizedBox.shrink()),
                 ),
-                LocationBanner(productCategory: true),
               ],
             ),
           ),

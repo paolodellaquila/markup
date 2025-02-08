@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/app/controllers/product_detail_controller.dart';
 import 'package:flutter_app/resources/widgets/product_detail_description_widget.dart';
 import 'package:flutter_app/resources/widgets/shared/alert_box.dart';
-import 'package:flutter_app/resources/widgets/shared/location_banner.dart';
 import 'package:flutter_app/utils/product_manager.dart';
 import 'package:nylo_framework/nylo_framework.dart';
 import 'package:woosignal/models/response/product.dart';
@@ -66,11 +65,6 @@ class _ProductDetailBodyWidgetState extends State<ProductDetailBodyWidget> {
                 : widget.product!.images,
             onTapImage: (i) => _viewProductImages(context, i)),
         // </Image Swiper>
-
-        Padding(
-          padding: const EdgeInsets.only(top: 16),
-          child: LocationBanner(productCategory: true),
-        ),
 
         ProductDetailHeaderWidget(
           controller: widget.controller,
